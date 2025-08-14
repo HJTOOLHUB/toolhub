@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款计算器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36BFFA',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 10px 30px -5px rgba(0, 0, 0, 0.1)',
+                        'input': '0 2px 5px rgba(22, 93, 255, 0.1)',
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-custom {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .input-focus {
+                @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+            }
+            .card-hover {
+                @apply hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-calculator text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-dark">贷款计算器</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-gray-600 hover:text-primary transition-custom">首页</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-custom">使用指南</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-custom">常见问题</a>
+            </div>
+            <button class="md:hidden text-gray-600 focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-12">
+        <section class="max-w-5xl mx-auto">
+            <!-- 介绍部分 -->
+            <div class="text-center mb-8 md:mb-12">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">轻松计算您的贷款详情</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">输入贷款金额、利率和期限，立即获取月供、总还款额和总利息的详细计算结果</p>
+            </div>
+            
+            <!-- 计算器卡片 -->
+            <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- 输入部分 -->
+                    <div class="p-6 md:p-8 bg-neutral rounded-r-2xl md:rounded-r-none">
+                        <h3 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                            <i class="fa fa-pencil-square-o text-primary mr-2"></i>贷款信息
+                        </h3>
+                        
+                        <form id="loanForm" class="space-y-6">
+                            <!-- 贷款金额 -->
+                            <div class="space-y-2">
+                                <label for="loanAmount" class="block text-gray-700 font-medium">贷款金额 (元)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">¥</span>
+                                    <input 
+                                        type="number" 
+                                        id="loanAmount" 
+                                        min="1000" 
+                                        step="1000" 
+                                        value="300000"
+                                        class="w-full pl-8 pr-3 py-3 rounded-lg border border-gray-300 input-focus shadow-input"
+                                        required
+                                    >
+                                </div>
+                                <input 
+                                    type="range" 
+                                    id="loanAmountSlider" 
+                                    min="1000" 
+                                    max="10000000" 
+                                    step="1000" 
+                                    value="300000"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                >
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>1,000 元</span>
+                                    <span id="loanAmountValue">300,000 元</span>
+                                    <span>10,000,000 元</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 年利率 -->
+                            <div class="space-y-2">
+                                <label for="interestRate" class="block text-gray-700 font-medium">年利率 (%)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">%</span>
+                                    <input 
+                                        type="number" 
+                                        id="interestRate" 
+                                        min="0.1" 
+                                        max="30" 
+                                        step="0.1" 
+                                        value="4.9"
+                                        class="w-full pl-8 pr-3 py-3 rounded-lg border border-gray-300 input-focus shadow-input"
+                                        required
+                                    >
+                                </div>
+                                <input 
+                                    type="range" 
+                                    id="interestRateSlider" 
+                                    min="0.1" 
+                                    max="30" 
+                                    step="0.1" 
+                                    value="4.9"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                >
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>0.1%</span>
+                                    <span id="interestRateValue">4.9%</span>
+                                    <span>30%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 贷款期限 -->
+                            <div class="space-y-2">
+                                <label for="loanTerm" class="block text-gray-700 font-medium">贷款期限</label>
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative flex-1">
+                                        <input 
+                                            type="number" 
+                                            id="loanTerm" 
+                                            min="1" 
+                                            max="30" 
+                                            step="1" 
+                                            value="20"
+                                            class="w-full pl-3 pr-3 py-3 rounded-lg border border-gray-300 input-focus shadow-input"
+                                            required
+                                        >
+                                    </div>
+                                    <select id="loanTermType" class="px-3 py-3 rounded-lg border border-gray-300 bg-white input-focus shadow-input">
+                                        <option value="years">年</option>
+                                        <option value="months">月</option>
+                                    </select>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    id="loanTermSlider" 
+                                    min="1" 
+                                    max="30" 
+                                    step="1" 
+                                    value="20"
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                                >
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>1 年</span>
+                                    <span id="loanTermValue">20 年</span>
+                                    <span>30 年</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 还款方式 -->
+                            <div class="space-y-2">
+                                <label class="block text-gray-700 font-medium">还款方式</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="relative">
+                                        <input 
+                                            type="radio" 
+                                            id="repaymentEqualPrincipalAndInterest" 
+                                            name="repaymentType" 
+                                            value="equal-principal-interest" 
+                                            checked
+                                            class="peer sr-only"
+                                        >
+                                        <label for="repaymentEqualPrincipalAndInterest" class="block text-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-custom peer-checked:border-primary peer-checked:bg-primary/5">
+                                            等额本息
+                                        </label>
+                                    </div>
+                                    <div class="relative">
+                                        <input 
+                                            type="radio" 
+                                            id="repaymentEqualPrincipal" 
+                                            name="repaymentType" 
+                                            value="equal-principal" 
+                                            class="peer sr-only"
+                                        >
+                                        <label for="repaymentEqualPrincipal" class="block text-center p-3 border border-gray-300 rounded-lg cursor-pointer transition-custom peer-checked:border-primary peer-checked:bg-primary/5">
+                                            等额本金
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-custom flex items-center justify-center">
+                                <i class="fa fa-calculator mr-2"></i> 计算贷款
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- 结果部分 -->
+                    <div class="p-6 md:p-8">
+                        <h3 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                            <i class="fa fa-bar-chart text-primary mr-2"></i>计算结果
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <!-- 月供 -->
+                            <div class="bg-neutral rounded-xl p-5 card-hover">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-gray-600">月供金额</span>
+                                    <i class="fa fa-money text-primary"></i>
+                                </div>
+                                <div class="flex items-baseline">
+                                    <span id="monthlyPayment" class="text-2xl md:text-3xl font-bold text-dark">1,963.33</span>
+                                    <span class="text-gray-500 ml-1">元/月</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 总还款 -->
+                            <div class="bg-neutral rounded-xl p-5 card-hover">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-gray-600">总还款金额</span>
+                                    <i class="fa fa-cny text-primary"></i>
+                                </div>
+                                <div class="flex items-baseline">
+                                    <span id="totalPayment" class="text-2xl md:text-3xl font-bold text-dark">471,199.72</span>
+                                    <span class="text-gray-500 ml-1">元</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 总利息 -->
+                            <div class="bg-neutral rounded-xl p-5 card-hover">
+                                <div class="flex justify-between items-start mb-1">
+                                    <span class="text-gray-600">总利息</span>
+                                    <i class="fa fa-line-chart text-primary"></i>
+                                </div>
+                                <div class="flex items-baseline">
+                                    <span id="totalInterest" class="text-2xl md:text-3xl font-bold text-dark">171,199.72</span>
+                                    <span class="text-gray-500 ml-1">元</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 图表 -->
+                            <div class="bg-neutral rounded-xl p-5">
+                                <h4 class="text-gray-700 font-medium mb-4">还款构成</h4>
+                                <div class="h-48 md:h-64">
+                                    <canvas id="paymentChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 说明部分 -->
+            <div class="mt-10 grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm card-hover">
+                    <div class="flex items-start">
+                        <div class="bg-primary/10 p-3 rounded-lg mr-4">
+                            <i class="fa fa-info-circle text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-dark mb-2">等额本息</h3>
+                            <p class="text-gray-600">每月还款金额相同，前期偿还的利息比例较大，本金比例较小，后期则逐渐转换。适合收入稳定的借款人。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-sm card-hover">
+                    <div class="flex items-start">
+                        <div class="bg-primary/10 p-3 rounded-lg mr-4">
+                            <i class="fa fa-info-circle text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-dark mb-2">等额本金</h3>
+                            <p class="text-gray-600">每月偿还固定的本金和剩余贷款在该月产生的利息，月供逐月递减。前期还款压力较大，总利息支出较少。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        // 格式化数字为带千分位的格式
+        function formatNumber(num) {
+            return num.toLocaleString('zh-CN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // 反格式化，将带千分位的字符串转为数字
+        function parseNumber(str) {
+            return parseFloat(str.replace(/,/g, ''));
+        }
+        
+        // 等额本息计算
+        function calculateEqualPrincipalAndInterest(loanAmount, annualRate, months) {
+            const monthlyRate = annualRate / 100 / 12;
+            const monthlyPayment = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+            const totalPayment = monthlyPayment * months;
+            const totalInterest = totalPayment - loanAmount;
+            
+            return {
+                monthlyPayment,
+                totalPayment,
+                totalInterest
+            };
+        }
+        
+        // 等额本金计算 (首月还款额)
+        function calculateEqualPrincipal(loanAmount, annualRate, months) {
+            const monthlyRate = annualRate / 100 / 12;
+            const monthlyPrincipal = loanAmount / months;
+            const firstMonthInterest = loanAmount * monthlyRate;
+            const firstMonthPayment = monthlyPrincipal + firstMonthInterest;
+            const totalInterest = (loanAmount * monthlyRate * (months + 1)) / 2;
+            const totalPayment = loanAmount + totalInterest;
+            
+            return {
+                monthlyPayment: firstMonthPayment, // 首月还款额
+                totalPayment,
+                totalInterest
+            };
+        }
+        
+        // 更新计算结果
+        function updateResults() {
+            // 获取输入值
+            const loanAmount = parseNumber(document.getElementById('loanAmount').value);
+            const annualRate = parseFloat(document.getElementById('interestRate').value);
+            
+            let months;
+            const termValue = parseInt(document.getElementById('loanTerm').value);
+            const termType = document.getElementById('loanTermType').value;
+            
+            if (termType === 'years') {
+                months = termValue * 12;
+            } else {
+                months = termValue;
+            }
+            
+            // 判断还款方式
+            const repaymentType = document.querySelector('input[name="repaymentType"]:checked').value;
+            
+            let results;
+            if (repaymentType === 'equal-principal-interest') {
+                results = calculateEqualPrincipalAndInterest(loanAmount, annualRate, months);
+            } else {
+                results = calculateEqualPrincipal(loanAmount, annualRate, months);
+            }
+            
+            // 更新结果显示
+            document.getElementById('monthlyPayment').textContent = formatNumber(results.monthlyPayment);
+            document.getElementById('totalPayment').textContent = formatNumber(results.totalPayment);
+            document.getElementById('totalInterest').textContent = formatNumber(results.totalInterest);
+            
+            // 更新图表
+            updateChart(loanAmount, results.totalInterest);
+        }
+        
+        // 更新图表
+        function updateChart(principal, interest) {
+            const ctx = document.getElementById('paymentChart').getContext('2d');
+            
+            // 如果已有图表实例，先销毁
+            if (window.paymentChartInstance) {
+                window.paymentChartInstance.destroy();
+            }
+            
+            // 创建新图表
+            window.paymentChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['本金', '利息'],
+                    datasets: [{
+                        data: [principal, interest],
+                        backgroundColor: [
+                            '#165DFF',
+                            '#36BFFA'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${formatNumber(value)} 元 (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true
+                    }
+                }
+            });
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 表单提交事件
+            document.getElementById('loanForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateResults();
+            });
+            
+            // 贷款金额输入框和滑块联动
+            const loanAmountInput = document.getElementById('loanAmount');
+            const loanAmountSlider = document.getElementById('loanAmountSlider');
+            const loanAmountValue = document.getElementById('loanAmountValue');
+            
+            loanAmountInput.addEventListener('input', function() {
+                const value = this.value;
+                loanAmountSlider.value = value;
+                loanAmountValue.textContent = formatNumber(parseFloat(value)) + ' 元';
+                updateResults();
+            });
+            
+            loanAmountSlider.addEventListener('input', function() {
+                const value = this.value;
+                loanAmountInput.value = value;
+                loanAmountValue.textContent = formatNumber(parseFloat(value)) + ' 元';
+                updateResults();
+            });
+            
+            // 年利率输入框和滑块联动
+            const interestRateInput = document.getElementById('interestRate');
+            const interestRateSlider = document.getElementById('interestRateSlider');
+            const interestRateValue = document.getElementById('interestRateValue');
+            
+            interestRateInput.addEventListener('input', function() {
+                const value = this.value;
+                interestRateSlider.value = value;
+                interestRateValue.textContent = value + '%';
+                updateResults();
+            });
+            
+            interestRateSlider.addEventListener('input', function() {
+                const value = this.value;
+                interestRateInput.value = value;
+                interestRateValue.textContent = value + '%';
+                updateResults();
+            });
+            
+            // 贷款期限输入框、类型和滑块联动
+            const loanTermInput = document.getElementById('loanTerm');
+            const loanTermSlider = document.getElementById('loanTermSlider');
+            const loanTermValue = document.getElementById('loanTermValue');
+            const loanTermType = document.getElementById('loanTermType');
+            
+            function updateTermDisplay() {
+                const value = loanTermInput.value;
+                const type = loanTermType.value;
+                loanTermValue.textContent = value + ' ' + (type === 'years' ? '年' : '月');
+                updateResults();
+            }
+            
+            loanTermInput.addEventListener('input', function() {
+                const value = this.value;
+                loanTermSlider.value = value;
+                updateTermDisplay();
+            });
+            
+            loanTermSlider.addEventListener('input', function() {
+                const value = this.value;
+                loanTermInput.value = value;
+                updateTermDisplay();
+            });
+            
+            loanTermType.addEventListener('change', function() {
+                // 如果切换到月份，调整最大值
+                if (this.value === 'months') {
+                    loanTermInput.max = 360;
+                    loanTermSlider.max = 360;
+                } else {
+                    loanTermInput.max = 30;
+                    loanTermSlider.max = 30;
+                }
+                updateTermDisplay();
+            });
+            
+            // 还款方式切换
+            const repaymentRadios = document.querySelectorAll('input[name="repaymentType"]');
+            repaymentRadios.forEach(radio => {
+                radio.addEventListener('change', updateResults);
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initEventListeners();
+            updateResults(); // 初始计算
+        });
+    </script>
+</body>
+</html>

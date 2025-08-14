@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF转换工具 - 简单高效的文件格式转换</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#4f46e5',
+                        accent: '#0ea5e9',
+                        neutral: '#f3f4f6',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-transform-opacity {
+                transition-property: transform, opacity;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-file-pdf-o text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">PDF转换工具</h1>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#convert" class="text-gray-600 hover:text-primary transition-colors font-medium">文件转换</a>
+                <a href="#features" class="text-gray-600 hover:text-primary transition-colors font-medium">功能特点</a>
+                <a href="#formats" class="text-gray-600 hover:text-primary transition-colors font-medium">支持格式</a>
+                <a href="#faq" class="text-gray-600 hover:text-primary transition-colors font-medium">常见问题</a>
+            </nav>
+            
+            <button class="md:hidden text-gray-600 focus:outline-none" id="menuToggle">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white shadow-md absolute w-full" id="mobileMenu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#convert" class="text-gray-600 hover:text-primary py-2 transition-colors">文件转换</a>
+                <a href="#features" class="text-gray-600 hover:text-primary py-2 transition-colors">功能特点</a>
+                <a href="#formats" class="text-gray-600 hover:text-primary py-2 transition-colors">支持格式</a>
+                <a href="#faq" class="text-gray-600 hover:text-primary py-2 transition-colors">常见问题</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- 英雄区域 -->
+        <section class="bg-gradient-to-r from-primary to-secondary text-white py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight mb-6 text-shadow">
+                        简单、快速的PDF转换工具
+                    </h2>
+                    <p class="text-[clamp(1rem,2vw,1.25rem)] mb-8 text-blue-100">
+                        轻松将PDF转换为Word、Excel、图片等格式，或反之。安全高效，无需安装任何软件。
+                    </p>
+                    <a href="#convert" class="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                        立即转换 <i class="fa fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 转换区域 -->
+        <section id="convert" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-4xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">文件转换</h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto">上传您的文件，选择目标格式，我们将快速为您完成转换。所有文件均在您的浏览器中处理，确保隐私安全。</p>
+                    </div>
+                    
+                    <!-- 转换选项 -->
+                    <div class="bg-neutral rounded-2xl shadow-md p-6 mb-8">
+                        <div class="flex flex-col md:flex-row gap-4 mb-6">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">转换类型</label>
+                                <div class="relative">
+                                    <select id="conversionType" class="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg appearance-none bg-white">
+                                        <option value="pdf-to-other">PDF 转 其他格式</option>
+                                        <option value="other-to-pdf">其他格式 转 PDF</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fa fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">目标格式</label>
+                                <div class="relative">
+                                    <select id="targetFormat" class="block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg appearance-none bg-white">
+                                        <option value="docx">Word (DOCX)</option>
+                                        <option value="xlsx">Excel (XLSX)</option>
+                                        <option value="pptx">PowerPoint (PPTX)</option>
+                                        <option value="jpg">JPG 图片</option>
+                                        <option value="png">PNG 图片</option>
+                                        <option value="txt">文本 (TXT)</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <i class="fa fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 文件上传区域 -->
+                        <div id="dropArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer bg-gray-50">
+                            <i class="fa fa-cloud-upload text-4xl text-primary mb-4"></i>
+                            <h3 class="text-lg font-medium text-gray-700 mb-2">拖放文件到此处，或点击上传</h3>
+                            <p class="text-sm text-gray-500 mb-4">支持最大文件大小：10MB</p>
+                            <label class="inline-block bg-primary text-white font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                                <i class="fa fa-file-o mr-2"></i>选择文件
+                                <input type="file" id="fileInput" class="hidden" accept=".pdf,.docx,.doc,.xlsx,.xls,.pptx,.ppt,.jpg,.jpeg,.png,.txt">
+                            </label>
+                        </div>
+                        
+                        <!-- 已上传文件列表 -->
+                        <div id="fileList" class="mt-6 hidden">
+                            <h4 class="font-medium text-gray-700 mb-3">已选择文件</h4>
+                            <ul class="space-y-2" id="selectedFiles"></ul>
+                        </div>
+                    </div>
+                    
+                    <!-- 转换按钮 -->
+                    <div class="text-center">
+                        <button id="convertButton" class="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0" disabled>
+                            <i class="fa fa-magic mr-2"></i>开始转换
+                        </button>
+                    </div>
+                    
+                    <!-- 转换进度 -->
+                    <div id="conversionProgress" class="mt-8 hidden">
+                        <div class="bg-gray-200 rounded-full h-4 mb-2">
+                            <div id="progressBar" class="bg-primary h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="progressText" class="text-sm text-gray-600 text-center">准备转换...</p>
+                    </div>
+                    
+                    <!-- 转换结果 -->
+                    <div id="conversionResult" class="mt-8 hidden">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                            <i class="fa fa-check-circle text-4xl text-green-500 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-green-800 mb-2">转换完成！</h3>
+                            <p class="text-green-700 mb-4">您的文件已成功转换为所选格式</p>
+                            <button id="downloadButton" class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-lg transition-colors">
+                                <i class="fa fa-download mr-2"></i>下载文件
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特点 -->
+        <section id="features" class="py-16 bg-neutral">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">功能特点</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">我们的PDF转换工具提供丰富功能，满足您的各种转换需求</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 特点1 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-bolt text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">快速转换</h3>
+                        <p class="text-gray-600">利用先进的转换引擎，在几秒钟内完成文件格式转换，节省您的宝贵时间。</p>
+                    </div>
+                    
+                    <!-- 特点2 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-lock text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">隐私保护</h3>
+                        <p class="text-gray-600">所有文件转换均在您的浏览器中进行，不会上传到服务器，确保文件安全。</p>
+                    </div>
+                    
+                    <!-- 特点3 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-refresh text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">高质量转换</h3>
+                        <p class="text-gray-600">保持原始文件的格式和布局，确保转换后的文件与原文件效果一致。</p>
+                    </div>
+                    
+                    <!-- 特点4 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-desktop text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">多平台支持</h3>
+                        <p class="text-gray-600">适用于Windows、Mac和Linux系统，支持Chrome、Firefox、Safari等主流浏览器。</p>
+                    </div>
+                    
+                    <!-- 特点5 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-files-o text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">批量转换</h3>
+                        <p class="text-gray-600">支持同时上传和转换多个文件，提高工作效率，特别适合处理大量文件。</p>
+                    </div>
+                    
+                    <!-- 特点6 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-free-code-camp text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">完全免费</h3>
+                        <p class="text-gray-600">所有转换功能完全免费使用，无隐藏费用，无需注册账号即可享受全部服务。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支持格式 -->
+        <section id="formats" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">支持的格式</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">我们的工具支持多种文件格式的相互转换，满足您的各种需求</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                    <!-- PDF转其他格式 -->
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fa fa-file-pdf-o text-red-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">PDF 转换为</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-word-o text-blue-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">Word (DOCX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-excel-o text-green-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">Excel (XLSX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-powerpoint-o text-orange-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">PowerPoint (PPTX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-image-o text-purple-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">JPG 图片</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-image-o text-pink-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">PNG 图片</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-text-o text-gray-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">文本 (TXT)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 其他格式转PDF -->
+                    <div>
+                        <div class="flex items-center mb-6">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fa fa-file-o text-gray-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold">转换为 PDF</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-word-o text-blue-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">Word (DOCX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-excel-o text-green-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">Excel (XLSX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-powerpoint-o text-orange-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">PowerPoint (PPTX)</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-image-o text-purple-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">JPG 图片</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-image-o text-pink-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">PNG 图片</p>
+                            </div>
+                            <div class="bg-neutral rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                                <i class="fa fa-file-text-o text-gray-600 text-2xl mb-2"></i>
+                                <p class="text-sm font-medium">文本 (TXT)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section id="faq" class="py-16 bg-neutral">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">常见问题</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">关于我们的PDF转换工具，您可能想知道这些</p>
+                </div>
+                
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <!-- 问题1 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">转换后的文件会保存在服务器上吗？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">不会。我们的工具在您的浏览器中本地处理所有文件转换，不会将您的文件上传到任何服务器。这意味着您的文件更加安全，并且转换速度更快。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题2 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">我可以转换多大的文件？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">我们的工具支持最大10MB的文件转换。对于 larger 文件，我们建议您将文件分割成较小的部分，或者使用专业版工具。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题3 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">转换后的文件质量如何？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">我们使用先进的转换算法，尽可能保持原始文件的格式、布局和内容。大多数情况下，转换后的文件与原文件几乎没有区别。但复杂格式可能会有细微差异。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题4 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">这个工具需要付费吗？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">我们的基本转换功能完全免费，无需注册即可使用。如果您需要更多高级功能，如更大的文件大小限制、批量转换更多文件等，可以考虑我们的高级版服务。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题5 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">我可以在手机上使用这个工具吗？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">是的，我们的工具采用响应式设计，完全支持在手机和平板等移动设备上使用。您可以在任何设备上上传文件并进行转换。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 行动召唤 -->
+        <section class="py-16 bg-gradient-to-r from-primary to-secondary text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6">准备好转换您的PDF文件了吗？</h2>
+                <p class="text-lg mb-8 max-w-2xl mx-auto text-blue-100">立即使用我们的免费工具，体验快速、安全、高质量的文件转换服务</p>
+                <a href="#convert" class="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    开始免费转换 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.add('py-4');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+        
+        // 移动端菜单切换
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单（如果打开）
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+        
+        // FAQ 折叠功能
+        document.querySelectorAll('.faq-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // 切换当前FAQ的显示状态
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+                
+                // 关闭其他打开的FAQ
+                document.querySelectorAll('.faq-toggle').forEach(otherToggle => {
+                    if (otherToggle !== toggle) {
+                        const otherContent = otherToggle.nextElementSibling;
+                        const otherIcon = otherToggle.querySelector('i');
+                        
+                        if (!otherContent.classList.contains('hidden')) {
+                            otherContent.classList.add('hidden');
+                            otherIcon.classList.remove('rotate-180');
+                        }
+                    }
+                });
+            });
+        });
+        
+        // 文件上传功能
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const convertButton = document.getElementById('convertButton');
+        const conversionType = document.getElementById('conversionType');
+        const targetFormat = document.getElementById('targetFormat');
+        
+        // 点击上传区域触发文件选择
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // 阻止拖放默认行为
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // 高亮拖放区域
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('border-primary', 'bg-blue-50');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('border-primary', 'bg-blue-50');
+        }
+        
+        // 处理文件拖放
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+        
+        // 处理文件选择
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+        
+        // 处理选中的文件
+        function handleFiles(files) {
+            if (files.length > 0) {
+                fileList.classList.remove('hidden');
+                selectedFiles.innerHTML = '';
+                
+                Array.from(files).forEach(file => {
+                    const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                    
+                    // 检查文件大小
+                    if (parseFloat(fileSize) > 10) {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg';
+                        li.innerHTML = `
+                            <div class="flex items-center">
+                                <i class="fa fa-file-o text-red-500 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-red-800">${file.name}</p>
+                                    <p class="text-xs text-red-600">文件过大（最大支持10MB）</p>
+                                </div>
+                            </div>
+                        `;
+                        selectedFiles.appendChild(li);
+                        return;
+                    }
+                    
+                    // 检查文件格式
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    const allowedExtensions = ['pdf', 'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt', 'jpg', 'jpeg', 'png', 'txt'];
+                    
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg';
+                        li.innerHTML = `
+                            <div class="flex items-center">
+                                <i class="fa fa-file-o text-red-500 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-red-800">${file.name}</p>
+                                    <p class="text-xs text-red-600">不支持的文件格式</p>
+                                </div>
+                            </div>
+                        `;
+                        selectedFiles.appendChild(li);
+                        return;
+                    }
+                    
+                    // 添加有效的文件
+                    const li = document.createElement('li');
+                    li.className = 'flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg';
+                    li.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fa fa-file-${getIconClass(fileExtension)} text-primary mr-3"></i>
+                            <div>
+                                <p class="font-medium">${file.name}</p>
+                                <p class="text-xs text-gray-500">${fileSize} MB</p>
+                            </div>
+                        </div>
+                        <button class="remove-file text-gray-400 hover:text-red-500 transition-colors">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    `;
+                    selectedFiles.appendChild(li);
+                    
+                    // 添加删除文件事件
+                    li.querySelector('.remove-file').addEventListener('click', function() {
+                        li.remove();
+                        if (selectedFiles.children.length === 0) {
+                            fileList.classList.add('hidden');
+                            convertButton.disabled = true;
+                        }
+                    });
+                });
+                
+                // 启用转换按钮（如果有有效文件）
+                if (selectedFiles.querySelector('.bg-gray-50')) {
+                    convertButton.disabled = false;
+                }
+            }
+        }
+        
+        // 根据文件扩展名获取对应的Font Awesome图标类
+        function getIconClass(extension) {
+            switch(extension) {
+                case 'pdf': return 'pdf-o text-red-600';
+                case 'docx':
+                case 'doc': return 'word-o text-blue-600';
+                case 'xlsx':
+                case 'xls': return 'excel-o text-green-600';
+                case 'pptx':
+                case 'ppt': return 'powerpoint-o text-orange-600';
+                case 'jpg':
+                case 'jpeg':
+                case 'png': return 'image-o text-purple-600';
+                case 'txt': return 'text-o text-gray-600';
+                default: return 'o';
+            }
+        }
+        
+        // 转换类型变更时更新目标格式选项
+        conversionType.addEventListener('change', function() {
+            if (this.value === 'pdf-to-other') {
+                targetFormat.innerHTML = `
+                    <option value="docx">Word (DOCX)</option>
+                    <option value="xlsx">Excel (XLSX)</option>
+                    <option value="pptx">PowerPoint (PPTX)</option>
+                    <option value="jpg">JPG 图片</option>
+                    <option value="png">PNG 图片</option>
+                    <option value="txt">文本 (TXT)</option>
+                `;
+            } else {
+                targetFormat.innerHTML = `
+                    <option value="pdf">PDF</option>
+                `;
+            }
+        });
+        
+        // 转换按钮点击事件
+        convertButton.addEventListener('click', function() {
+            const progressContainer = document.getElementById('conversionProgress');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const resultContainer = document.getElementById('conversionResult');
+            
+            // 显示进度条
+            progressContainer.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '开始转换...';
+            
+            // 模拟转换进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // 显示转换结果
+                    setTimeout(() => {
+                        progressText.textContent = '转换完成';
+                        setTimeout(() => {
+                            progressContainer.classList.add('hidden');
+                            resultContainer.classList.remove('hidden');
+                        }, 500);
+                    }, 500);
+                } else {
+                    // 更新进度文本
+                    if (progress < 30) {
+                        progressText.textContent = '正在准备文件...';
+                    } else if (progress < 60) {
+                        progressText.textContent = '正在转换文件...';
+                    } else {
+                        progressText.textContent = '正在处理结果...';
+                    }
+                }
+                
+                progressBar.style.width = `${progress}%`;
+            }, 300);
+        });
+        
+        // 下载按钮点击事件
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            alert('在实际应用中，这里会触发文件下载');
+        });
+    </script>
+</body>
+</html>

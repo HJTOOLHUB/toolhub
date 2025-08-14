@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js for response time visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6', // Blue as primary color
+                        secondary: '#10B981', // Green for success states
+                        danger: '#EF4444', // Red for errors
+                        warning: '#F59E0B', // Amber for warnings
+                        dark: '#1E293B', // Dark blue-gray for backgrounds
+                        light: '#F8FAFC', // Light background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Utilities -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-height {
+                transition: max-height 0.3s ease-in-out;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background-color: rgba(156, 163, 175, 0.5);
+                border-radius: 3px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-exchange text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-gray-800">API Tester</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-moon-o text-gray-600"></i>
+                </button>
+                <button id="save-request" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-save text-gray-600"></i>
+                </button>
+                <button id="history-btn" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                    <i class="fa fa-history text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Request Panel -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-md">
+                <div class="p-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800">Request</h2>
+                </div>
+                
+                <!-- Request Method & URL -->
+                <div class="p-4 border-b border-gray-200">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button class="method-btn px-3 py-1 rounded-md bg-primary text-white font-medium text-sm" data-method="GET">GET</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="POST">POST</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="PUT">PUT</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="DELETE">DELETE</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="PATCH">PATCH</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="HEAD">HEAD</button>
+                        <button class="method-btn px-3 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-colors" data-method="OPTIONS">OPTIONS</button>
+                    </div>
+                    
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            <i class="fa fa-link"></i>
+                        </span>
+                        <input type="text" id="url-input" placeholder="https://api.example.com/endpoint" 
+                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
+                            value="https://jsonplaceholder.typicode.com/posts/1">
+                    </div>
+                </div>
+                
+                <!-- Request Tabs -->
+                <div class="border-b border-gray-200">
+                    <div class="flex">
+                        <button id="headers-tab" class="tab-btn px-4 py-3 font-medium text-primary border-b-2 border-primary">Headers</button>
+                        <button id="body-tab" class="tab-btn px-4 py-3 font-medium text-gray-500 hover:text-gray-700 transition-colors">Body</button>
+                        <button id="auth-tab" class="tab-btn px-4 py-3 font-medium text-gray-500 hover:text-gray-700 transition-colors">Auth</button>
+                    </div>
+                </div>
+                
+                <!-- Headers Content -->
+                <div id="headers-content" class="tab-content p-4">
+                    <div id="headers-container">
+                        <div class="header-row flex gap-2 mb-2">
+                            <input type="text" placeholder="Key" class="header-key flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" value="Content-Type">
+                            <input type="text" placeholder="Value" class="header-value flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" value="application/json">
+                            <button class="remove-header p-2 text-gray-400 hover:text-danger transition-colors self-center">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="add-header" class="mt-2 px-3 py-1.5 text-sm font-medium text-primary border border-primary/30 rounded-md hover:bg-primary/5 transition-colors">
+                        <i class="fa fa-plus mr-1"></i> Add Header
+                    </button>
+                </div>
+                
+                <!-- Body Content -->
+                <div id="body-content" class="tab-content p-4 hidden">
+                    <div class="mb-3">
+                        <div class="flex gap-2">
+                            <button class="body-type-btn px-3 py-1.5 rounded-md bg-primary text-white text-sm font-medium" data-type="json">JSON</button>
+                            <button class="body-type-btn px-3 py-1.5 rounded-md bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors" data-type="form">Form Data</button>
+                            <button class="body-type-btn px-3 py-1.5 rounded-md bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors" data-type="text">Text</button>
+                        </div>
+                    </div>
+                    
+                    <div id="json-body" class="body-content">
+                        <textarea id="json-editor" class="w-full h-48 p-3 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all scrollbar-thin"
+                            placeholder='{"key": "value"}'>{
+  "title": "foo",
+  "body": "bar",
+  "userId": 1
+}</textarea>
+                        <button id="format-json" class="mt-2 px-3 py-1.5 text-sm font-medium text-primary border border-primary/30 rounded-md hover:bg-primary/5 transition-colors">
+                            <i class="fa fa-indent mr-1"></i> Format JSON
+                        </button>
+                    </div>
+                    
+                    <div id="form-body" class="body-content hidden">
+                        <div id="form-fields-container">
+                            <div class="form-row flex gap-2 mb-2">
+                                <input type="text" placeholder="Key" class="form-key flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                                <input type="text" placeholder="Value" class="form-value flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                                <button class="remove-form-field p-2 text-gray-400 hover:text-danger transition-colors self-center">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button id="add-form-field" class="mt-2 px-3 py-1.5 text-sm font-medium text-primary border border-primary/30 rounded-md hover:bg-primary/5 transition-colors">
+                            <i class="fa fa-plus mr-1"></i> Add Field
+                        </button>
+                    </div>
+                    
+                    <div id="text-body" class="body-content hidden">
+                        <textarea id="text-editor" class="w-full h-48 p-3 border border-gray-300 rounded-md font-mono text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all scrollbar-thin"
+                            placeholder="Enter text content here..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Auth Content -->
+                <div id="auth-content" class="tab-content p-4 hidden">
+                    <div class="mb-3">
+                        <div class="flex gap-2">
+                            <button class="auth-type-btn px-3 py-1.5 rounded-md bg-primary text-white text-sm font-medium" data-type="none">None</button>
+                            <button class="auth-type-btn px-3 py-1.5 rounded-md bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors" data-type="basic">Basic Auth</button>
+                            <button class="auth-type-btn px-3 py-1.5 rounded-md bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors" data-type="bearer">Bearer Token</button>
+                        </div>
+                    </div>
+                    
+                    <div id="basic-auth" class="auth-content hidden">
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                                <input type="text" id="basic-username" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" id="basic-password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="bearer-auth" class="auth-content hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Token</label>
+                            <input type="text" id="bearer-token" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Send Button -->
+                <div class="p-4 border-t border-gray-200 flex justify-end">
+                    <button id="send-request" class="px-6 py-2.5 bg-primary text-white font-medium rounded-md hover:bg-primary/90 focus:ring-4 focus:ring-primary/30 transition-all shadow-sm hover:shadow flex items-center">
+                        <i class="fa fa-paper-plane mr-2"></i> Send Request
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Response Panel -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-md">
+                <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800">Response</h2>
+                    <div id="response-stats" class="flex items-center gap-4 text-sm">
+                        <div id="status-code" class="hidden">
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-white font-medium">200</span>
+                        </div>
+                        <div id="response-time" class="text-gray-500 hidden">
+                            <i class="fa fa-clock-o mr-1"></i> <span>125ms</span>
+                        </div>
+                        <div id="response-size" class="text-gray-500 hidden">
+                            <i class="fa fa-file-text-o mr-1"></i> <span>1.2KB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Response Tabs -->
+                <div class="border-b border-gray-200">
+                    <div class="flex">
+                        <button id="body-response-tab" class="response-tab-btn px-4 py-3 font-medium text-primary border-b-2 border-primary">Body</button>
+                        <button id="headers-response-tab" class="response-tab-btn px-4 py-3 font-medium text-gray-500 hover:text-gray-700 transition-colors">Headers</button>
+                        <button id="timeline-response-tab" class="response-tab-btn px-4 py-3 font-medium text-gray-500 hover:text-gray-700 transition-colors">Timeline</button>
+                    </div>
+                </div>
+                
+                <!-- Response Body -->
+                <div id="body-response-content" class="response-tab-content p-4">
+                    <div id="empty-response" class="flex flex-col items-center justify-center h-64 text-gray-400">
+                        <i class="fa fa-comment-o text-5xl mb-3"></i>
+                        <p>Send a request to see the response here</p>
+                    </div>
+                    
+                    <div id="loading-response" class="flex flex-col items-center justify-center h-64 hidden">
+                        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary mb-3"></div>
+                        <p class="text-gray-500">Sending request...</p>
+                    </div>
+                    
+                    <div id="error-response" class="p-4 bg-red-50 border border-red-100 rounded-md hidden">
+                        <div class="flex items-start">
+                            <i class="fa fa-exclamation-circle text-danger mt-1 mr-3 text-xl"></i>
+                            <div>
+                                <h3 class="font-medium text-danger">Error</h3>
+                                <p id="error-message" class="text-sm text-red-600 mt-1">Failed to connect to the server</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="json-response" class="hidden">
+                        <div class="mb-3 flex justify-between items-center">
+                            <div class="flex gap-2">
+                                <button id="copy-response" class="px-2 py-1 text-xs font-medium text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors">

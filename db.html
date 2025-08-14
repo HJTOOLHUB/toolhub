@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档对比工具 - 快速找出文本差异</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36CFC9',
+                        added: '#E6FFED',
+                        added-text: '#00875A',
+                        removed: '#FFEBE9',
+                        removed-text: '#E02020',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background-color: rgba(30, 99, 218, 0.5);
+                border-radius: 3px;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-code-fork text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">文档对比工具</h1>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#compare" class="text-gray-600 hover:text-primary transition-colors font-medium">文档对比</a>
+                <a href="#features" class="text-gray-600 hover:text-primary transition-colors font-medium">功能特点</a>
+                <a href="#supported" class="text-gray-600 hover:text-primary transition-colors font-medium">支持格式</a>
+                <a href="#faq" class="text-gray-600 hover:text-primary transition-colors font-medium">常见问题</a>
+            </nav>
+            
+            <button class="md:hidden text-gray-600 focus:outline-none" id="menuToggle">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white shadow-md absolute w-full" id="mobileMenu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#compare" class="text-gray-600 hover:text-primary py-2 transition-colors">文档对比</a>
+                <a href="#features" class="text-gray-600 hover:text-primary py-2 transition-colors">功能特点</a>
+                <a href="#supported" class="text-gray-600 hover:text-primary py-2 transition-colors">支持格式</a>
+                <a href="#faq" class="text-gray-600 hover:text-primary py-2 transition-colors">常见问题</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        
+        <!-- 对比区域 -->
+        <section id="compare" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">文档对比</h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto">上传两个文档进行对比，我们将快速找出它们之间的差异并高亮显示</p>
+                    </div>
+                    
+                    <!-- 对比选项 -->
+                    <div class="bg-neutral rounded-2xl shadow-md p-6 mb-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <!-- 原始文档 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    <i class="fa fa-file-text-o mr-2 text-primary"></i>原始文档
+                                </label>
+                                <div class="document-upload border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer bg-gray-50">
+                                    <i class="fa fa-upload text-3xl text-primary mb-3"></i>
+                                    <h3 class="text-base font-medium text-gray-700 mb-2">拖放文件到此处，或点击上传</h3>
+                                    <p class="text-xs text-gray-500 mb-3">支持文本、Word、PDF等格式</p>
+                                    <label class="inline-block bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                                        选择文件
+                                        <input type="file" class="document-input hidden" accept=".txt,.docx,.doc,.pdf">
+                                    </label>
+                                    <div class="document-preview mt-4 hidden">
+                                        <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200">
+                                            <div class="flex items-center">
+                                                <i class="fa fa-file-text-o text-primary mr-2"></i>
+                                                <span class="text-sm truncate max-w-[200px]">document1.docx</span>
+                                            </div>
+                                            <button class="remove-document text-gray-400 hover:text-red-500">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 对比文档 -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    <i class="fa fa-file-text-o mr-2 text-primary"></i>对比文档
+                                </label>
+                                <div class="document-upload border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer bg-gray-50">
+                                    <i class="fa fa-upload text-3xl text-primary mb-3"></i>
+                                    <h3 class="text-base font-medium text-gray-700 mb-2">拖放文件到此处，或点击上传</h3>
+                                    <p class="text-xs text-gray-500 mb-3">支持文本、Word、PDF等格式</p>
+                                    <label class="inline-block bg-primary text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer">
+                                        选择文件
+                                        <input type="file" class="document-input hidden" accept=".txt,.docx,.doc,.pdf">
+                                    </label>
+                                    <div class="document-preview mt-4 hidden">
+                                        <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200">
+                                            <div class="flex items-center">
+                                                <i class="fa fa-file-text-o text-primary mr-2"></i>
+                                                <span class="text-sm truncate max-w-[200px]">document2.docx</span>
+                                            </div>
+                                            <button class="remove-document text-gray-400 hover:text-red-500">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 对比选项设置 -->
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 mb-6">
+                            <h3 class="text-base font-semibold mb-3 flex items-center">
+                                <i class="fa fa-sliders text-primary mr-2"></i>对比选项
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="ignoreWhitespace" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                    <label for="ignoreWhitespace" class="ml-2 block text-sm text-gray-700">忽略空白差异</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="ignoreCase" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                    <label for="ignoreCase" class="ml-2 block text-sm text-gray-700">忽略大小写差异</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="showLineNumbers" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                    <label for="showLineNumbers" class="ml-2 block text-sm text-gray-700">显示行号</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 对比按钮 -->
+                        <div class="text-center">
+                            <button id="compareButton" class="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0" disabled>
+                                <i class="fa fa-exchange mr-2"></i>开始对比
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 对比进度 -->
+                    <div id="comparisonProgress" class="mt-8 hidden">
+                        <div class="bg-gray-200 rounded-full h-4 mb-2">
+                            <div id="progressBar" class="bg-primary h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="progressText" class="text-sm text-gray-600 text-center">准备对比...</p>
+                    </div>
+                    
+                    <!-- 对比结果 -->
+                    <div id="comparisonResult" class="mt-8 hidden">
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+                            <div class="p-4 bg-neutral border-b border-gray-200 flex justify-between items-center">
+                                <h3 class="font-semibold flex items-center">
+                                    <i class="fa fa-bar-chart text-primary mr-2"></i>对比结果
+                                </h3>
+                                <div class="flex space-x-2">
+                                    <button class="text-sm bg-white border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 transition-colors flex items-center">
+                                        <i class="fa fa-download mr-1"></i> 导出结果
+                                    </button>
+                                    <button class="text-sm bg-white border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 transition-colors flex items-center">
+                                        <i class="fa fa-refresh mr-1"></i> 重新对比
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border-b border-gray-200 flex flex-wrap gap-4">
+                                <div class="flex items-center">
+                                    <span class="inline-block w-3 h-3 bg-added rounded-full mr-2"></span>
+                                    <span class="text-sm text-gray-700">新增: <span class="font-medium text-added-text">12处</span></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="inline-block w-3 h-3 bg-removed rounded-full mr-2"></span>
+                                    <span class="text-sm text-gray-700">删除: <span class="font-medium text-removed-text">8处</span></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="inline-block w-3 h-3 bg-yellow-100 rounded-full mr-2"></span>
+                                    <span class="text-sm text-gray-700">修改: <span class="font-medium text-yellow-700">5处</span></span>
+                                </div>
+                                <div class="flex items-center ml-auto">
+                                    <span class="text-sm text-gray-700">总差异: <span class="font-medium text-primary">25处</span></span>
+                                </div>
+                            </div>
+                            
+                            <!-- 对比视图切换 -->
+                            <div class="border-b border-gray-200 flex">
+                                <button class="px-4 py-2 font-medium text-primary border-b-2 border-primary">并排视图</button>
+                                <button class="px-4 py-2 font-medium text-gray-500 hover:text-gray-700">合并视图</button>
+                            </div>
+                            
+                            <!-- 对比内容 -->
+                            <div class="flex overflow-hidden">
+                                <!-- 原始文档 -->
+                                <div class="w-1/2 border-r border-gray-200">
+                                    <div class="p-3 bg-gray-50 border-b border-gray-200 text-center text-sm font-medium">
+                                        原始文档: document1.docx
+                                    </div>
+                                    <div class="h-[500px] overflow-auto p-4 scrollbar-thin font-mono text-sm leading-relaxed">
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">1</div>
+                                            <div>项目概述</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">2</div>
+                                            <div>本项目旨在开发一个<span class="bg-removed text-removed-text">高效的</span>文档对比工具。</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">3</div>
+                                            <div>该工具将支持<span class="bg-removed text-removed-text">多种文本</span>格式的对比。</div>
+                                        </div>
+                                        <div class="flex bg-removed">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">4</div>
+                                            <div class="text-removed-text">初步计划支持TXT和PDF格式。</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">5</div>
+                                            <div>主要功能包括：</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">6</div>
+                                            <div>1. 文本差异识别</div>
+                                        </div>
+                                        <div class="flex bg-removed">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">7</div>
+                                            <div class="text-removed-text">2. 简单的格式保留</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">8</div>
+                                            <div>3. 差异结果导出</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">9</div>
+                                            <div>项目周期预计为<span class="bg-removed text-removed-text">3个月</span>。</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 对比文档 -->
+                                <div class="w-1/2">
+                                    <div class="p-3 bg-gray-50 border-b border-gray-200 text-center text-sm font-medium">
+                                        对比文档: document2.docx
+                                    </div>
+                                    <div class="h-[500px] overflow-auto p-4 scrollbar-thin font-mono text-sm leading-relaxed">
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">1</div>
+                                            <div>项目概述</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">2</div>
+                                            <div>本项目旨在开发一个<span class="bg-added text-added-text">高精度、高效率的</span>文档对比工具。</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">3</div>
+                                            <div>该工具将支持<span class="bg-added text-added-text">多种主流文档</span>格式的对比。</div>
+                                        </div>
+                                        <div class="flex bg-added">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">4</div>
+                                            <div class="text-added-text">计划支持TXT、PDF、Word和Excel格式。</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">5</div>
+                                            <div>主要功能包括：</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">6</div>
+                                            <div>1. 文本差异识别</div>
+                                        </div>
+                                        <div class="flex bg-added">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">7</div>
+                                            <div class="text-added-text">2. 完整的格式保留</div>
+                                        </div>
+                                        <div class="flex bg-added">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">8</div>
+                                            <div class="text-added-text">3. 可视化差异展示</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">9</div>
+                                            <div>4. 差异结果导出</div>
+                                        </div>
+                                        <div class="flex">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">10</div>
+                                            <div>项目周期预计为<span class="bg-added text-added-text">4个月</span>。</div>
+                                        </div>
+                                        <div class="flex bg-added">
+                                            <div class="w-8 text-right text-gray-400 pr-3 select-none">11</div>
+                                            <div class="text-added-text">预算需求：¥50,000</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特点 -->
+        <section id="features" class="py-16 bg-neutral">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">功能特点</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">我们的文档对比工具提供强大功能，帮助您轻松找出文档间的差异</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 特点1 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-search text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">精准差异识别</h3>
+                        <p class="text-gray-600">精确识别文档中的新增、删除和修改内容，连细微的文字变化都能准确捕捉。</p>
+                    </div>
+                    
+                    <!-- 特点2 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-eye text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">可视化对比</h3>
+                        <p class="text-gray-600">通过直观的颜色标记和并排视图，让您一目了然地查看文档间的所有差异。</p>
+                    </div>
+                    
+                    <!-- 特点3 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-file-text-o text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">多格式支持</h3>
+                        <p class="text-gray-600">支持多种文档格式的对比，包括TXT、Word、PDF等常用格式文件。</p>
+                    </div>
+                    
+                    <!-- 特点4 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-sliders text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">灵活的对比选项</h3>
+                        <p class="text-gray-600">可根据需求设置对比选项，如忽略空白差异、忽略大小写等，提高对比效率。</p>
+                    </div>
+                    
+                    <!-- 特点5 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-download text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">结果导出</h3>
+                        <p class="text-gray-600">支持将对比结果导出为多种格式，方便保存和分享文档间的差异分析。</p>
+                    </div>
+                    
+                    <!-- 特点6 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-lock text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">隐私保护</h3>
+                        <p class="text-gray-600">所有文档均在本地处理，不会上传至服务器，确保您的文档内容安全保密。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 支持格式 -->
+        <section id="supported" class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">支持的格式</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">我们的工具支持多种常见文档格式的对比，满足您的不同需求</p>
+                </div>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-5xl mx-auto">
+                    <!-- 格式1 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-text-o text-4xl text-gray-700 mb-3"></i>
+                        <h3 class="font-semibold">文本文件</h3>
+                        <p class="text-sm text-gray-500 mt-1">.txt</p>
+                    </div>
+                    
+                    <!-- 格式2 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-word-o text-4xl text-blue-600 mb-3"></i>
+                        <h3 class="font-semibold">Word</h3>
+                        <p class="text-sm text-gray-500 mt-1">.docx, .doc</p>
+                    </div>
+                    
+                    <!-- 格式3 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-pdf-o text-4xl text-red-600 mb-3"></i>
+                        <h3 class="font-semibold">PDF</h3>
+                        <p class="text-sm text-gray-500 mt-1">.pdf</p>
+                    </div>
+                    
+                    <!-- 格式4 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-excel-o text-4xl text-green-600 mb-3"></i>
+                        <h3 class="font-semibold">Excel</h3>
+                        <p class="text-sm text-gray-500 mt-1">.xlsx, .xls</p>
+                    </div>
+                    
+                    <!-- 格式5 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-powerpoint-o text-4xl text-orange-600 mb-3"></i>
+                        <h3 class="font-semibold">PowerPoint</h3>
+                        <p class="text-sm text-gray-500 mt-1">.pptx, .ppt</p>
+                    </div>
+                    
+                    <!-- 格式6 -->
+                    <div class="bg-neutral rounded-xl p-6 text-center hover:shadow-md transition-shadow transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fa fa-file-code-o text-4xl text-purple-600 mb-3"></i>
+                        <h3 class="font-semibold">代码文件</h3>
+                        <p class="text-sm text-gray-500 mt-1">.html, .css, .js等</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 常见问题 -->
+        <section id="faq" class="py-16 bg-neutral">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4">常见问题</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">关于我们的文档对比工具，您可能想知道这些</p>
+                </div>
+                
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <!-- 问题1 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">文档对比的准确度如何？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">我们的工具采用先进的文本比对算法，能够精确识别文档中的各种差异，包括新增、删除和修改的内容。对于复杂格式文档，也能保持较高的比对准确度，同时保留原始文档的格式信息。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题2 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">我的文档会被上传到服务器吗？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">不会。所有文档对比操作都在您的本地浏览器中进行，文档内容不会被上传到任何服务器。这确保了您的文档内容安全和隐私保护，特别适合处理敏感文档。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题3 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">最大支持多大的文件对比？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">目前我们的工具支持最大20MB的文件对比。对于超过此限制的大型文档，建议您分割成较小的文件后再进行对比，或者联系我们获取专业版服务。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题4 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">如何导出对比结果？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">完成文档对比后，您可以点击"导出结果"按钮，将对比结果保存为HTML、PDF或Word格式。导出的结果将保留所有差异标记，方便您分享和查看。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题5 -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left focus:outline-none">
+                            <span class="font-semibold text-lg">可以对比扫描版PDF文件吗？</span>
+                            <i class="fa fa-chevron-down text-gray-400 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-gray-600">扫描版PDF本质上是图片文件，我们的基础版工具不支持直接对比。如果您需要对比扫描版PDF，需要先通过OCR工具将其转换为可编辑文本，然后再进行对比，或者使用我们支持OCR的高级版工具。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 行动召唤 -->
+        <section class="py-16 bg-gradient-to-r from-primary to-primary/80 text-white">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6">准备好对比您的文档了吗？</h2>
+                <p class="text-lg mb-8 max-w-2xl mx-auto text-blue-100">立即使用我们的免费工具，快速准确地找出文档间的差异</p>
+                <a href="#compare" class="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    开始免费对比 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('header');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.add('py-4');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+        
+        // 移动端菜单切换
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单（如果打开）
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                }
+            });
+        });
+        
+        // FAQ 折叠功能
+        document.querySelectorAll('.faq-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                // 切换当前FAQ的显示状态
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+                
+                // 关闭其他打开的FAQ
+                document.querySelectorAll('.faq-toggle').forEach(otherToggle => {
+                    if (otherToggle !== toggle) {
+                        const otherContent = otherToggle.nextElementSibling;
+                        const otherIcon = otherToggle.querySelector('i');
+                        
+                        if (!otherContent.classList.contains('hidden')) {
+                            otherContent.classList.add('hidden');
+                            otherIcon.classList.remove('rotate-180');
+                        }
+                    }
+                });
+            });
+        });
+        
+        // 文档上传功能
+        const uploadAreas = document.querySelectorAll('.document-upload');
+        const fileInputs = document.querySelectorAll('.document-input');
+        const compareButton = document.getElementById('compareButton');
+        const comparisonProgress = document.getElementById('comparisonProgress');
+        const comparisonResult = document.getElementById('comparisonResult');
+        
+        // 为每个上传区域添加事件监听
+        uploadAreas.forEach((area, index) => {
+            const input = fileInputs[index];
+            const preview = area.querySelector('.document-preview');
+            const fileNameEl = preview.querySelector('span');
+            const removeBtn = preview.querySelector('.remove-document');
+            
+            // 点击上传区域触发文件选择
+            area.addEventListener('click', (e) => {
+                if (!e.target.closest('.remove-document')) {
+                    input.click();
+                }
+            });
+            
+            // 处理文件选择
+            input.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    fileNameEl.textContent = file.name;
+                    preview.classList.remove('hidden');
+                    checkFilesSelected();
+                }
+            });
+            
+            // 移除文件
+            removeBtn.addEventListener('click', function() {
+                preview.classList.add('hidden');
+                input.value = '';
+                checkFilesSelected();
+                
+                // 如果结果区域显示，则隐藏
+                if (!comparisonResult.classList.contains('hidden')) {
+                    comparisonResult.classList.add('hidden');
+                }
+            });
+            
+            // 拖放功能
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // 高亮拖放区域
+            ['dragenter', 'dragover'].forEach(eventName => {
+                area.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                area.classList.add('border-primary', 'bg-blue-50');
+            }
+            
+            function unhighlight() {
+                area.classList.remove('border-primary', 'bg-blue-50');
+            }
+            
+            // 处理文件拖放
+            area.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    const file = files[0];
+                    fileNameEl.textContent = file.name;
+                    preview.classList.remove('hidden');
+                    checkFilesSelected();
+                }
+            }
+        });
+        
+        // 检查是否已选择两个文件
+        function checkFilesSelected() {
+            const previews = document.querySelectorAll('.document-preview:not(.hidden)');
+            compareButton.disabled = previews.length < 2;
+        }
+        
+        // 对比按钮点击事件
+        compareButton.addEventListener('click', function() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            // 显示进度条
+            comparisonProgress.classList.remove('hidden');
+            comparisonResult.classList.add('hidden');
+            progressBar.style.width = '0%';
+            progressText.textContent = '开始对比文档...';
+            
+            // 模拟对比进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // 显示对比结果
+                    setTimeout(() => {
+                        progressText.textContent = '对比完成';
+                        setTimeout(() => {
+                            comparisonProgress.classList.add('hidden');
+                            comparisonResult.classList.remove('hidden');
+                            
+                            // 平滑滚动到结果区域
+                            comparisonResult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 500);
+                    }, 500);
+                } else {
+                    // 更新进度文本
+                    if (progress < 30) {
+                        progressText.textContent = '正在加载文档...';
+                    } else if (progress < 60) {
+                        progressText.textContent = '正在分析文档内容...';
+                    } else {
+                        progressText.textContent = '正在生成对比结果...';
+                    }
+                }
+                
+                progressBar.style.width = `${progress}%`;
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+    

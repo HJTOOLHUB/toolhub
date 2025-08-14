@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片拼接工具</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-transform-opacity {
+                transition-property: transform, opacity;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .bg-gradient-custom {
+                background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-picture-o text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-custom">图片拼接工具</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="helpBtn" class="text-gray-600 hover:text-primary transition-colors duration-300 flex items-center">
+                    <i class="fa fa-question-circle mr-1"></i>
+                    <span class="hidden md:inline">帮助</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-6 md:py-10">
+        <!-- 上传区域 -->
+        <section class="mb-8">
+            <div id="dropArea" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary transition-colors duration-300 bg-white shadow-sm">
+                <div class="max-w-md mx-auto">
+                    <i class="fa fa-cloud-upload text-5xl text-gray-400 mb-4"></i>
+                    <h2 class="text-xl font-semibold mb-2">拖放图片到这里</h2>
+                    <p class="text-gray-500 mb-6">或者点击选择图片文件，支持JPG、PNG格式</p>
+                    <label class="inline-block bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg cursor-pointer transition-all duration-300 transform hover:scale-105">
+                        <i class="fa fa-file-image-o mr-2"></i>选择图片
+                        <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 图片预览和选项区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- 已上传图片 -->
+            <section class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm p-4 h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">已上传图片</h2>
+                        <span id="imageCount" class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">0张</span>
+                    </div>
+                    
+                    <div id="imageContainer" class="space-y-3 max-h-[400px] overflow-y-auto scrollbar-hide pr-2">
+                        <div class="text-center text-gray-400 py-10">
+                            <i class="fa fa-images text-4xl mb-3"></i>
+                            <p>尚未上传图片</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <button id="clearBtn" class="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center">
+                            <i class="fa fa-trash mr-2"></i>清空图片
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 拼接选项 -->
+            <section class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm p-4 h-full">
+                    <h2 class="text-lg font-semibold mb-4">拼接选项</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- 拼接方向 -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">拼接方向</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button class="direction-btn active py-3 border-2 border-primary bg-primary/5 rounded-lg flex flex-col items-center" data-direction="horizontal">
+                                    <i class="fa fa-arrows-h text-xl mb-1"></i>
+                                    <span class="text-sm">横向</span>
+                                </button>
+                                <button class="direction-btn py-3 border-2 border-gray-200 hover:border-gray-300 rounded-lg flex flex-col items-center" data-direction="vertical">
+                                    <i class="fa fa-arrows-v text-xl mb-1"></i>
+                                    <span class="text-sm">纵向</span>
+                                </button>
+                                <button class="direction-btn py-3 border-2 border-gray-200 hover:border-gray-300 rounded-lg flex flex-col items-center" data-direction="grid">
+                                    <i class="fa fa-th text-xl mb-1"></i>
+                                    <span class="text-sm">网格</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- 网格设置 (仅网格模式可见) -->
+                        <div id="gridSettings" class="hidden">
+                            <label class="block text-gray-700 font-medium mb-2">网格布局</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="rows" min="1" value="2" class="w-16 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                                <span class="text-gray-500">行</span>
+                                <span class="text-gray-400 mx-2">×</span>
+                                <input type="number" id="cols" min="1" value="2" class="w-16 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                                <span class="text-gray-500">列</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 间距设置 -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">图片间距 (px)</label>
+                            <input type="range" id="spacing" min="0" max="50" value="10" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>0</span>
+                                <span id="spacingValue">10</span>
+                                <span>50</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 背景颜色 -->
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">背景颜色</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="color" id="bgColor" value="#FFFFFF" class="w-10 h-10 border-0 rounded cursor-pointer">
+                                <select id="bgPresets" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                                    <option value="#FFFFFF">白色</option>
+                                    <option value="#000000">黑色</option>
+                                    <option value="#F3F4F6">浅灰</option>
+                                    <option value="#1F2937">深灰</option>
+                                    <option value="#EF4444">红色</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- 拼接按钮 -->
+                        <button id="stitchBtn" class="w-full bg-secondary hover:bg-secondary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-magic mr-2"></i>开始拼接
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 拼接结果 -->
+            <section class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm p-4 h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold">拼接结果</h2>
+                        <button id="downloadBtn" class="text-primary hover:text-primary/80 transition-colors duration-300 flex items-center text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-download mr-1"></i>下载图片
+                        </button>
+                    </div>
+                    
+                    <div id="resultContainer" class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 min-h-[300px] flex items-center justify-center">
+                        <div class="text-center text-gray-400 p-6">
+                            <i class="fa fa-picture-o text-4xl mb-3"></i>
+                            <p>拼接结果将显示在这里</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <button id="zoomInBtn" class="py-2 px-4 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-search-plus"></i>
+                        </button>
+                        <button id="zoomOutBtn" class="py-2 px-4 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fa fa-search-minus"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 使用说明 -->
+        <section class="mb-8 bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fa fa-info-circle text-primary mr-2"></i>使用说明
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-700">
+                <div class="flex flex-col">
+                    <div class="bg-primary/10 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fa fa-upload text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">上传图片</h3>
+                    <p class="text-sm text-gray-600">拖放或点击上传按钮选择多张图片，支持JPG和PNG格式</p>
+                </div>
+                <div class="flex flex-col">
+                    <div class="bg-primary/10 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fa fa-sliders text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">设置选项</h3>
+                    <p class="text-sm text-gray-600">选择拼接方向、调整间距和背景颜色等参数</p>
+                </div>
+                <div class="flex flex-col">
+                    <div class="bg-primary/10 w-10 h-10 rounded-full flex items-center justify-center mb-3">
+                        <i class="fa fa-download text-primary"></i>
+                    </div>
+                    <h3 class="font-medium mb-2">下载结果</h3>
+                    <p class="text-sm text-gray-600">点击开始拼接，完成后可下载拼接好的图片</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 帮助模态框 -->
+    <div id="helpModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">使用帮助</h3>
+                    <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <h4 class="font-semibold mb-2">如何上传图片？</h4>
+                    <p class="text-gray-600 text-sm">您可以直接将图片拖放到上传区域，或者点击"选择图片"按钮从您的设备中选择图片文件。支持JPG和PNG格式的图片。</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">如何调整图片顺序？</h4>
+                    <p class="text-gray-600 text-sm">在已上传图片区域，您可以将鼠标悬停在图片上，然后使用上下箭头按钮调整它们的顺序，这将影响最终的拼接结果。</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">有哪些拼接方式？</h4>
+                    <p class="text-gray-600 text-sm">目前支持三种拼接方式：横向拼接（图片并排排列）、纵向拼接（图片上下排列）和网格拼接（图片按行列排列）。</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-2">如何下载拼接结果？</h4>
+                    <p class="text-gray-600 text-sm">点击"开始拼接"按钮后，系统会处理您的图片并在右侧显示结果。完成后，您可以点击"下载图片"按钮保存拼接好的图片。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed bottom-6 right-6 bg-dark text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-transform-opacity duration-300 flex items-center z-50">
+        <i id="notificationIcon" class="fa fa-check-circle mr-2"></i>
+        <span id="notificationText">操作成功</span>
+    </div>
+
+    <script>
+        // 全局变量
+        const uploadedImages = [];
+        let currentDirection = 'horizontal';
+        let zoomLevel = 1;
+        
+        // DOM 元素
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const imageContainer = document.getElementById('imageContainer');
+        const imageCount = document.getElementById('imageCount');
+        const clearBtn = document.getElementById('clearBtn');
+        const stitchBtn = document.getElementById('stitchBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const spacingSlider = document.getElementById('spacing');
+        const spacingValue = document.getElementById('spacingValue');
+        const bgColorInput = document.getElementById('bgColor');
+        const bgPresets = document.getElementById('bgPresets');
+        const directionBtns = document.querySelectorAll('.direction-btn');
+        const gridSettings = document.getElementById('gridSettings');
+        const rowsInput = document.getElementById('rows');
+        const colsInput = document.getElementById('cols');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const helpBtn = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeHelpBtn = document.getElementById('closeHelpBtn');
+        const notification = document.getElementById('notification');
+        const notificationIcon = document.getElementById('notificationIcon');
+        const notificationText = document.getElementById('notificationText');
+        
+        // 初始化
+        function init() {
+            updateImageCount();
+            setupEventListeners();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 拖放上传
+            dropArea.addEventListener('dragover', handleDragOver);
+            dropArea.addEventListener('dragleave', handleDragLeave);
+            dropArea.addEventListener('drop', handleDrop);
+            
+            // 文件选择上传
+            fileInput.addEventListener('change', handleFileSelect);
+            dropArea.addEventListener('click', () => fileInput.click());
+            
+            // 清空按钮
+            clearBtn.addEventListener('click', clearImages);
+            
+            // 拼接按钮
+            stitchBtn.addEventListener('click', stitchImages);
+            
+            // 下载按钮
+            downloadBtn.addEventListener('click', downloadImage);
+            
+            // 间距滑块
+            spacingSlider.addEventListener('input', (e) => {
+                spacingValue.textContent = e.target.value;
+            });
+            
+            // 背景颜色预设
+            bgPresets.addEventListener('change', (e) => {
+                bgColorInput.value = e.target.value;
+            });
+            
+            // 拼接方向选择
+            directionBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    directionBtns.forEach(b => {
+                        b.classList.remove('active', 'border-primary', 'bg-primary/5');
+                        b.classList.add('border-gray-200');
+                    });
+                    
+                    btn.classList.add('active', 'border-primary', 'bg-primary/5');
+                    btn.classList.remove('border-gray-200');
+                    
+                    currentDirection = btn.dataset.direction;
+                    
+                    // 显示或隐藏网格设置
+                    if (currentDirection === 'grid') {
+                        gridSettings.classList.remove('hidden');
+                    } else {
+                        gridSettings.classList.add('hidden');
+                    }
+                    
+                    updateButtonStates();
+                });
+            });
+            
+            // 网格行列数变化时检查是否足够
+            rowsInput.addEventListener('input', updateButtonStates);
+            colsInput.addEventListener('input', updateButtonStates);
+            
+            // 缩放按钮
+            zoomInBtn.addEventListener('click', () => {
+                zoomLevel = Math.min(zoomLevel + 0.2, 3);
+                updateResultZoom();
+            });
+            
+            zoomOutBtn.addEventListener('click', () => {
+                zoomLevel = Math.max(zoomLevel - 0.2, 0.4);
+                updateResultZoom();
+            });
+            
+            // 帮助模态框
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            
+            helpModal.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+        
+        // 拖放事件处理
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropArea.classList.add('border-primary', 'bg-primary/5');
+        }
+        
+        function handleDragLeave() {
+            dropArea.classList.remove('border-primary', 'bg-primary/5');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            dropArea.classList.remove('border-primary', 'bg-primary/5');
+            
+            if (e.dataTransfer.files.length) {
+                handleFiles(e.dataTransfer.files);
+            }
+        }
+        
+        // 文件选择事件处理
+        function handleFileSelect(e) {
+            if (e.target.files.length) {
+                handleFiles(e.target.files);
+            }
+        }
+        
+        // 处理文件
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (!file.type.match('image.*')) {
+                    showNotification('请上传图片文件', 'error');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // 添加到上传图片数组
+                        uploadedImages.push({
+                            id: Date.now() + Math.floor(Math.random() * 1000),
+                            src: e.target.result,
+                            width: img.width,
+                            height: img.height
+                        });
+                        
+                        // 更新UI
+                        renderImages();
+                        updateImageCount();
+                        updateButtonStates();
+                        
+                        showNotification('图片上传成功', 'success');
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+            });
+            
+            // 重置文件输入，允许重复选择同一文件
+            fileInput.value = '';
+        }
+        
+        // 渲染上传的图片
+        function renderImages() {
+            if (uploadedImages.length === 0) {
+                imageContainer.innerHTML = `
+                    <div class="text-center text-gray-400 py-10">
+                        <i class="fa fa-images text-4xl mb-3"></i>
+                        <p>尚未上传图片</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            imageContainer.innerHTML = '';
+            
+            uploadedImages.forEach((image, index) => {
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'relative group bg-gray-50 rounded-lg overflow-hidden border border-gray-200';
+                imageWrapper.dataset.id = image.id;
+                
+                // 计算缩略图尺寸，保持比例
+                const maxThumbSize = 120;
+                let thumbWidth, thumbHeight;
+                
+                if (image.width > image.height) {
+                    thumbWidth = maxThumbSize;
+                    thumbHeight = (image.height / image.width) * maxThumbSize;
+                } else {
+                    thumbHeight = maxThumbSize;
+                    thumbWidth = (image.width / image.height) * maxThumbSize;
+                }
+                
+                imageWrapper.innerHTML = `
+                    <div class="p-2 flex justify-center items-center">
+                        <img src="${image.src}" alt="上传的图片" class="rounded" style="width: ${thumbWidth}px; height: ${thumbHeight}px; object-fit: contain;">
+                    </div>
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                        <button class="move-up-btn p-2 bg-white/80 hover:bg-white rounded-full text-gray-700 transition-colors ${index === 0 ? 'opacity-50 cursor-not-allowed' : ''}">
+                            <i class="fa fa-arrow-up"></i>
+                        </button>
+                        <button class="move-down-btn p-2 bg-white/80 hover:bg-white rounded-full text-gray-700 transition-colors ${index === uploadedImages.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                            <i class="fa fa-arrow-down"></i>
+                        </button>
+                        <button class="remove-btn p-2 bg-white/80 hover:bg-white rounded-full text-red-500 hover:text-red-600 transition-colors">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                imageContainer.appendChild(imageWrapper);
+                
+                // 添加事件监听器
+                const removeBtn = imageWrapper.querySelector('.remove-btn');
+                removeBtn.addEventListener('click', () => removeImage(image.id));
+                
+                const moveUpBtn = imageWrapper.querySelector('.move-up-btn');
+                if (index > 0) {
+                    moveUpBtn.addEventListener('click', () => moveImage(index, index - 1));
+                }
+                
+                const moveDownBtn = imageWrapper.querySelector('.move-down-btn');
+                if (index < uploadedImages.length - 1) {
+                    moveDownBtn.addEventListener('click', () => moveImage(index, index + 1));
+                }
+            });
+        }
+        
+        // 更新图片计数
+        function updateImageCount() {
+            imageCount.textContent = `${uploadedImages.length}张`;
+        }
+        
+        // 更新按钮状态
+        function updateButtonStates() {
+            const hasImages = uploadedImages.length > 0;
+            stitchBtn.disabled = !hasImages;
+            clearBtn.disabled = !hasImages;
+            
+            // 检查网格模式下的行列数是否合理
+            if (currentDirection === 'grid' && hasImages) {
+                const rows = parseInt(rowsInput.value) || 1;
+                const cols = parseInt(colsInput.value) || 1;
+                const totalCells = rows * cols;
+                
+                if (totalCells < uploadedImages.length) {
+                    stitchBtn.disabled = true;
+                    stitchBtn.title = `网格单元格数量(${totalCells})少于图片数量(${uploadedImages.length})`;
+                } else {
+                    stitchBtn.disabled = false;
+                    stitchBtn.title = '';
+                }
+            }
+        }
+        
+        // 移除图片
+        function removeImage(id) {
+            const index = uploadedImages.findIndex(img => img.id === id);
+            if (index !== -1) {
+                uploadedImages.splice(index, 1);
+                renderImages();
+                updateImageCount();
+                updateButtonStates();
+                showNotification('图片已移除', 'info');
+            }
+        }
+        
+        // 移动图片位置
+        function moveImage(fromIndex, toIndex) {
+            const temp = uploadedImages[fromIndex];
+            uploadedImages[fromIndex] = uploadedImages[toIndex];
+            uploadedImages[toIndex] = temp;
+            
+            renderImages();
+        }
+        
+        // 清空所有图片
+        function clearImages() {
+            if (uploadedImages.length === 0) return;
+            
+            if (confirm('确定要清空所有图片吗？')) {
+                uploadedImages.length = 0;
+                renderImages();
+                updateImageCount();
+                updateButtonStates();
+                resultContainer.innerHTML = `
+                    <div class="text-center text-gray-400 p-6">
+                        <i class="fa fa-picture-o text-4xl mb-3"></i>
+                        <p>拼接结果将显示在这里</p>
+                    </div>
+                `;
+                downloadBtn.disabled = true;
+                zoomInBtn.disabled = true;
+                zoomOutBtn.disabled = true;
+                zoomLevel = 1;
+                showNotification('已清空所有图片', 'info');
+            }
+        }
+        
+        // 拼接图片
+        function stitchImages() {
+            if (uploadedImages.length === 0) return;
+            
+            // 显示加载状态
+            resultContainer.innerHTML = `
+                <div class="text-center text-gray-500 p-6">
+                    <i class="fa fa-circle-o-notch fa-spin text-4xl mb-3"></i>
+                    <p>正在处理图片...</p>
+                </div>
+            `;
+            
+            // 使用setTimeout模拟异步处理，避免UI阻塞
+            setTimeout(() => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const spacing = parseInt(spacingSlider.value);
+                const bgColor = bgColorInput.value;
+                
+                // 根据不同拼接方向计算画布尺寸和绘制图片
+                if (currentDirection === 'horizontal') {
+                    // 横向拼接：高度取最大高度，宽度总和加上间距
+                    const maxHeight = Math.max(...uploadedImages.map(img => img.height));
+                    const totalWidth = uploadedImages.reduce((sum, img) => sum + img.width, 0) + (uploadedImages.length - 1) * spacing;
+                    
+                    canvas.width = totalWidth;
+                    canvas.height = maxHeight;
+                    
+                    // 绘制背景
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // 绘制图片
+                    let currentX = 0;
+                    uploadedImages.forEach(img => {
+                        const imgElement = new Image();
+                        imgElement.src = img.src;
+                        // 居中对齐
+                        const y = (maxHeight - img.height) / 2;
+                        ctx.drawImage(imgElement, currentX, y, img.width, img.height);
+                        currentX += img.width + spacing;
+                    });
+                } else if (currentDirection === 'vertical') {
+                    // 纵向拼接：宽度取最大宽度，高度总和加上间距
+                    const maxWidth = Math.max(...uploadedImages.map(img => img.width));
+                    const totalHeight = uploadedImages.reduce((sum, img) => sum + img.height, 0) + (uploadedImages.length - 1) * spacing;
+                    
+                    canvas.width = maxWidth;
+                    canvas.height = totalHeight;
+                    
+                    // 绘制背景
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // 绘制图片
+                    let currentY = 0;
+                    uploadedImages.forEach(img => {
+                        const imgElement = new Image();
+                        imgElement.src = img.src;
+                        // 居中对齐
+                        const x = (maxWidth - img.width) / 2;
+                        ctx.drawImage(imgElement, x, currentY, img.width, img.height);
+                        currentY += img.height + spacing;
+                    });
+                } else if (currentDirection === 'grid') {
+                    // 网格拼接
+                    const rows = parseInt(rowsInput.value) || 1;
+                    const cols = parseInt(colsInput.value) || 1;
+                    
+                    // 计算每个单元格的最大宽高
+                    const cellWidth = Math.max(...uploadedImages.map(img => img.width));
+                    const cellHeight = Math.max(...uploadedImages.map(img => img.height));
+                    
+                    // 计算总画布尺寸
+                    canvas.width = cols * cellWidth + (cols - 1) * spacing;
+                    canvas.height = rows * cellHeight + (rows - 1) * spacing;
+                    
+                    // 绘制背景
+                    ctx.fillStyle = bgColor;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // 绘制图片
+                    uploadedImages.forEach((img, index) => {
+                        const row = Math.floor(index / cols);
+                        const col = index % cols;
+                        
+                        const x = col * cellWidth + col * spacing + (cellWidth - img.width) / 2;
+                        const y = row * cellHeight + row * spacing + (cellHeight - img.height) / 2;
+                        
+                        const imgElement = new Image();
+                        imgElement.src = img.src;
+                        ctx.drawImage(imgElement, x, y, img.width, img.height);
+                    });
+                }
+                
+                // 显示拼接结果
+                const resultImg = document.createElement('img');
+                resultImg.src = canvas.toDataURL('image/png');
+                resultImg.className = 'max-w-full max-h-[300px] object-contain transition-transform duration-300';
+                resultImg.id = 'resultImage';
+                resultImg.alt = '拼接结果';
+                
+                resultContainer.innerHTML = '';
+                resultContainer.appendChild(resultImg);
+                
+                // 启用下载和缩放按钮
+                downloadBtn.disabled = false;
+                zoomInBtn.disabled = false;
+                zoomOutBtn.disabled = false;
+                
+                // 保存拼接结果用于下载
+                resultContainer.dataset.result = canvas.toDataURL('image/png');
+                
+                showNotification('图片拼接成功', 'success');
+            }, 500);
+        }
+        
+        // 更新结果缩放
+        function updateResultZoom() {
+            const resultImg = document.getElementById('resultImage');
+            if (resultImg) {
+                resultImg.style.transform = `scale(${zoomLevel})`;
+            }
+        }
+        
+        // 下载图片
+        function downloadImage() {
+            const dataUrl = resultContainer.dataset.result;
+            if (!dataUrl) return;
+            
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `拼接图片_${new Date().getTime()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('图片已下载', 'success');
+        }
+        
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            
+            // 设置图标和颜色
+            if (type === 'success') {
+                notificationIcon.className = 'fa fa-check-circle mr-2';
+                notification.classList.add('bg-green-600');
+                notification.classList.remove('bg-red-600', 'bg-blue-600');
+            } else if (type === 'error') {
+                notificationIcon.className = 'fa fa-exclamation-circle mr-2';
+                notification.classList.add('bg-red-600');
+                notification.classList.remove('bg-green-600', 'bg-blue-600');
+            } else if (type === 'info') {
+                notificationIcon.className = 'fa fa-info-circle mr-2';
+                notification.classList.add('bg-blue-600');
+                notification.classList.remove('bg-green-600', 'bg-red-600');
+            }
+            
+            // 显示通知
+            notification.classList.remove('translate-y-20', 'opacity-0');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                notification.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

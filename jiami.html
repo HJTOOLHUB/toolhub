@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加密解密工具 | 支持MD5、SHA、Base64</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 引入CryptoJS库用于加密解密 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  
+  <!-- 配置Tailwind自定义主题 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#7B61FF',
+            accent: '#00CFFD',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .glass-dark {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .gradient-border {
+        position: relative;
+        border-radius: 0.75rem;
+        z-index: 0;
+      }
+      .gradient-border::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        border-radius: 0.85rem;
+        background: linear-gradient(135deg, #165DFF, #7B61FF, #00CFFD);
+        z-index: -1;
+        animation: rotate 6s linear infinite;
+      }
+      @keyframes rotate {
+        0% { filter: hue-rotate(0deg); }
+        100% { filter: hue-rotate(360deg); }
+      }
+      .text-gradient {
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        background-image: linear-gradient(135deg, #165DFF, #7B61FF);
+      }
+      .input-focus {
+        @apply focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none;
+      }
+      .btn-effect {
+        @apply transform transition-all duration-300 hover:scale-105 active:scale-95;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-gradient-to-br from-gray-50 to-gray-100 dark:from-dark dark:to-gray-900 min-h-screen text-gray-800 dark:text-gray-100 transition-colors duration-300">
+  <!-- 顶部导航 -->
+  <header class="container mx-auto px-4 py-6">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center gap-2 mb-4 md:mb-0">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white">
+          <i class="fa fa-lock text-xl"></i>
+        </div>
+        <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-gradient">加密解密工具</h1>
+      </div>
+      
+      <!-- 主题切换按钮 -->
+      <button id="theme-toggle" class="w-10 h-10 rounded-full flex items-center justify-center glass hover:bg-primary/10 transition-colors duration-300 btn-effect">
+        <i class="fa fa-moon-o dark:hidden"></i>
+        <i class="fa fa-sun-o hidden dark:inline-block"></i>
+      </button>
+    </div>
+    
+    <p class="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl">
+      一个强大的在线加密解密工具，支持MD5、SHA系列和Base64等多种加密解密方式，保护您的数据安全。
+    </p>
+  </header>
+
+  <!-- 主要内容区域 -->
+  <main class="container mx-auto px-4 pb-12">
+    <!-- 加密解密选项卡 -->
+    <div class="mb-8 max-w-4xl mx-auto">
+      <div class="flex flex-wrap rounded-lg overflow-hidden gradient-border bg-white dark:bg-gray-800 shadow-lg">
+        <button class="encrypt-tab active w-1/2 py-4 text-center font-medium transition-colors duration-300 bg-primary/10 dark:bg-primary/20 text-primary" data-tab="encrypt">
+          <i class="fa fa-shield mr-2"></i>加密
+        </button>
+        <button class="decrypt-tab w-1/2 py-4 text-center font-medium transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700" data-tab="decrypt">
+          <i class="fa fa-unlock mr-2"></i>解密
+        </button>
+      </div>
+    </div>
+    
+    <!-- 算法选择区域 -->
+    <div class="mb-6 max-w-4xl mx-auto">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">选择算法:</label>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+        <button class="algorithm-btn active py-3 rounded-lg glass-dark text-center transition-all duration-300 border-2 border-primary btn-effect" data-algorithm="md5">
+          <i class="fa fa-hashtag block mb-1"></i>
+          <span class="text-xs sm:text-sm">MD5</span>
+        </button>
+        <button class="algorithm-btn py-3 rounded-lg glass-dark text-center transition-all duration-300 border-2 border-transparent hover:border-primary/50 btn-effect" data-algorithm="sha1">
+          <i class="fa fa-sha block mb-1"></i>
+          <span class="text-xs sm:text-sm">SHA-1</span>
+        </button>
+        <button class="algorithm-btn py-3 rounded-lg glass-dark text-center transition-all duration-300 border-2 border-transparent hover:border-primary/50 btn-effect" data-algorithm="sha256">
+          <i class="fa fa-shield block mb-1"></i>
+          <span class="text-xs sm:text-sm">SHA-256</span>
+        </button>
+        <button class="algorithm-btn py-3 rounded-lg glass-dark text-center transition-all duration-300 border-2 border-transparent hover:border-primary/50 btn-effect" data-algorithm="sha512">
+          <i class="fa fa-shield-alt block mb-1"></i>
+          <span class="text-xs sm:text-sm">SHA-512</span>
+        </button>
+        <button class="algorithm-btn py-3 rounded-lg glass-dark text-center transition-all duration-300 border-2 border-transparent hover:border-primary/50 btn-effect" data-algorithm="base64">
+          <i class="fa fa-code block mb-1"></i>
+          <span class="text-xs sm:text-sm">Base64</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 输入区域 -->
+    <div class="mb-6 max-w-4xl mx-auto">
+      <div class="flex justify-between items-center mb-2">
+        <label for="input-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300">输入文本:</label>
+        <button id="clear-input" class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
+          <i class="fa fa-trash-o mr-1"></i>清空
+        </button>
+      </div>
+      <div class="gradient-border">
+        <textarea 
+          id="input-text" 
+          rows="5" 
+          class="w-full p-4 rounded-lg bg-white dark:bg-gray-800 input-focus transition-colors duration-300 resize-none"
+          placeholder="请输入需要加密或解密的文本..."></textarea>
+      </div>
+    </div>
+    
+    <!-- 操作按钮 -->
+    <div class="mb-6 max-w-4xl mx-auto flex flex-wrap gap-4 justify-center">
+      <button id="process-btn" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium shadow-lg shadow-primary/20 flex items-center gap-2 btn-effect">
+        <i class="fa fa-cog"></i>
+        <span>执行加密</span>
+      </button>
+      <button id="swap-btn" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg font-medium flex items-center gap-2 btn-effect">
+        <i class="fa fa-exchange"></i>
+        <span>交换内容</span>
+      </button>
+    </div>
+    
+    <!-- 输出区域 -->
+    <div class="max-w-4xl mx-auto">
+      <div class="flex justify-between items-center mb-2">
+        <label for="output-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300">结果:</label>
+        <button id="copy-output" class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
+          <i class="fa fa-copy mr-1"></i>复制
+        </button>
+      </div>
+      <div class="gradient-border relative">
+        <div id="result-loading" class="absolute inset-0 bg-white/80 dark:bg-gray-800/80 flex items-center justify-center rounded-lg hidden">
+          <div class="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+        <textarea 
+          id="output-text" 
+          rows="5" 
+          class="w-full p-4 rounded-lg bg-white dark:bg-gray-800 input-focus transition-colors duration-300 resize-none"
+          placeholder="处理结果将显示在这里..." readonly></textarea>
+      </div>
+      <div id="copy-notification" class="mt-2 text-sm text-green-500 text-center hidden">
+        <i class="fa fa-check-circle mr-1"></i>已复制到剪贴板
+      </div>
+    </div>
+    
+    <!-- 信息提示卡片 -->
+    <div class="mt-8 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-lg glass dark:glass-dark border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300">
+        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
+          <i class="fa fa-info"></i>
+        </div>
+        <h3 class="font-medium mb-2">不可逆算法</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">MD5、SHA系列算法是单向加密，无法解密。</p>
+      </div>
+      <div class="p-4 rounded-lg glass dark:glass-dark border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300">
+        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-3">
+          <i class="fa fa-lock"></i>
+        </div>
+        <h3 class="font-medium mb-2">安全保障</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">所有操作均在本地完成，您的数据不会上传到服务器。</p>
+      </div>
+      <div class="p-4 rounded-lg glass dark:glass-dark border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-300">
+        <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent mb-3">
+          <i class="fa fa-lightbulb-o"></i>
+        </div>
+        <h3 class="font-medium mb-2">使用提示</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Base64可用于加密和解密，常用于简单的数据编码。</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript 功能实现 -->
+  <script>
+    // DOM 元素
+    const themeToggle = document.getElementById('theme-toggle');
+    const encryptTab = document.querySelector('.encrypt-tab');
+    const decryptTab = document.querySelector('.decrypt-tab');
+    const algorithmBtns = document.querySelectorAll('.algorithm-btn');
+    const inputText = document.getElementById('input-text');
+    const outputText = document.getElementById('output-text');
+    const processBtn = document.getElementById('process-btn');
+    const swapBtn = document.getElementById('swap-btn');
+    const clearInputBtn = document.getElementById('clear-input');
+    const copyOutputBtn = document.getElementById('copy-output');
+    const copyNotification = document.getElementById('copy-notification');
+    const resultLoading = document.getElementById('result-loading');
+    
+    // 状态变量
+    let currentMode = 'encrypt'; // 'encrypt' 或 'decrypt'
+    let currentAlgorithm = 'md5';
+    
+    // 初始化主题
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // 主题切换
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    });
+    
+    // 切换加密/解密选项卡
+    encryptTab.addEventListener('click', () => {
+      currentMode = 'encrypt';
+      updateUIForMode();
+    });
+    
+    decryptTab.addEventListener('click', () => {
+      currentMode = 'decrypt';
+      updateUIForMode();
+    });
+    
+    // 切换算法
+    algorithmBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        algorithmBtns.forEach(b => {
+          b.classList.remove('active', 'border-primary');
+          b.classList.add('border-transparent', 'hover:border-primary/50');
+        });
+        
+        btn.classList.add('active', 'border-primary');
+        btn.classList.remove('border-transparent', 'hover:border-primary/50');
+        
+        currentAlgorithm = btn.dataset.algorithm;
+        updateUIForMode();
+      });
+    });
+    
+    // 根据模式更新UI
+    function updateUIForMode() {
+      // 更新选项卡样式
+      if (currentMode === 'encrypt') {
+        encryptTab.classList.add('active', 'bg-primary/10', 'dark:bg-primary/20', 'text-primary');
+        decryptTab.classList.remove('active', 'bg-primary/10', 'dark:bg-primary/20', 'text-primary');
+        decryptTab.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+      } else {
+        decryptTab.classList.add('active', 'bg-primary/10', 'dark:bg-primary/20', 'text-primary');
+        encryptTab.classList.remove('active', 'bg-primary/10', 'dark:bg-primary/20', 'text-primary');
+        encryptTab.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+      }
+      
+      // 更新按钮文本
+      if (currentMode === 'encrypt') {
+        processBtn.innerHTML = `<i class="fa fa-cog"></i><span>执行加密</span>`;
+      } else {
+        processBtn.innerHTML = `<i class="fa fa-cog"></i><span>执行解密</span>`;
+      }
+      
+      // 对于不可逆算法，禁用解密模式
+      const irreversibleAlgorithms = ['md5', 'sha1', 'sha256', 'sha512'];
+      if (currentMode === 'decrypt' && irreversibleAlgorithms.includes(currentAlgorithm)) {
+        processBtn.disabled = true;
+        processBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        processBtn.classList.remove('hover:bg-primary/90', 'btn-effect');
+      } else {
+        processBtn.disabled = false;
+        processBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        processBtn.classList.add('hover:bg-primary/90', 'btn-effect');
+      }
+    }
+    
+    // 处理加密解密
+    processBtn.addEventListener('click', () => {
+      const text = inputText.value.trim();
+      if (!text) return;
+      
+      // 显示加载状态
+      resultLoading.classList.remove('hidden');
+      outputText.value = '';
+      
+      // 模拟处理延迟，增强用户体验
+      setTimeout(() => {
+        let result = '';
+        
+        if (currentMode === 'encrypt') {
+          result = encrypt(text, currentAlgorithm);
+        } else {
+          result = decrypt(text, currentAlgorithm);
+        }
+        
+        outputText.value = result;
+        resultLoading.classList.add('hidden');
+        
+        // 添加结果出现动画
+        outputText.classList.add('animate-pulse');
+        setTimeout(() => {
+          outputText.classList.remove('animate-pulse');
+        }, 500);
+      }, 500);
+    });
+    
+    // 交换输入输出内容
+    swapBtn.addEventListener('click', () => {
+      const temp = inputText.value;
+      inputText.value = outputText.value;
+      outputText.value = temp;
+      
+      // 添加交换动画
+      [inputText, outputText].forEach(el => {
+        el.classList.add('scale-105');
+        setTimeout(() => el.classList.remove('scale-105'), 300);
+      });
+      
+      // 如果交换后处于解密模式且算法不可逆，禁用按钮
+      updateUIForMode();
+    });
+    
+    // 清空输入
+    clearInputBtn.addEventListener('click', () => {
+      inputText.value = '';
+      inputText.focus();
+    });
+    
+    // 复制结果
+    copyOutputBtn.addEventListener('click', () => {
+      if (outputText.value) {
+        outputText.select();
+        document.execCommand('copy');
+        
+        // 显示复制成功提示
+        copyNotification.classList.remove('hidden');
+        setTimeout(() => {
+          copyNotification.classList.add('hidden');
+        }, 2000);
+        
+        // 添加复制反馈动画
+        copyOutputBtn.classList.add('text-green-500');
+        setTimeout(() => {
+          copyOutputBtn.classList.remove('text-green-500');
+        }, 500);
+      }
+    });
+    
+    // 加密函数
+    function encrypt(text, algorithm) {
+      switch (algorithm) {
+        case 'md5':
+          return CryptoJS.MD5(text).toString();
+        case 'sha1':
+          return CryptoJS.SHA1(text).toString();
+        case 'sha256':
+          return CryptoJS.SHA256(text).toString();
+        case 'sha512':
+          return CryptoJS.SHA512(text).toString();
+        case 'base64':
+          return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(text));
+        default:
+          return '不支持的算法';
+      }
+    }
+    
+    // 解密函数
+    function decrypt(text, algorithm) {
+      switch (algorithm) {
+        case 'base64':
+          try {
+            return CryptoJS.enc.Base64.parse(text).toString(CryptoJS.enc.Utf8);
+          } catch (e) {
+            return '解密失败：无效的Base64字符串';
+          }
+        default:
+          return '不支持的解密算法';
+      }
+    }
+    
+    // 响应式调整文本区域高度
+    function adjustTextareaHeight(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+    
+    inputText.addEventListener('input', () => adjustTextareaHeight(inputText));
+    outputText.addEventListener('input', () => adjustTextareaHeight(outputText));
+    
+    // 初始调整高度
+    adjustTextareaHeight(inputText);
+    adjustTextareaHeight(outputText);
+  </script>
+</body>
+</html>

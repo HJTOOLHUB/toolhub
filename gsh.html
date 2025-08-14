@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码格式化工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义主题
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        editor: {
+                            dark: '#0F172A',
+                            light: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'editor': '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        'button': '0 4px 6px -1px rgba(59, 130, 246, 0.3)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .editor-transition {
+                transition: all 0.3s ease;
+            }
+            .button-hover {
+                @apply transform hover:scale-105 transition-all duration-200;
+            }
+            .text-gradient {
+                @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-dark min-h-screen editor-transition">
+    <!-- 页面容器 -->
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- 标题区域 -->
+        <header class="mb-8 text-center">
+            <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-gradient mb-2">
+                代码格式化工具
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300 text-lg">
+                轻松美化您的代码，提升可读性
+            </p>
+        </header>
+
+        <!-- 控制面板 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-editor mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <!-- 语言选择 -->
+                <div class="relative">
+                    <select id="language-selector" class="bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md py-2 pl-4 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="javascript">JavaScript</option>
+                        <option value="python">Python</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="java">Java</option>
+                        <option value="csharp">C#</option>
+                        <option value="php">PHP</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                        <i class="fa fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- 缩进设置 -->
+                <div class="relative">
+                    <select id="indent-selector" class="bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-md py-2 pl-4 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="2">2个空格缩进</option>
+                        <option value="4" selected>4个空格缩进</option>
+                        <option value="tab">Tab缩进</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                        <i class="fa fa-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- 格式化按钮 -->
+                <button id="format-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-md shadow-button button-hover flex items-center gap-2">
+                    <i class="fa fa-magic"></i>
+                    <span>格式化代码</span>
+                </button>
+
+                <!-- 主题切换 -->
+                <button id="theme-toggle" class="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 button-hover">
+                    <i class="fa fa-moon-o dark:hidden"></i>
+                    <i class="fa fa-sun-o hidden dark:inline-block"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 编辑器区域 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- 输入区域 -->
+            <div class="flex flex-col h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-t-lg p-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                        <i class="fa fa-code"></i>
+                        <span>输入代码</span>
+                    </h2>
+                    <button id="clear-input" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 button-hover">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                </div>
+                <textarea id="code-input" class="flex-grow bg-editor-light dark:bg-editor-dark text-gray-800 dark:text-gray-200 font-mono text-sm p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary resize-none" placeholder="在此输入您的代码..."></textarea>
+            </div>
+
+            <!-- 输出区域 -->
+            <div class="flex flex-col h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-t-lg p-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                        <i class="fa fa-code-fork"></i>
+                        <span>格式化结果</span>
+                    </h2>
+                    <button id="copy-output" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 button-hover">
+                        <i class="fa fa-clipboard"></i>
+                    </button>
+                </div>
+                <pre id="formatted-output" class="flex-grow bg-editor-light dark:bg-editor-dark text-gray-800 dark:text-gray-200 font-mono text-sm p-4 rounded-b-lg border border-gray-200 dark:border-gray-700 overflow-auto"></pre>
+            </div>
+        </div>
+
+        <!-- 通知提示 -->
+        <div id="notification" class="fixed top-4 right-4 bg-gray-800 text-white px-4 py-3 rounded-md shadow-lg transform translate-x-full transition-transform duration-300 flex items-center gap-2">
+            <i class="fa fa-check-circle text-green-400"></i>
+            <span id="notification-text">操作成功</span>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const codeInput = document.getElementById('code-input');
+        const formattedOutput = document.getElementById('formatted-output');
+        const formatBtn = document.getElementById('format-btn');
+        const clearInputBtn = document.getElementById('clear-input');
+        const copyOutputBtn = document.getElementById('copy-output');
+        const languageSelector = document.getElementById('language-selector');
+        const indentSelector = document.getElementById('indent-selector');
+        const themeToggle = document.getElementById('theme-toggle');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+
+        // 初始化主题
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // 主题切换
+        themeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // 显示通知
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.classList.remove('translate-x-full');
+            
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+            }, 2000);
+        }
+
+        // 复制到剪贴板
+        copyOutputBtn.addEventListener('click', () => {
+            const textToCopy = formattedOutput.textContent;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showNotification('已复制到剪贴板');
+            }).catch(err => {
+                showNotification('复制失败，请手动复制');
+                console.error('复制失败:', err);
+            });
+        });
+
+        // 清空输入
+        clearInputBtn.addEventListener('click', () => {
+            codeInput.value = '';
+            formattedOutput.textContent = '';
+            codeInput.focus();
+        });
+
+        // 格式化代码的模拟函数（实际应用中可以集成Prettier等库）
+        function formatCode(code, language, indent) {
+            if (!code.trim()) return '';
+            
+            // 根据选择的缩进类型确定缩进字符
+            const indentChar = indent === 'tab' ? '\t' : ' '.repeat(parseInt(indent));
+            
+            // 简单的格式化逻辑（实际应用中应该使用专业的格式化库）
+            let formatted = '';
+            let depth = 0;
+            let inString = false;
+            let stringChar = '';
+            
+            for (let i = 0; i < code.length; i++) {
+                const char = code[i];
+                const nextChar = code[i + 1];
+                
+                // 处理字符串
+                if ((char === '"' || char === "'" || char === '`') && (i === 0 || code[i - 1] !== '\\')) {
+                    if (inString && char === stringChar) {
+                        inString = false;
+                    } else if (!inString) {
+                        inString = true;
+                        stringChar = char;
+                    }
+                }
+                
+                // 不在字符串中时处理缩进
+                if (!inString) {
+                    // 增加缩进的情况
+                    if (char === '{' || char === '[' || char === '(') {
+                        formatted += char;
+                        depth++;
+                        if (nextChar !== '}' && nextChar !== ']' && nextChar !== ')') {
+                            formatted += '\n' + indentChar.repeat(depth);
+                        }
+                        continue;
+                    }
+                    
+                    // 减少缩进的情况
+                    if (char === '}' || char === ']' || char === ')') {
+                        depth = Math.max(0, depth - 1);
+                        formatted += '\n' + indentChar.repeat(depth) + char;
+                        
+                        // 如果下一个字符是逗号或分号，跟在后面
+                        if (nextChar === ',' || nextChar === ';') {
+                            i++;
+                            formatted += nextChar;
+                        }
+                        
+                        // 添加换行（除非是结尾）
+                        if (i < code.length - 1) {
+                            formatted += '\n' + indentChar.repeat(depth);
+                        }
+                        continue;
+                    }
+                    
+                    // 处理分号
+                    if (char === ';') {
+                        formatted += ';';
+                        if (nextChar && nextChar !== '\n' && nextChar !== '}') {
+                            formatted += '\n' + indentChar.repeat(depth);
+                        }
+                        continue;
+                    }
+                    
+                    // 处理逗号
+                    if (char === ',') {
+                        formatted += ', ';
+                        if (nextChar && nextChar !== '\n' && !/\s/.test(nextChar)) {
+                            formatted += '\n' + indentChar.repeat(depth);
+                        }
+                        continue;
+                    }
+                }
+                
+                // 普通字符
+                formatted += char;
+            }
+            
+            // 清理多余的空行
+            return formatted.replace(/\n{3,}/g, '\n\n').trim() + '\n';
+        }
+
+        // 格式化按钮点击事件
+        formatBtn.addEventListener('click', () => {
+            const code = codeInput.value;
+            const language = languageSelector.value;
+            const indent = indentSelector.value;
+            
+            if (!code.trim()) {
+                showNotification('请输入代码后再格式化');
+                return;
+            }
+            
+            // 添加加载效果
+            formatBtn.disabled = true;
+            formatBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i><span>格式化中...</span>';
+            
+            // 模拟异步格式化
+            setTimeout(() => {
+                const formatted = formatCode(code, language, indent);
+                formattedOutput.textContent = formatted;
+                
+                // 恢复按钮状态
+                formatBtn.disabled = false;
+                formatBtn.innerHTML = '<i class="fa fa-magic"></i><span>格式化代码</span>';
+                
+                showNotification('代码格式化完成');
+            }, 500);
+        });
+
+        // 示例代码
+        const exampleCodes = {
+            javascript: `function calculateTotal(price, quantity, taxRate) {
+if(price <=0 || quantity <=0) {
+return 0;
+}
+const subtotal = price * quantity;
+const tax = subtotal * taxRate;
+return subtotal + tax;
+}
+
+const products = [
+{name: "Laptop", price: 999.99, quantity: 1},
+{name: "Mouse", price: 25.50, quantity: 2}
+];
+
+let total = 0;
+for(let i=0;i<products.length;i++){
+total += calculateTotal(products[i].price, products[i].quantity, 0.08);
+}
+
+console.log("Total: $" + total.toFixed(2));`,
+            
+            python: `def calculate_total(price, quantity, tax_rate):
+if price <= 0 or quantity <= 0:
+return 0
+subtotal = price * quantity
+tax = subtotal * tax_rate
+return subtotal + tax
+
+products = [
+{"name": "Laptop", "price": 999.99, "quantity": 1},
+{"name": "Mouse", "price": 25.50, "quantity": 2}
+]
+
+total = 0
+for product in products:
+total += calculate_total(product["price"], product["quantity"], 0.08)
+
+print(f"Total: ${{total:.2f}}")`,
+            
+            html: `<html><head><title>示例页面</title><style>.container{max-width:1200px;margin:0 auto;padding:20px;}</style></head><body><div class="container"><h1>欢迎来到我的网站</h1><p>这是一个示例段落。</p><ul><li>列表项 1</li><li>列表项 2</li></ul></div></body></html>`,
+            
+            css: `.container{max-width:1200px;margin:0 auto;padding:20px;}
+.header{background-color:#f0f0f0;padding:15px;border-radius:4px;}
+.title{font-size:24px;color:#333;margin:0;}
+.nav{display:flex;gap:10px;}
+.nav a{text-decoration:none;color:#666;}
+.nav a:hover{color:#000;text-decoration:underline;}`,
+            
+            java: `public class Calculator {
+public static double calculateTotal(double price, int quantity, double taxRate) {
+if(price <= 0 || quantity <= 0) {
+return 0;
+}
+double subtotal = price * quantity;
+double tax = subtotal * taxRate;
+return subtotal + tax;
+}
+
+public static void main(String[] args) {
+Product[] products = {
+new Product("Laptop", 999.99, 1),
+new Product("Mouse", 25.50, 2)
+};
+
+double total = 0;
+for(int i=0; i<products.length; i++) {
+total += calculateTotal(products[i].price, products[i].quantity, 0.08);
+}
+
+System.out.printf("Total: $%.2f%n", total);
+}
+}
+
+class Product {
+String name;
+double price;
+int quantity;
+
+Product(String name, double price, int quantity) {
+this.name = name;
+this.price = price;
+this.quantity = quantity;
+}
+}`
+        };
+
+        // 当选择不同语言时，加载示例代码
+        languageSelector.addEventListener('change', () => {
+            const language = languageSelector.value;
+            codeInput.value = exampleCodes[language] || '';
+            formattedOutput.textContent = '';
+        });
+
+        // 初始加载JavaScript示例代码
+        window.addEventListener('load', () => {
+            codeInput.value = exampleCodes.javascript;
+        });
+    </script>
+</body>
+</html>

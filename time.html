@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐲时钟●2.0更新啦！</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#12B7F5', // QQ蓝色作为主色调
+            secondary: '#FF9500', // 辅助色
+            neutral: {
+              100: '#F5F5F5',
+              200: '#E5E5E5',
+              300: '#D4D4D4',
+              800: '#1F2937',
+              900: '#111827',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+
+      .clock-shadow {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      }
+
+      .btn-glow {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-5px);
+      }
+
+      /* 公告栏样式 */
+      .announcement-board {
+        width: 100%;
+        max-width: 7xl;
+        background-color: rgb(255, 255, 255);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .announcement {
+        display: none;
+      }
+
+      .announcement.active {
+        display: block;
+      }
+
+      .announcement img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 0.5rem;
+      }
+
+      .announcement-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+      }
+
+      .announcement-btn.prev {
+        left: 1rem;
+      }
+
+      .announcement-btn.next {
+        right: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-neutral-100 font-inter text-neutral-800 min-h-screen flex flex-col">
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-clock-o text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold text-neutral-1000">🐲杂杂时钟2.0</h1>
+      </div>
+      <nav>
+        <ul class="flex space-x-6">
+          <li><a href="#" class="text-neutral-600 hover:text-primary transition-colors">MADE IN ZZ!</a></li>
+          <li><a href="#" class="text-neutral-600 hover:text-primary transition-colors"> </a></li>
+          <li><a href="#" class="text-neutral-600 hover:text-primary transition-colors"> </a></li>
+        </ul>
+      </nav>
+      <div id="adminModeIndicator" class="hidden text-primary font-bold">🛃管理员模式🛃</div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+    <!-- 时钟卡片 -->
+    <div class="w-full max-w-7x1 bg-white rounded-8xl clock-shadow p-6 md:p-5 card-hover">
+      <!-- 日期显示 -->
+      <div class="text-center mb-18">
+        <p style="font-size: 55px;"><strong>🐲在线时钟</strong></p>
+
+        <br>
+        <br>
+        <p id="dateDisplay" class="text-black font-bold text-2.5xl px-10 md:text-4xl mb-0 text-shadow">
+          2025年6月25日 星期三
+        </p>
+      </div>
+
+      <!-- 时钟显示 -->
+      <div class="flex flex-col mb-10 items-center">
+        <div id="clockDisplay" class="text-[clamp(4rem,17vw,13rem)] font-bold text-neutral-900 mb-2 text-shadow">
+          14:30:45
+        </div>
+
+        <!-- 全屏按钮 -->
+        <button id="fullscreenBtn" class="bg-primary hover:bg-primary/90 text-white font-medium py-4 px-10 rounded-full mb-20 transition-all duration-300 flex items-center btn-glow">
+          <i class="fa fa-expand mr-2"></i>
+          <span>点击我进入全屏模式</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 公告栏 -->
+    <div class="announcement-board">
+      <div class="announcement active">
+        <img src="https://cdn.picui.cn/vip/2025/07/11/6870b581b5059.webp" alt="">
+        <p>杂杂时钟2.0更新啦！更新内容：</p>
+        <p>1、更新公告栏功能，并带有左右滑动功能！</p>
+        <p>2、更新网站账号登陆功能！</p>
+        <p>3、优化网站内存使用！</p>
+        <p>4、更新管理员账号与管理员模式</p>
+        <p>5、更新签到功能、并带有用户排行榜</p>
+      </div>
+      <div class="announcement">
+        <img src="https://cdn.picui.cn/vip/2025/07/11/6870b581b5059.webp" alt="公告图片2">
+        <p>欢迎使用本时钟网站，团队会时刻更新</p>
+      </div>
+      <div class="announcement">
+        <img src="https://cdn.picui.cn/vip/2025/07/11/6870b581b5059.webp" alt="公告图片3">
+        <p>广告招商热线：3301976275@qq.com</p>
+      </div>
+
+      <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
+      <button class="announcement-btn next" onclick="nextAnnouncement()"><i class="fa fa-chevron-right"></i></button>
+    </div>
+
+    <!-- 用户认证区域 -->
+    <div class="w-full max-w-md mt-12 bg-white rounded-2xl clock-shadow p-6 card-hover">
+      <h2 class="text-2xl font-bold text-center mb-6 text-neutral-900">账号登录</h2>
+
+      <div class="space-y-4">
+        <div class="relative">
+          <i class="fa fa-user text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="username" placeholder="请输入用户名" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <div class="relative">
+          <i class="fa fa-lock text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="password" id="password" placeholder="请输入密码" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <button id="loginBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+          <i class="fa fa-sign-in mr-2"></i>
+          <span>登录</span>
+        </button>
+        <div id="loginMessage" class="text-center text-sm"></div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-neutral-500">
+          还没有账号？
+          <a href="#" id="registerLink" class="text-primary font-medium hover:underline">立即注册</a>
+        </p>
+      </div>
+
+      <!-- 注册表单，默认隐藏 -->
+      <div id="registerForm" class="space-y-4 hidden">
+        <div class="relative">
+          <i class="fa fa-user text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="registerUsername" placeholder="用户名" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <div class="relative">
+          <i class="fa fa-lock text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="password" id="registerPassword" placeholder="密码" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <button id="registerBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+          <i class="fa fa-user-plus mr-2"></i>
+          <span>注册</span>
+        </button>
+        <div id="registerMessage" class="text-center text-sm"></div>
+      </div>
+
+      <!-- 退出登录按钮 -->
+      <button id="logoutBtn" class="hidden w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+        <i class="fa fa-sign-out mr-2"></i>
+        <span>退出登录</span>
+      </button>
+    </div>
+
+    <!-- 每日签到区域 -->
+    <div class="w-full max-w-md mt-8 bg-white rounded-2xl clock-shadow p-6 card-hover">
+      <h2 class="text-2xl font-bold text-center mb-4 text-neutral-900">每日签到</h2>
+      <button id="checkInBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+        <i class="fa fa-check mr-2"></i>
+        <span>签到</span>
+      </button>
+      <div id="checkInMessage" class="text-center text-sm mt-2"></div>
+      <div id="userPoints" class="text-center text-sm mt-2"></div>
+      <h2 class="text-2xl font-bold text-center mt-4 mb-2 text-neutral-900">签到排行榜(登陆后方可显示)</h2>
+      <ul id="pointsRanking" class="text-center text-sm"></ul>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-white border-t border-neutral-200 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center text-neutral-500 text-sm">
+      <p>© 2025 三龍工作室●侯文杰保留一切权利。This web made in ZZ!</p>
+      <p class="mt-2">使用即表示您同意我们的服务条款和隐私政策</p>
+    </div>
+  </footer>
+
+  <script>
+    // 时钟功能实现
+    function updateClock() {
+      const now = new Date();
+
+      // 时钟显示
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById('clockDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+
+      // 日期显示
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const day = now.getDate().toString().padStart(2, '0');
+      const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekDay = weekDays[now.getDay()];
+      document.getElementById('dateDisplay').textContent = `${year}年${month}月${day}日 ${weekDay}`;
+    }
+
+    // 初始化时钟
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // 全屏功能
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen()
+          .catch(err => console.error(`无法进入全屏模式: ${err.message}`));
+        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+          fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏模式</span>';
+        }
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    // 监听全屏状态变化
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
+      } else {
+        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏模式</span>';
+      }
+    });
+
+    // 公告翻动功能
+    const announcements = document.querySelectorAll('.announcement');
+    let currentIndex = 0;
+
+    function showAnnouncement(index) {
+      announcements.forEach((announcement, i) => {
+        if (i === index) {
+          announcement.classList.add('active');
+        } else {
+          announcement.classList.remove('active');
+        }
+      });
+    }
+
+    function nextAnnouncement() {
+      currentIndex = (currentIndex + 1) % announcements.length;
+      showAnnouncement(currentIndex);
+    }
+
+    function prevAnnouncement() {
+      currentIndex = (currentIndex - 1 + announcements.length) % announcements.length;
+      showAnnouncement(currentIndex);
+    }
+
+    // 存储用户信息
+    const users = JSON.parse(localStorage.getItem('users')) || {};
+    const userPoints = JSON.parse(localStorage.getItem('userPoints')) || {};
+    const checkedInDates = JSON.parse(localStorage.getItem('checkedInDates')) || {};
+
+    // 注册功能
+    const registerLink = document.getElementById('registerLink');
+    const registerForm = document.getElementById('registerForm');
+    const registerUsername = document.getElementById('registerUsername');
+    const registerPassword = document.getElementById('registerPassword');
+    const registerBtn = document.getElementById('registerBtn');
+    const registerMessage = document.getElementById('registerMessage');
+
+    registerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      registerForm.classList.remove('hidden');
+    });
+
+    registerBtn.addEventListener('click', () => {
+      const username = registerUsername.value;
+      const password = registerPassword.value;
+
+      if (username && password) {
+        if (users[username]) {
+          registerMessage.textContent = '该用户名已存在，请选择其他用户名。';
+          registerMessage.style.color = 'red';
+        } else {
+          users[username] = password;
+          userPoints[username] = 0;
+          localStorage.setItem('users', JSON.stringify(users));
+          localStorage.setItem('userPoints', JSON.stringify(userPoints));
+          registerMessage.textContent = '注册成功，请登录。';
+          registerMessage.style.color = 'green';
+          registerForm.classList.add('hidden');
+        }
+      } else {
+        registerMessage.textContent = '用户名和密码不能为空，请重新输入。';
+        registerMessage.style.color = 'red';
+      }
+    });
+
+    // 登录功能
+    const loginBtn = document.getElementById('loginBtn');
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const loginMessage = document.getElementById('loginMessage');
+    const adminModeIndicator = document.getElementById('adminModeIndicator');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const adminUsername = 'administor for zz';
+    const adminPassword = 'administor666';
+
+    loginBtn.addEventListener('click', () => {
+      const inputUsername = username.value;
+      const inputPassword = password.value;
+
+      if (inputUsername && inputPassword) {
+        if (inputUsername === adminUsername && inputPassword === adminPassword) {
+          loginMessage.textContent = '管理员登录成功！';
+          loginMessage.style.color = 'green';
+          adminModeIndicator.classList.remove('hidden');
+          // 保存登录信息
+          localStorage.setItem('lastLoggedInUser', inputUsername);
+          showLogoutBtn();
+          updateUserPointsDisplay(inputUsername);
+          updatePointsRanking();
+        } else if (users[inputUsername] === inputPassword) {
+          loginMessage.textContent = '恭喜你、登录成功！';
+          loginMessage.style.color = 'green';
+          adminModeIndicator.classList.add('hidden');
+          // 保存登录信息
+          localStorage.setItem('lastLoggedInUser', inputUsername);
+          showLogoutBtn();
+          updateUserPointsDisplay(inputUsername);
+          updatePointsRanking();
+        } else {
+          loginMessage.textContent = '用户名或密码错误，请重新输入。';
+          loginMessage.style.color = 'red';
+          adminModeIndicator.classList.add('hidden');
+          hideLogoutBtn();
+        }
+      } else {
+        loginMessage.textContent = '用户名和密码不能为空，请重新输入。';
+        loginMessage.style.color = 'red';
+        adminModeIndicator.classList.add('hidden');
+        hideLogoutBtn();
+      }
+    });
+
+    // 显示退出登录按钮
+    function showLogoutBtn() {
+      logoutBtn.classList.remove('hidden');
+    }
+
+    // 隐藏退出登录按钮
+    function hideLogoutBtn() {
+      logoutBtn.classList.add('hidden');
+    }
+
+    // 退出登录功能
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('lastLoggedInUser');
+      loginMessage.textContent = '已退出登录。';
+      loginMessage.style.color = 'green';
+      adminModeIndicator.classList.add('hidden');
+      hideLogoutBtn();
+      document.getElementById('checkInMessage').textContent = '';
+      document.getElementById('userPoints').textContent = '';
+      document.getElementById('pointsRanking').innerHTML = '';
+    });
+
+    // 自动登录功能
+    window.addEventListener('load', () => {
+      const lastLoggedInUser = localStorage.getItem('lastLoggedInUser');
+      if (lastLoggedInUser) {
+        const storedPassword = users[lastLoggedInUser];
+        if (lastLoggedInUser === adminUsername && storedPassword === adminPassword) {
+          loginMessage.textContent = '🛃管理员登录成功！🛃';
+          loginMessage.style.color = 'green';
+          adminModeIndicator.classList.remove('hidden');
+          showLogoutBtn();
+          updateUserPointsDisplay(lastLoggedInUser);
+          updatePointsRanking();
+        } else if (storedPassword) {
+          loginMessage.textContent = '自动登录成功666！';
+          loginMessage.style.color = 'green';
+          adminModeIndicator.classList.add('hidden');
+          showLogoutBtn();
+          updateUserPointsDisplay(lastLoggedInUser);
+          updatePointsRanking();
+        } else {
+          loginMessage.textContent = '自动登录失败呜呜呜，请重新登录。';
+          loginMessage.style.color = 'red';
+          hideLogoutBtn();
+        }
+      }
+    });
+
+    // 签到功能
+    const checkInBtn = document.getElementById('checkInBtn');
+    const checkInMessage = document.getElementById('checkInMessage');
+
+    checkInBtn.addEventListener('click', () => {
+      const lastLoggedInUser = localStorage.getItem('lastLoggedInUser');
+      if (!lastLoggedInUser) {
+        checkInMessage.textContent = '请先登录再进行签到。';
+        checkInMessage.style.color = 'red';
+        return;
+      }
+
+      const now = new Date();
+      const today = now.toDateString();
+      const currentHour = now.getHours();
+
+      if (checkedInDates[lastLoggedInUser] === today) {
+        checkInMessage.textContent = '你今天已经签到过了。';
+        checkInMessage.style.color = 'red';
+        return;
+      }
+
+      if (currentHour === 10) {
+        userPoints[lastLoggedInUser] = (userPoints[lastLoggedInUser] || 0) + 10;
+        checkInMessage.textContent = '签到成功，获得10点奖励！';
+        checkInMessage.style.color = 'green';
+      } else {
+        userPoints[lastLoggedInUser] = (userPoints[lastLoggedInUser] || 0) + 1;
+        checkInMessage.textContent = '签到成功，获得1点奖励！';
+        checkInMessage.style.color = 'green';
+      }
+
+      checkedInDates[lastLoggedInUser] = today;
+      localStorage.setItem('userPoints', JSON.stringify(userPoints));
+      localStorage.setItem('checkedInDates', JSON.stringify(checkedInDates));
+      updateUserPointsDisplay(lastLoggedInUser);
+      updatePointsRanking();
+    });
+
+    // 更新用户点数显示
+    function updateUserPointsDisplay(username) {
+      const points = userPoints[username] || 0;
+      document.getElementById('userPoints').textContent = `你的总点数: ${points}`;
+    }
+
+    // 更新点数排行榜
+    function updatePointsRanking() {
+      const rankingList = Object.entries(userPoints).sort((a, b) => b[1] - a[1]);
+      const rankingElement = document.getElementById('pointsRanking');
+      rankingElement.innerHTML = '';
+
+      rankingList.forEach(([username, points], index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${index + 1}. ${username}: ${points} 点`;
+        rankingElement.appendChild(listItem);
+      });
+    }
+  </script>
+</body>
+
+</html>

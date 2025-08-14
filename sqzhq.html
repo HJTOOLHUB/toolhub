@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全球时区转换工具</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            accent: '#722ED1',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .glass-effect {
+        @apply bg-white/80 backdrop-blur-md;
+      }
+    }
+  </style>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(22, 93, 255, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(114, 46, 209, 0.05) 0%, transparent 20%);
+      background-attachment: fixed;
+    }
+    
+    .clock-hand {
+      transform-origin: bottom center;
+      transition: transform 0.5s cubic-bezier(0.1, 2.7, 0.58, 1);
+    }
+    
+    .timezone-card {
+      transition: all 0.3s ease;
+    }
+    
+    .timezone-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    select, input {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    select:focus, input:focus {
+      border-color: #165DFF;
+      box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+    }
+  </style>
+</head>
+<body class="min-h-screen text-dark">
+  <!-- 顶部导航 -->
+  <header class="sticky top-0 z-50 glass-effect border-b border-gray-200/50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-globe text-primary text-2xl"></i>
+        <h1 class="text-xl md:text-2xl font-bold text-primary">时区转换工具</h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-6">
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-moon-o text-gray-600"></i>
+        </button>
+        <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-info-circle text-gray-600"></i>
+        </button>
+      </div>
+      <button class="md:hidden p-2 rounded-full hover:bg-gray-100 transition-colors">
+        <i class="fa fa-bars text-gray-600"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <!-- 当前时间概览 -->
+    <section class="mb-12">
+      <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6 text-center text-shadow">全球主要城市时间</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- 纽约 -->
+        <div class="timezone-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-semibold text-lg">纽约</h3>
+              <p class="text-sm text-gray-500">America/New_York</p>
+            </div>
+            <span class="text-xs font-medium bg-blue-100 text-primary px-2 py-1 rounded-full">UTC-4</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-16 h-16 relative mr-4">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="4"/>
+                <circle cx="50" cy="50" r="4" fill="#165DFF"/>
+                <line id="ny-hours" class="clock-hand" x1="50" y1="50" x2="50" y2="30" stroke="#165DFF" stroke-width="3" stroke-linecap="round"/>
+                <line id="ny-minutes" class="clock-hand" x1="50" y1="50" x2="70" y2="50" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="ny-time" class="text-2xl font-mono font-bold">00:00:00</div>
+              <div id="ny-date" class="text-sm text-gray-500">2023年1月1日</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 伦敦 -->
+        <div class="timezone-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-semibold text-lg">伦敦</h3>
+              <p class="text-sm text-gray-500">Europe/London</p>
+            </div>
+            <span class="text-xs font-medium bg-blue-100 text-primary px-2 py-1 rounded-full">UTC+1</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-16 h-16 relative mr-4">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="4"/>
+                <circle cx="50" cy="50" r="4" fill="#165DFF"/>
+                <line id="ldn-hours" class="clock-hand" x1="50" y1="50" x2="50" y2="30" stroke="#165DFF" stroke-width="3" stroke-linecap="round"/>
+                <line id="ldn-minutes" class="clock-hand" x1="50" y1="50" x2="70" y2="50" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="ldn-time" class="text-2xl font-mono font-bold">00:00:00</div>
+              <div id="ldn-date" class="text-sm text-gray-500">2023年1月1日</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 北京 -->
+        <div class="timezone-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-semibold text-lg">北京</h3>
+              <p class="text-sm text-gray-500">Asia/Shanghai</p>
+            </div>
+            <span class="text-xs font-medium bg-blue-100 text-primary px-2 py-1 rounded-full">UTC+8</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-16 h-16 relative mr-4">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="4"/>
+                <circle cx="50" cy="50" r="4" fill="#165DFF"/>
+                <line id="bj-hours" class="clock-hand" x1="50" y1="50" x2="50" y2="30" stroke="#165DFF" stroke-width="3" stroke-linecap="round"/>
+                <line id="bj-minutes" class="clock-hand" x1="50" y1="50" x2="70" y2="50" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="bj-time" class="text-2xl font-mono font-bold">00:00:00</div>
+              <div id="bj-date" class="text-sm text-gray-500">2023年1月1日</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 东京 -->
+        <div class="timezone-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-semibold text-lg">东京</h3>
+              <p class="text-sm text-gray-500">Asia/Tokyo</p>
+            </div>
+            <span class="text-xs font-medium bg-blue-100 text-primary px-2 py-1 rounded-full">UTC+9</span>
+          </div>
+          <div class="flex items-center">
+            <div class="w-16 h-16 relative mr-4">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f1f1" stroke-width="4"/>
+                <circle cx="50" cy="50" r="4" fill="#165DFF"/>
+                <line id="tokyo-hours" class="clock-hand" x1="50" y1="50" x2="50" y2="30" stroke="#165DFF" stroke-width="3" stroke-linecap="round"/>
+                <line id="tokyo-minutes" class="clock-hand" x1="50" y1="50" x2="70" y2="50" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div id="tokyo-time" class="text-2xl font-mono font-bold">00:00:00</div>
+              <div id="tokyo-date" class="text-sm text-gray-500">2023年1月1日</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 时区转换工具 -->
+    <section class="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-gray-100 mb-12 transform transition-all duration-300 hover:shadow-xl">
+      <h2 class="text-[clamp(1.25rem,2vw,2rem)] font-bold mb-6 text-center">时区转换</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- 源时区 -->
+        <div class="space-y-4">
+          <label class="block text-sm font-medium text-gray-700">源时区</label>
+          <div class="relative">
+            <select id="source-timezone" class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-gray-50 focus:outline-none">
+              <option value="Asia/Shanghai">北京 (Asia/Shanghai)</option>
+              <option value="America/New_York">纽约 (America/New_York)</option>
+              <option value="Europe/London">伦敦 (Europe/London)</option>
+              <option value="Asia/Tokyo">东京 (Asia/Tokyo)</option>
+              <option value="UTC">UTC</option>
+              <option value="Europe/Paris">巴黎 (Europe/Paris)</option>
+              <option value="Asia/Dubai">迪拜 (Asia/Dubai)</option>
+              <option value="Australia/Sydney">悉尼 (Australia/Sydney)</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <i class="fa fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+          
+          <label class="block text-sm font-medium text-gray-700">日期和时间</label>
+          <div class="grid grid-cols-2 gap-4">
+            <input type="date" id="source-date" class="p-3 border border-gray-300 rounded-lg focus:outline-none">
+            <input type="time" id="source-time" class="p-3 border border-gray-300 rounded-lg focus:outline-none">
+          </div>
+          
+          <div class="flex justify-center mt-6">
+            <button id="swap-btn" class="p-3 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+              <i class="fa fa-exchange"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 目标时区 -->
+        <div class="space-y-4">
+          <label class="block text-sm font-medium text-gray-700">目标时区</label>
+          <div class="relative">
+            <select id="target-timezone" class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-gray-50 focus:outline-none">
+              <option value="America/New_York">纽约 (America/New_York)</option>
+              <option value="Asia/Shanghai">北京 (Asia/Shanghai)</option>
+              <option value="Europe/London">伦敦 (Europe/London)</option>
+              <option value="Asia/Tokyo">东京 (Asia/Tokyo)</option>
+              <option value="UTC">UTC</option>
+              <option value="Europe/Paris">巴黎 (Europe/Paris)</option>
+              <option value="Asia/Dubai">迪拜 (Asia/Dubai)</option>
+              <option value="Australia/Sydney">悉尼 (Australia/Sydney)</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <i class="fa fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+          
+          <label class="block text-sm font-medium text-gray-700">转换结果</label>
+          <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div id="result-date" class="text-gray-500 text-sm mb-1">2023年1月1日</div>
+            <div id="result-time" class="text-2xl font-mono font-bold">00:00:00</div>
+            <div id="result-offset" class="text-xs text-gray-500 mt-1">UTC+8</div>
+          </div>
+          
+          <div class="flex justify-center mt-6">
+            <button id="convert-btn" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg flex items-center">
+              <i class="fa fa-refresh mr-2"></i> 转换时间
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 时区信息 -->
+    <section class="max-w-5xl mx-auto">
+      <h2 class="text-[clamp(1.25rem,2vw,2rem)] font-bold mb-6 text-center">世界时区地图</h2>
+      <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 overflow-hidden">
+        <div class="relative h-[300px] md:h-[400px] bg-blue-50 rounded-lg overflow-hidden">
+          <img src="https://picsum.photos/id/101/1200/800" alt="世界时区地图" class="w-full h-full object-cover opacity-70">
+          <div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
+          
+          <!-- 时区标记点 -->
+          <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-red-500 rounded-full animate-pulse" title="纽约"></div>
+          <div class="absolute top-1/3 left-2/3 w-4 h-4 bg-green-500 rounded-full animate-pulse" title="伦敦"></div>
+          <div class="absolute top-1/2 right-1/4 w-4 h-4 bg-blue-500 rounded-full animate-pulse" title="北京"></div>
+          <div class="absolute top-1/2 right-1/5 w-4 h-4 bg-yellow-500 rounded-full animate-pulse" title="东京"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h3 class="font-semibold flex items-center"><i class="fa fa-lightbulb-o text-yellow-500 mr-2"></i> 夏令时说明</h3>
+            <p class="text-sm text-gray-600 mt-2">部分国家和地区会实行夏令时，通常在春季将时间调快1小时，秋季调回。本工具已考虑夏令时因素。</p>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h3 class="font-semibold flex items-center"><i class="fa fa-info-circle text-primary mr-2"></i> UTC 说明</h3>
+            <p class="text-sm text-gray-600 mt-2">协调世界时(UTC)是世界标准时间，所有时区都以UTC为基准加减。例如北京时间是UTC+8。</p>
+          </div>
+          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h3 class="font-semibold flex items-center"><i class="fa fa-clock-o text-accent mr-2"></i> 实时更新</h3>
+            <p class="text-sm text-gray-600 mt-2">本工具会实时更新所有显示的时间，精度为秒级，确保您获得准确的时间信息。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 初始化日期和时间输入为当前本地时间
+    document.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+      
+      // 格式化日期为YYYY-MM-DD
+      const dateStr = now.toISOString().split('T')[0];
+      document.getElementById('source-date').value = dateStr;
+      
+      // 格式化时间为HH:MM
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('source-time').value = `${hours}:${minutes}`;
+      
+      // 初始化时钟
+      updateAllTimes();
+      updateConversion();
+      
+      // 每秒更新一次
+      setInterval(() => {
+        updateAllTimes();
+      }, 1000);
+      
+      // 添加事件监听器
+      document.getElementById('convert-btn').addEventListener('click', updateConversion);
+      document.getElementById('swap-btn').addEventListener('click', swapTimezones);
+      document.getElementById('source-timezone').addEventListener('change', updateConversion);
+      document.getElementById('target-timezone').addEventListener('change', updateConversion);
+      document.getElementById('source-date').addEventListener('change', updateConversion);
+      document.getElementById('source-time').addEventListener('change', updateConversion);
+    });
+    
+    // 交换源时区和目标时区
+    function swapTimezones() {
+      const source = document.getElementById('source-timezone');
+      const target = document.getElementById('target-timezone');
+      
+      const temp = source.value;
+      source.value = target.value;
+      target.value = temp;
+      
+      updateConversion();
+    }
+    
+    // 更新转换结果
+    function updateConversion() {
+      const sourceTimezone = document.getElementById('source-timezone').value;
+      const targetTimezone = document.getElementById('target-timezone').value;
+      const sourceDate = document.getElementById('source-date').value;
+      const sourceTime = document.getElementById('source-time').value;
+      
+      if (!sourceDate || !sourceTime) return;
+      
+      // 解析源日期和时间
+      const [year, month, day] = sourceDate.split('-').map(Number);
+      const [hours, minutes] = sourceTime.split(':').map(Number);
+      
+      // 创建源时区的日期对象
+      const sourceDateTime = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+      
+      // 计算目标时区的时间
+      const targetTime = convertTimezone(sourceDateTime, sourceTimezone, targetTimezone);
+      
+      // 更新结果显示
+      document.getElementById('result-date').textContent = formatDate(targetTime);
+      document.getElementById('result-time').textContent = formatTime(targetTime, true);
+      
+      // 获取目标时区偏移
+      const offset = getTimezoneOffset(targetTimezone);
+      document.getElementById('result-offset').textContent = `UTC${offset >= 0 ? '+' : ''}${offset}`;
+    }
+    
+    // 更新所有显示的时间
+    function updateAllTimes() {
+      // 更新纽约时间
+      const nyTime = convertToTimezone(new Date(), 'America/New_York');
+      updateTimeDisplay('ny-time', 'ny-date', 'ny-hours', 'ny-minutes', nyTime);
+      
+      // 更新伦敦时间
+      const ldnTime = convertToTimezone(new Date(), 'Europe/London');
+      updateTimeDisplay('ldn-time', 'ldn-date', 'ldn-hours', 'ldn-minutes', ldnTime);
+      
+      // 更新北京时间
+      const bjTime = convertToTimezone(new Date(), 'Asia/Shanghai');
+      updateTimeDisplay('bj-time', 'bj-date', 'bj-hours', 'bj-minutes', bjTime);
+      
+      // 更新东京时间
+      const tokyoTime = convertToTimezone(new Date(), 'Asia/Tokyo');
+      updateTimeDisplay('tokyo-time', 'tokyo-date', 'tokyo-hours', 'tokyo-minutes', tokyoTime);
+    }
+    
+    // 更新单个时间显示
+    function updateTimeDisplay(timeElementId, dateElementId, hoursHandId, minutesHandId, time) {
+      // 更新数字时间
+      document.getElementById(timeElementId).textContent = formatTime(time, true);
+      document.getElementById(dateElementId).textContent = formatDate(time);
+      
+      // 更新时钟指针
+      const hours = time.getHours() % 12;
+      const minutes = time.getMinutes();
+      
+      const hoursDeg = (hours * 30) + (minutes * 0.5);
+      const minutesDeg = minutes * 6;
+      
+      document.getElementById(hoursHandId).style.transform = `rotate(${hoursDeg}deg)`;
+      document.getElementById(minutesHandId).style.transform = `rotate(${minutesDeg}deg)`;
+    }
+    
+    // 转换时间到时区
+    function convertToTimezone(date, timezone) {
+      const options = {
+        timeZone: timezone,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false
+      };
+      
+      const dateStr = date.toLocaleString('en-US', options);
+      return new Date(dateStr);
+    }
+    
+    // 在两个时区之间转换时间
+    function convertTimezone(date, fromTimezone, toTimezone) {
+      // 先转换为UTC时间
+      const utcTime = new Date(date.toISOString());
+      
+      // 再转换为目标时区
+      return convertToTimezone(utcTime, toTimezone);
+    }
+    
+    // 获取时区偏移（小时）
+    function getTimezoneOffset(timezone) {
+      const now = new Date();
+      const options = {
+        timeZone: timezone,
+        hour: 'numeric',
+        hour12: false,
+        minute: 'numeric'
+      };
+      
+      const zoneTimeStr = now.toLocaleString('en-US', options);
+      const [zoneHours, zoneMinutes] = zoneTimeStr.split(':').map(Number);
+      
+      const utcOptions = {
+        timeZone: 'UTC',
+        hour: 'numeric',
+        hour12: false,
+        minute: 'numeric'
+      };
+      
+      const utcTimeStr = now.toLocaleString('en-US', utcOptions);
+      const [utcHours, utcMinutes] = utcTimeStr.split(':').map(Number);
+      
+      let offsetHours = zoneHours - utcHours;
+      if (offsetHours > 12) offsetHours -= 24;
+      if (offsetHours < -12) offsetHours += 24;
+      
+      // 考虑分钟偏移
+      if (zoneMinutes !== utcMinutes) {
+        offsetHours += (zoneMinutes - utcMinutes) / 60;
+      }
+      
+      return offsetHours;
+    }
+    
+    // 格式化时间显示
+    function formatTime(date, showSeconds = false) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      
+      if (showSeconds) {
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+      }
+      
+      return `${hours}:${minutes}`;
+    }
+    
+    // 格式化日期显示
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const weekday = weekdays[date.getDay()];
+      
+      return `${year}年${month}月${day}日 ${weekday}`;
+    }
+  </script>
+</body>
+</html>

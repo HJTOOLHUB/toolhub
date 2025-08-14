@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单位转换器 | 简单高效的单位转换工具</title>
+  <!-- 引入外部资源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            accent: '#8B5CF6',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义样式 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      }
+      .transition-all-300 {
+        transition: all 300ms ease-in-out;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-light to-slate-100 min-h-screen text-dark">
+  <!-- 页面容器 -->
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- 标题区域 -->
+    <header class="text-center mb-8">
+      <h1 class="text-[clamp(2rem,5vw,3rem)] font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent mb-2">
+        单位转换器
+      </h1>
+      <p class="text-slate-600 text-lg max-w-2xl mx-auto">
+        简单高效地转换各种单位，支持长度、重量、温度、面积、体积和时间
+      </p>
+    </header>
+    
+    <!-- 主内容区 -->
+    <main class="bg-white rounded-2xl card-shadow p-6 md:p-8">
+      <!-- 单位类别选择器 -->
+      <div class="mb-8 overflow-x-auto pb-2">
+        <div class="flex space-x-2 min-w-max">
+          <button class="category-btn active px-4 py-2 rounded-full bg-primary text-white font-medium transition-all-300 flex items-center" data-category="length">
+            <i class="fa fa-arrows-h mr-2"></i>长度
+          </button>
+          <button class="category-btn px-4 py-2 rounded-full bg-slate-200 text-slate-700 font-medium transition-all-300 flex items-center" data-category="weight">
+            <i class="fa fa-balance-scale mr-2"></i>重量
+          </button>
+          <button class="category-btn px-4 py-2 rounded-full bg-slate-200 text-slate-700 font-medium transition-all-300 flex items-center" data-category="temperature">
+            <i class="fa fa-thermometer-half mr-2"></i>温度
+          </button>
+          <button class="category-btn px-4 py-2 rounded-full bg-slate-200 text-slate-700 font-medium transition-all-300 flex items-center" data-category="area">
+            <i class="fa fa-square-o mr-2"></i>面积
+          </button>
+          <button class="category-btn px-4 py-2 rounded-full bg-slate-200 text-slate-700 font-medium transition-all-300 flex items-center" data-category="volume">
+            <i class="fa fa-cube mr-2"></i>体积
+          </button>
+          <button class="category-btn px-4 py-2 rounded-full bg-slate-200 text-slate-700 font-medium transition-all-300 flex items-center" data-category="time">
+            <i class="fa fa-clock-o mr-2"></i>时间
+          </button>
+        </div>
+      </div>
+      
+      <!-- 转换区域 -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- 输入区域 -->
+        <div class="bg-slate-50 rounded-xl p-5 transition-all-300 hover:shadow-md">
+          <label for="input-value" class="block text-sm font-medium text-slate-700 mb-2">输入值</label>
+          <div class="flex items-center space-x-3">
+            <input 
+              type="number" 
+              id="input-value" 
+              class="flex-1 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all-300"
+              placeholder="输入数值"
+              value="1"
+            >
+            <select 
+              id="from-unit" 
+              class="px-4 py-3 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all-300 cursor-pointer"
+            >
+              <!-- 选项将通过JavaScript动态填充 -->
+            </select>
+          </div>
+        </div>
+        
+        <!-- 输出区域 -->
+        <div class="bg-slate-50 rounded-xl p-5 transition-all-300 hover:shadow-md">
+          <label for="output-value" class="block text-sm font-medium text-slate-700 mb-2">转换结果</label>
+          <div class="flex items-center space-x-3">
+            <input 
+              type="number" 
+              id="output-value" 
+              class="flex-1 px-4 py-3 rounded-lg border border-slate-300 bg-slate-100 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all-300"
+              placeholder="转换结果"
+              readonly
+            >
+            <select 
+              id="to-unit" 
+              class="px-4 py-3 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all-300 cursor-pointer"
+            >
+              <!-- 选项将通过JavaScript动态填充 -->
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 交换按钮 -->
+      <div class="flex justify-center my-6">
+        <button id="swap-btn" class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center transition-all-300 hover:bg-primary hover:text-white">
+          <i class="fa fa-exchange text-xl"></i>
+        </button>
+      </div>
+      
+      <!-- 转换信息和公式 -->
+      <div id="conversion-info" class="bg-slate-50 rounded-xl p-5 mt-4 text-sm text-slate-600">
+        <h3 class="font-medium text-slate-800 mb-2 flex items-center">
+          <i class="fa fa-info-circle mr-2 text-primary"></i>转换信息
+        </h3>
+        <p id="conversion-formula">1 米 = 100 厘米</p>
+      </div>
+      
+      <!-- 最近转换记录 -->
+      <div class="mt-8">
+        <h3 class="font-semibold text-lg mb-4 flex items-center">
+          <i class="fa fa-history mr-2 text-primary"></i>最近转换
+        </h3>
+        <div id="history-list" class="space-y-2 max-h-40 overflow-y-auto pr-2">
+          <p class="text-slate-500 italic text-center text-sm">暂无转换记录</p>
+          <!-- 历史记录将通过JavaScript动态添加 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 单位转换数据
+    const unitData = {
+      length: {
+        units: ["米 (m)", "厘米 (cm)", "毫米 (mm)", "千米 (km)", "英寸 (in)", "英尺 (ft)", "码 (yd)", "英里 (mi)"],
+        baseUnit: "米 (m)",
+        conversionFactors: {
+          "米 (m)": 1,
+          "厘米 (cm)": 0.01,
+          "毫米 (mm)": 0.001,
+          "千米 (km)": 1000,
+          "英寸 (in)": 0.0254,
+          "英尺 (ft)": 0.3048,
+          "码 (yd)": 0.9144,
+          "英里 (mi)": 1609.34
+        }
+      },
+      weight: {
+        units: ["千克 (kg)", "克 (g)", "毫克 (mg)", "吨 (t)", "磅 (lb)", "盎司 (oz)"],
+        baseUnit: "千克 (kg)",
+        conversionFactors: {
+          "千克 (kg)": 1,
+          "克 (g)": 0.001,
+          "毫克 (mg)": 0.000001,
+          "吨 (t)": 1000,
+          "磅 (lb)": 0.453592,
+          "盎司 (oz)": 0.0283495
+        }
+      },
+      temperature: {
+        units: ["摄氏度 (°C)", "华氏度 (°F)", "开尔文 (K)"],
+        baseUnit: "摄氏度 (°C)",
+        // 温度转换需要特殊处理，不使用简单的乘法因子
+        convert: function(value, fromUnit, toUnit) {
+          if (fromUnit === toUnit) return value;
+          
+          // 先转换为摄氏度，再转换到目标单位
+          let celsius;
+          switch(fromUnit) {
+            case "摄氏度 (°C)":
+              celsius = value;
+              break;
+            case "华氏度 (°F)":
+              celsius = (value - 32) * 5/9;
+              break;
+            case "开尔文 (K)":
+              celsius = value - 273.15;
+              break;
+          }
+          
+          switch(toUnit) {
+            case "摄氏度 (°C)":
+              return celsius;
+            case "华氏度 (°F)":
+              return celsius * 9/5 + 32;
+            case "开尔文 (K)":
+              return celsius + 273.15;
+          }
+        },
+        getFormula: function(fromUnit, toUnit) {
+          if (fromUnit === toUnit) return `1 ${fromUnit} = 1 ${toUnit}`;
+          
+          const formulas = {
+            "摄氏度 (°C) to 华氏度 (°F)": "°F = °C × 9/5 + 32",
+            "华氏度 (°F) to 摄氏度 (°C)": "°C = (°F - 32) × 5/9",
+            "摄氏度 (°C) to 开尔文 (K)": "K = °C + 273.15",
+            "开尔文 (K) to 摄氏度 (°C)": "°C = K - 273.15",
+            "华氏度 (°F) to 开尔文 (K)": "K = (°F - 32) × 5/9 + 273.15",
+            "开尔文 (K) to 华氏度 (°F)": "°F = (K - 273.15) × 9/5 + 32"
+          };
+          
+          return formulas[`${fromUnit} to ${toUnit}`] || "";
+        }
+      },
+      area: {
+        units: ["平方米 (m²)", "平方厘米 (cm²)", "平方毫米 (mm²)", "平方千米 (km²)", "公顷 (ha)", "平方英寸 (in²)", "平方英尺 (ft²)", "平方码 (yd²)", "英亩 (acre)"],
+        baseUnit: "平方米 (m²)",
+        conversionFactors: {
+          "平方米 (m²)": 1,
+          "平方厘米 (cm²)": 0.0001,
+          "平方毫米 (mm²)": 0.000001,
+          "平方千米 (km²)": 1000000,
+          "公顷 (ha)": 10000,
+          "平方英寸 (in²)": 0.00064516,
+          "平方英尺 (ft²)": 0.092903,
+          "平方码 (yd²)": 0.836127,
+          "英亩 (acre)": 4046.86
+        }
+      },
+      volume: {
+        units: ["立方米 (m³)", "立方厘米 (cm³)", "升 (L)", "毫升 (mL)", "立方英寸 (in³)", "立方英尺 (ft³)", "加仑 (美) (gal)"],
+        baseUnit: "立方米 (m³)",
+        conversionFactors: {
+          "立方米 (m³)": 1,
+          "立方厘米 (cm³)": 0.000001,
+          "升 (L)": 0.001,
+          "毫升 (mL)": 0.000001,
+          "立方英寸 (in³)": 0.0000163871,
+          "立方英尺 (ft³)": 0.0283168,
+          "加仑 (美) (gal)": 0.00378541
+        }
+      },
+      time: {
+        units: ["秒 (s)", "毫秒 (ms)", "分钟 (min)", "小时 (h)", "天 (d)", "周 (wk)", "月 (30天)", "年 (365天)"],
+        baseUnit: "秒 (s)",
+        conversionFactors: {
+          "秒 (s)": 1,
+          "毫秒 (ms)": 0.001,
+          "分钟 (min)": 60,
+          "小时 (h)": 3600,
+          "天 (d)": 86400,
+          "周 (wk)": 604800,
+          "月 (30天)": 2592000,
+          "年 (365天)": 31536000
+        }
+      }
+    };
+
+    // DOM元素
+    const inputValue = document.getElementById('input-value');
+    const outputValue = document.getElementById('output-value');
+    const fromUnit = document.getElementById('from-unit');
+    const toUnit = document.getElementById('to-unit');
+    const swapBtn = document.getElementById('swap-btn');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const conversionFormula = document.getElementById('conversion-formula');
+    const historyList = document.getElementById('history-list');
+    
+    // 当前选中的类别
+    let currentCategory = 'length';
+    // 历史记录
+    let conversionHistory = [];
+
+    // 初始化单位下拉菜单
+    function initUnitDropdowns(category) {
+      const data = unitData[category];
+      
+      // 清空现有选项
+      fromUnit.innerHTML = '';
+      toUnit.innerHTML = '';
+      
+      // 添加新选项
+      data.units.forEach(unit => {
+        const fromOption = document.createElement('option');
+        fromOption.value = unit;
+        fromOption.textContent = unit;
+        fromUnit.appendChild(fromOption);
+        
+        const toOption = document.createElement('option');
+        toOption.value = unit;
+        toOption.textContent = unit;
+        toUnit.appendChild(toOption);
+      });
+      
+      // 设置默认选中项（第一个和第二个）
+      fromUnit.selectedIndex = 0;
+      toUnit.selectedIndex = 1;
+      
+      // 执行一次转换
+      convertUnits();
+    }
+
+    // 转换单位
+    function convertUnits() {
+      const value = parseFloat(inputValue.value);
+      if (isNaN(value)) {
+        outputValue.value = '';
+        return;
+      }
+      
+      const from = fromUnit.value;
+      const to = toUnit.value;
+      const data = unitData[currentCategory];
+      
+      let result;
+      
+      // 特殊处理温度转换
+      if (currentCategory === 'temperature') {
+        result = data.convert(value, from, to);
+      } else {
+        // 其他单位使用转换因子
+        const fromFactor = data.conversionFactors[from];
+        const toFactor = data.conversionFactors[to];
+        result = (value * fromFactor) / toFactor;
+      }
+      
+      // 处理结果显示，根据大小自动调整小数位数
+      if (Math.abs(result) >= 10000) {
+        outputValue.value = result.toFixed(0);
+      } else if (Math.abs(result) >= 1) {
+        outputValue.value = result.toFixed(2);
+      } else if (Math.abs(result) >= 0.001) {
+        outputValue.value = result.toFixed(5);
+      } else {
+        outputValue.value = result.toExponential(6);
+      }
+      
+      // 更新转换公式信息
+      updateConversionInfo(from, to);
+      
+      // 添加到历史记录
+      addToHistory(value, from, outputValue.value, to);
+    }
+
+    // 更新转换信息
+    function updateConversionInfo(from, to) {
+      const data = unitData[currentCategory];
+      
+      if (from === to) {
+        conversionFormula.textContent = `1 ${from} = 1 ${to}`;
+        return;
+      }
+      
+      if (currentCategory === 'temperature') {
+        conversionFormula.textContent = data.getFormula(from, to);
+      } else {
+        const fromFactor = data.conversionFactors[from];
+        const toFactor = data.conversionFactors[to];
+        const ratio = toFactor / fromFactor;
+        conversionFormula.textContent = `1 ${from} = ${ratio.toFixed(10).replace(/0+$/, '').replace(/\.$/, '')} ${to}`;
+      }
+    }
+
+    // 交换单位
+    function swapUnits() {
+      const tempUnit = fromUnit.value;
+      fromUnit.value = toUnit.value;
+      toUnit.value = tempUnit;
+      
+      // 交换值
+      const tempValue = inputValue.value;
+      inputValue.value = outputValue.value;
+      outputValue.value = tempValue;
+      
+      // 更新转换信息
+      updateConversionInfo(fromUnit.value, toUnit.value);
+    }
+
+    // 切换单位类别
+    function switchCategory(category) {
+      currentCategory = category;
+      
+      // 更新按钮样式
+      categoryBtns.forEach(btn => {
+        if (btn.dataset.category === category) {
+          btn.classList.remove('bg-slate-200', 'text-slate-700');
+          btn.classList.add('bg-primary', 'text-white');
+        } else {
+          btn.classList.remove('bg-primary', 'text-white');
+          btn.classList.add('bg-slate-200', 'text-slate-700');
+        }
+      });
+      
+      // 重新初始化下拉菜单
+      initUnitDropdowns(category);
+    }
+
+    // 添加到历史记录
+    function addToHistory(inputVal, from, outputVal, to) {
+      const entry = {
+        input: inputVal,
+        fromUnit: from,
+        output: outputVal,
+        toUnit: to,
+        category: currentCategory,
+        timestamp: new Date()
+      };
+      
+      // 添加到历史记录数组（最多保留10条）
+      conversionHistory.unshift(entry);
+      if (conversionHistory.length > 10) {
+        conversionHistory.pop();
+      }
+      
+      // 更新历史记录UI
+      renderHistory();
+    }
+
+    // 渲染历史记录
+    function renderHistory() {
+      if (conversionHistory.length === 0) {
+        historyList.innerHTML = '<p class="text-slate-500 italic text-center text-sm">暂无转换记录</p>';
+        return;
+      }
+      
+      historyList.innerHTML = '';
+      
+      conversionHistory.forEach(entry => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'bg-white p-3 rounded-lg border border-slate-100 hover:border-primary/30 transition-all-300 text-sm';
+        historyItem.innerHTML = `
+          <span class="font-medium">${entry.input}</span> 
+          <span class="text-slate-600">${entry.fromUnit}</span> 
+          <span class="mx-2 text-slate-400"><i class="fa fa-arrow-right"></i></span>
+          <span class="font-medium">${entry.output}</span> 
+          <span class="text-slate-600">${entry.toUnit}</span>
+        `;
+        
+        // 点击历史记录项可以加载该转换
+        historyItem.addEventListener('click', () => {
+          // 切换到对应的类别
+          if (currentCategory !== entry.category) {
+            switchCategory(entry.category);
+          }
+          
+          // 设置值和单位
+          inputValue.value = entry.input;
+          fromUnit.value = entry.fromUnit;
+          toUnit.value = entry.toUnit;
+          
+          // 执行转换
+          convertUnits();
+        });
+        
+        historyList.appendChild(historyItem);
+      });
+    }
+
+    // 事件监听
+    inputValue.addEventListener('input', convertUnits);
+    fromUnit.addEventListener('change', convertUnits);
+    toUnit.addEventListener('change', convertUnits);
+    swapBtn.addEventListener('click', swapUnits);
+    
+    // 类别按钮点击事件
+    categoryBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchCategory(btn.dataset.category);
+      });
+    });
+
+    // 添加动画效果
+    swapBtn.addEventListener('click', function() {
+      this.classList.add('rotate-180');
+      setTimeout(() => {
+        this.classList.remove('rotate-180');
+      }, 300);
+    });
+
+    // 初始化
+    initUnitDropdowns(currentCategory);
+    renderHistory();
+  </script>
+</body>
+</html>

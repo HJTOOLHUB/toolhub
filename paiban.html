@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文字排版工具</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',
+            secondary: '#64748b',
+            neutral: '#f1f5f9',
+            dark: '#1e293b'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'serif'],
+            mono: ['Courier New', 'monospace'],
+            cursive: ['Brush Script MT', 'cursive']
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .control-panel {
+        @apply bg-white p-4 rounded-lg shadow-md;
+      }
+      .control-group {
+        @apply mb-6;
+      }
+      .control-label {
+        @apply block text-sm font-medium text-secondary mb-2;
+      }
+      .control-input {
+        @apply w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all;
+      }
+      .btn {
+        @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+      }
+      .btn-primary {
+        @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary/50;
+      }
+      .btn-secondary {
+        @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400/50;
+      }
+      .btn-icon {
+        @apply p-2 rounded-md transition-all duration-200;
+      }
+      .btn-icon-active {
+        @apply bg-primary/10 text-primary;
+      }
+      .btn-icon:hover:not(.btn-icon-active) {
+        @apply bg-gray-100;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- 顶部导航栏 -->
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-font text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold text-dark">文字排版工具</h1>
+      </div>
+      <div class="flex space-x-3">
+        <button id="resetBtn" class="btn btn-secondary flex items-center space-x-1">
+          <i class="fa fa-refresh"></i>
+          <span>重置</span>
+        </button>
+        <button id="copyBtn" class="btn btn-primary flex items-center space-x-1">
+          <i class="fa fa-copy"></i>
+          <span>复制文本</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区 -->
+  <main class="container mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 左侧控制面板 -->
+      <div class="lg:col-span-1 space-y-4">
+        <!-- 文本输入区域 -->
+        <div class="control-panel">
+          <label for="textInput" class="control-label">输入文本</label>
+          <textarea 
+            id="textInput" 
+            class="control-input h-40 resize-none"
+            placeholder="请输入或粘贴需要排版的文本..."
+          >这是一段示例文本，您可以在这里输入或粘贴需要排版的内容。
+
+这个工具可以帮助您调整文本的各种排版属性，包括字体、大小、行高、字间距等，让您的文本呈现出最佳的视觉效果。
+
+您可以尝试修改上方的各种设置，实时查看排版效果的变化。</textarea>
+        </div>
+        
+        <!-- 字体设置 -->
+        <div class="control-panel">
+          <h2 class="text-lg font-semibold mb-4 text-dark border-b pb-2">字体设置</h2>
+          
+          <div class="control-group">
+            <label for="fontFamily" class="control-label">字体选择</label>
+            <select id="fontFamily" class="control-input">
+              <option value="sans-serif">无衬线 (Sans-serif)</option>
+              <option value="serif">衬线 (Serif)</option>
+              <option value="monospace">等宽 (Monospace)</option>
+              <option value="cursive">手写体 (Cursive)</option>
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label for="fontSize" class="control-label">字体大小</label>
+            <div class="flex items-center space-x-3">
+              <input 
+                type="range" 
+                id="fontSize" 
+                min="12" 
+                max="36" 
+                value="16" 
+                class="control-input"
+              >
+              <span id="fontSizeValue" class="text-sm min-w-[3rem] text-center">16px</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="lineHeight" class="control-label">行高</label>
+            <div class="flex items-center space-x-3">
+              <input 
+                type="range" 
+                id="lineHeight" 
+                min="1" 
+                max="3" 
+                step="0.1" 
+                value="1.5" 
+                class="control-input"
+              >
+              <span id="lineHeightValue" class="text-sm min-w-[3rem] text-center">1.5</span>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="letterSpacing" class="control-label">字间距</label>
+            <div class="flex items-center space-x-3">
+              <input 
+                type="range" 
+                id="letterSpacing" 
+                min="-0.5" 
+                max="2" 
+                step="0.1" 
+                value="0" 
+                class="control-input"
+              >
+              <span id="letterSpacingValue" class="text-sm min-w-[3rem] text-center">0px</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 样式设置 -->
+        <div class="control-panel">
+          <h2 class="text-lg font-semibold mb-4 text-dark border-b pb-2">样式设置</h2>
+          
+          <div class="control-group">
+            <label class="control-label">文本样式</label>
+            <div class="flex space-x-2">
+              <button id="boldBtn" class="btn-icon" title="粗体">
+                <i class="fa fa-bold"></i>
+              </button>
+              <button id="italicBtn" class="btn-icon" title="斜体">
+                <i class="fa fa-italic"></i>
+              </button>
+              <button id="underlineBtn" class="btn-icon" title="下划线">
+                <i class="fa fa-underline"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="textAlign" class="control-label">对齐方式</label>
+            <div class="flex space-x-2">
+              <button data-align="left" class="btn-icon textAlignBtn btn-icon-active" title="左对齐">
+                <i class="fa fa-align-left"></i>
+              </button>
+              <button data-align="center" class="btn-icon textAlignBtn" title="居中对齐">
+                <i class="fa fa-align-center"></i>
+              </button>
+              <button data-align="right" class="btn-icon textAlignBtn" title="右对齐">
+                <i class="fa fa-align-right"></i>
+              </button>
+              <button data-align="justify" class="btn-icon textAlignBtn" title="两端对齐">
+                <i class="fa fa-align-justify"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="textColor" class="control-label">文本颜色</label>
+            <div class="flex space-x-2">
+              <input type="color" id="textColor" value="#000000" class="h-10 w-10 p-0 border rounded">
+              <select id="textColors" class="control-input">
+                <option value="#000000">黑色</option>
+                <option value="#333333">深灰</option>
+                <option value="#666666">中灰</option>
+                <option value="#999999">浅灰</option>
+                <option value="#ff0000">红色</option>
+                <option value="#0000ff">蓝色</option>
+                <option value="#008000">绿色</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="control-group">
+            <label for="bgColor" class="control-label">背景颜色</label>
+            <div class="flex space-x-2">
+              <input type="color" id="bgColor" value="#ffffff" class="h-10 w-10 p-0 border rounded">
+              <select id="bgColors" class="control-input">
+                <option value="#ffffff">白色</option>
+                <option value="#f8f9fa">浅灰</option>
+                <option value="#e9ecef">中灰</option>
+                <option value="#dee2e6">深灰</option>
+                <option value="#fff3cd">浅黄</option>
+                <option value="#d1ecf1">浅蓝</option>
+                <option value="#d4edda">浅绿</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧预览区域 -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow-md p-8 min-h-[600px]">
+          <h2 class="text-lg font-semibold mb-4 text-dark border-b pb-2">预览效果</h2>
+          <div id="previewArea" class="prose max-w-none">
+            <p>这是一段示例文本，您可以在这里输入或粘贴需要排版的内容。</p>
+            <p>这个工具可以帮助您调整文本的各种排版属性，包括字体、大小、行高、字间距等，让您的文本呈现出最佳的视觉效果。</p>
+            <p>您可以尝试修改上方的各种设置，实时查看排版效果的变化。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 通知提示 -->
+  <div id="notification" class="fixed top-4 right-4 bg-dark text-white px-4 py-2 rounded-md shadow-lg transform translate-x-full transition-transform duration-300 flex items-center space-x-2 z-50">
+    <i class="fa fa-check-circle"></i>
+    <span id="notificationText">操作成功</span>
+  </div>
+
+  <script>
+    // 获取DOM元素
+    const textInput = document.getElementById('textInput');
+    const previewArea = document.getElementById('previewArea');
+    const fontFamily = document.getElementById('fontFamily');
+    const fontSize = document.getElementById('fontSize');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    const lineHeight = document.getElementById('lineHeight');
+    const lineHeightValue = document.getElementById('lineHeightValue');
+    const letterSpacing = document.getElementById('letterSpacing');
+    const letterSpacingValue = document.getElementById('letterSpacingValue');
+    const boldBtn = document.getElementById('boldBtn');
+    const italicBtn = document.getElementById('italicBtn');
+    const underlineBtn = document.getElementById('underlineBtn');
+    const textAlignBtns = document.querySelectorAll('.textAlignBtn');
+    const textColor = document.getElementById('textColor');
+    const textColors = document.getElementById('textColors');
+    const bgColor = document.getElementById('bgColor');
+    const bgColors = document.getElementById('bgColors');
+    const resetBtn = document.getElementById('resetBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const notification = document.getElementById('notification');
+    const notificationText = document.getElementById('notificationText');
+    
+    // 初始化状态
+    let textStyles = {
+      fontFamily: 'sans-serif',
+      fontSize: '16px',
+      lineHeight: '1.5',
+      letterSpacing: '0px',
+      fontWeight: 'normal',
+      fontStyle: 'normal',
+      textDecoration: 'none',
+      textAlign: 'left',
+      color: '#000000',
+      backgroundColor: '#ffffff'
+    };
+    
+    // 更新预览区域
+    function updatePreview() {
+      // 更新文本内容
+      previewArea.innerHTML = textInput.value
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+      
+      // 应用样式
+      Object.keys(textStyles).forEach(style => {
+        previewArea.style[style] = textStyles[style];
+      });
+    }
+    
+    // 显示通知
+    function showNotification(message) {
+      notificationText.textContent = message;
+      notification.classList.remove('translate-x-full');
+      
+      setTimeout(() => {
+        notification.classList.add('translate-x-full');
+      }, 2000);
+    }
+    
+    // 事件监听器 - 文本输入变化
+    textInput.addEventListener('input', updatePreview);
+    
+    // 事件监听器 - 字体选择
+    fontFamily.addEventListener('change', () => {
+      textStyles.fontFamily = fontFamily.value;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 字体大小
+    fontSize.addEventListener('input', () => {
+      const value = fontSize.value;
+      fontSizeValue.textContent = `${value}px`;
+      textStyles.fontSize = `${value}px`;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 行高
+    lineHeight.addEventListener('input', () => {
+      const value = lineHeight.value;
+      lineHeightValue.textContent = value;
+      textStyles.lineHeight = value;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 字间距
+    letterSpacing.addEventListener('input', () => {
+      const value = letterSpacing.value;
+      letterSpacingValue.textContent = `${value}px`;
+      textStyles.letterSpacing = `${value}px`;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 粗体
+    boldBtn.addEventListener('click', () => {
+      textStyles.fontWeight = textStyles.fontWeight === 'bold' ? 'normal' : 'bold';
+      boldBtn.classList.toggle('btn-icon-active');
+      updatePreview();
+    });
+    
+    // 事件监听器 - 斜体
+    italicBtn.addEventListener('click', () => {
+      textStyles.fontStyle = textStyles.fontStyle === 'italic' ? 'normal' : 'italic';
+      italicBtn.classList.toggle('btn-icon-active');
+      updatePreview();
+    });
+    
+    // 事件监听器 - 下划线
+    underlineBtn.addEventListener('click', () => {
+      textStyles.textDecoration = textStyles.textDecoration === 'underline' ? 'none' : 'underline';
+      underlineBtn.classList.toggle('btn-icon-active');
+      updatePreview();
+    });
+    
+    // 事件监听器 - 对齐方式
+    textAlignBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const align = btn.getAttribute('data-align');
+        textStyles.textAlign = align;
+        
+        // 更新按钮状态
+        textAlignBtns.forEach(b => b.classList.remove('btn-icon-active'));
+        btn.classList.add('btn-icon-active');
+        
+        updatePreview();
+      });
+    });
+    
+    // 事件监听器 - 文本颜色
+    textColor.addEventListener('input', () => {
+      textStyles.color = textColor.value;
+      textColors.value = textColor.value;
+      updatePreview();
+    });
+    
+    textColors.addEventListener('change', () => {
+      textStyles.color = textColors.value;
+      textColor.value = textColors.value;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 背景颜色
+    bgColor.addEventListener('input', () => {
+      textStyles.backgroundColor = bgColor.value;
+      bgColors.value = bgColor.value;
+      updatePreview();
+    });
+    
+    bgColors.addEventListener('change', () => {
+      textStyles.backgroundColor = bgColors.value;
+      bgColor.value = bgColors.value;
+      updatePreview();
+    });
+    
+    // 事件监听器 - 重置
+    resetBtn.addEventListener('click', () => {
+      // 重置输入
+      textInput.value = `这是一段示例文本，您可以在这里输入或粘贴需要排版的内容。
+
+这个工具可以帮助您调整文本的各种排版属性，包括字体、大小、行高、字间距等，让您的文本呈现出最佳的视觉效果。
+
+您可以尝试修改上方的各种设置，实时查看排版效果的变化。`;
+      
+      // 重置样式选择器
+      fontFamily.value = 'sans-serif';
+      fontSize.value = 16;
+      fontSizeValue.textContent = '16px';
+      lineHeight.value = 1.5;
+      lineHeightValue.textContent = '1.5';
+      letterSpacing.value = 0;
+      letterSpacingValue.textContent = '0px';
+      textColor.value = '#000000';
+      textColors.value = '#000000';
+      bgColor.value = '#ffffff';
+      bgColors.value = '#ffffff';
+      
+      // 重置按钮状态
+      boldBtn.classList.remove('btn-icon-active');
+      italicBtn.classList.remove('btn-icon-active');
+      underlineBtn.classList.remove('btn-icon-active');
+      textAlignBtns.forEach(b => b.classList.remove('btn-icon-active'));
+      document.querySelector('[data-align="left"]').classList.add('btn-icon-active');
+      
+      // 重置样式对象
+      textStyles = {
+        fontFamily: 'sans-serif',
+        fontSize: '16px',
+        lineHeight: '1.5',
+        letterSpacing: '0px',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        textAlign: 'left',
+        color: '#000000',
+        backgroundColor: '#ffffff'
+      };
+      
+      updatePreview();
+      showNotification('已重置为默认设置');
+    });
+    
+    // 事件监听器 - 复制文本
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(textInput.value).then(() => {
+        showNotification('文本已复制到剪贴板');
+      }).catch(err => {
+        console.error('无法复制文本: ', err);
+        showNotification('复制失败，请手动复制');
+      });
+    });
+    
+    // 初始化预览
+    updatePreview();
+    
+    // 添加窗口大小变化时的响应式调整
+    window.addEventListener('resize', () => {
+      // 可以添加一些响应式调整逻辑
+    });
+  </script>
+</body>
+</html>

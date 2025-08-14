@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片美化工具 | 简单专业的图片编辑</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#8B5CF6',
+                        accent: '#EC4899',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .tool-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            }
+            .panel-shadow {
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            }
+            .filter-active {
+                @apply ring-2 ring-primary ring-offset-2;
+            }
+            .slider-thumb {
+                @apply appearance-none w-5 h-5 rounded-full bg-primary cursor-pointer;
+            }
+        }
+        
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        /* 滤镜滑块样式 */
+        input[type="range"] {
+            @apply appearance-none w-full h-2 bg-gray-200 rounded-lg outline-none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            @apply slider-thumb;
+        }
+        input[type="range"]::-moz-range-thumb {
+            @apply slider-thumb;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark overflow-hidden h-screen flex flex-col">
+    <!-- 顶部导航 -->
+    <header class="bg-white shadow-sm py-3 px-4 md:px-6 flex items-center justify-between z-10">
+        <div class="flex items-center space-x-2">
+            <i class="fa fa-magic text-primary text-2xl"></i>
+            <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                图片美化工具
+            </h1>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+            <button id="resetBtn" class="hidden md:flex items-center space-x-1 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                <i class="fa fa-refresh"></i>
+                <span>重置</span>
+            </button>
+            <button id="downloadBtn" class="hidden items-center space-x-1 px-4 py-1.5 text-sm bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors shadow-sm">
+                <i class="fa fa-download"></i>
+                <span>下载图片</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- 主内容区 -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+        <!-- 左侧工具栏 -->
+        <div class="bg-white w-full md:w-16 lg:w-20 panel-shadow flex md:flex-col items-center justify-between py-4 md:py-6">
+            <div class="flex md:flex-col items-center space-x-4 md:space-x-0 md:space-y-6 w-full">
+                <button id="uploadBtn" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-upload text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">上传</span>
+                </button>
+                
+                <button data-tool="brightness" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-sun-o text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">亮度</span>
+                </button>
+                
+                <button data-tool="contrast" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-adjust text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">对比度</span>
+                </button>
+                
+                <button data-tool="saturation" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-tint text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">饱和度</span>
+                </button>
+                
+                <button data-tool="crop" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-crop text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">裁剪</span>
+                </button>
+                
+                <button data-tool="rotate" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all">
+                    <i class="fa fa-rotate-right text-lg md:text-xl text-gray-700"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-600">旋转</span>
+                </button>
+            </div>
+            
+            <div class="flex md:flex-col items-center space-x-4 md:space-x-0 md:space-y-6">
+                <button id="undoBtn" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all opacity-50 cursor-not-allowed">
+                    <i class="fa fa-undo text-lg md:text-xl text-gray-500"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-500">撤销</span>
+                </button>
+                
+                <button id="redoBtn" class="tool-btn flex flex-col items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-xl hover:bg-gray-100 transition-all opacity-50 cursor-not-allowed">
+                    <i class="fa fa-repeat text-lg md:text-xl text-gray-500"></i>
+                    <span class="hidden md:block text-xs mt-1 text-gray-500">重做</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 中间预览区 -->
+        <div class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 bg-gray-100 overflow-hidden relative">
+            <!-- 初始状态提示 -->
+            <div id="initialState" class="text-center p-8 max-w-md">
+                <div class="w-20 h-20 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                    <i class="fa fa-upload text-4xl text-primary"></i>
+                </div>
+                <h2 class="text-xl font-semibold mb-2">上传图片开始美化</h2>
+                <p class="text-gray-500 mb-6">支持JPG、PNG等格式，拖拽图片到此处或点击上传按钮</p>
+                <label for="fileInput" class="inline-block px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg shadow-sm transition-all cursor-pointer">
+                    <i class="fa fa-picture-o mr-2"></i>选择图片
+                </label>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+            </div>
+            
+            <!-- 图片预览容器 -->
+            <div id="previewContainer" class="hidden relative max-w-full max-h-full flex items-center justify-center">
+                <img id="previewImage" src="" alt="预览图片" class="max-w-full max-h-[80vh] object-contain transition-all duration-300">
+                <canvas id="editCanvas" class="hidden absolute top-0 left-0"></canvas>
+            </div>
+            
+            <!-- 拖放区域覆盖层 -->
+            <div id="dropOverlay" class="hidden absolute inset-0 bg-primary/10 border-2 border-dashed border-primary/50 rounded-lg flex items-center justify-center">
+                <div class="text-center p-6">
+                    <i class="fa fa-cloud-upload text-4xl text-primary mb-3"></i>
+                    <p class="text-gray-700">释放图片进行上传</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧编辑面板 -->
+        <div id="editPanel" class="hidden w-full md:w-80 bg-white panel-shadow overflow-y-auto">
+            <!-- 滤镜面板 -->
+            <div class="p-4 border-b border-gray-100">
+                <h3 class="text-lg font-medium mb-4">滤镜效果</h3>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-filter="none" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-gray-200 flex items-center justify-center text-xs">原图</div>
+                    </button>
+                    <button data-filter="vintage" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#E8DCC8]"></div>
+                    </button>
+                    <button data-filter="blackwhite" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-gray-400"></div>
+                    </button>
+                    <button data-filter="cool" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#B9D6F2]"></div>
+                    </button>
+                    <button data-filter="warm" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#F2C3A7]"></div>
+                    </button>
+                    <button data-filter="bright" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#F7F3E3]"></div>
+                    </button>
+                    <button data-filter="dark" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#3A3238]"></div>
+                    </button>
+                    <button data-filter="sharp" class="filter-btn aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+                        <div class="w-full h-full bg-[#D8E2DC]"></div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 亮度调节面板 -->
+            <div id="brightnessPanel" class="p-4 border-b border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-medium">亮度</h3>
+                    <span id="brightnessValue" class="text-sm text-gray-500">100%</span>
+                </div>
+                <input type="range" id="brightnessSlider" min="0" max="200" value="100" class="mb-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>暗</span>
+                    <span>亮</span>
+                </div>
+            </div>
+            
+            <!-- 对比度调节面板 -->
+            <div id="contrastPanel" class="p-4 border-b border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-medium">对比度</h3>
+                    <span id="contrastValue" class="text-sm text-gray-500">100%</span>
+                </div>
+                <input type="range" id="contrastSlider" min="0" max="200" value="100" class="mb-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>低</span>
+                    <span>高</span>
+                </div>
+            </div>
+            
+            <!-- 饱和度调节面板 -->
+            <div id="saturationPanel" class="p-4 border-b border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-medium">饱和度</h3>
+                    <span id="saturationValue" class="text-sm text-gray-500">100%</span>
+                </div>
+                <input type="range" id="saturationSlider" min="0" max="200" value="100" class="mb-1">
+                <div class="flex justify-between text-xs text-gray-400">
+                    <span>低</span>
+                    <span>高</span>
+                </div>
+            </div>
+            
+            <!-- 裁剪面板 -->
+            <div id="cropPanel" class="p-4 border-b border-gray-100">
+                <h3 class="text-lg font-medium mb-4">裁剪比例</h3>
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <button data-ratio="1:1" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">1:1</button>
+                    <button data-ratio="4:3" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">4:3</button>
+                    <button data-ratio="16:9" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">16:9</button>
+                    <button data-ratio="3:4" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">3:4</button>
+                    <button data-ratio="9:16" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">9:16</button>
+                    <button data-ratio="free" class="crop-ratio-btn py-2 border border-gray-200 rounded hover:border-primary hover:bg-primary/5 transition-all text-sm">自由</button>
+                </div>
+                <button id="applyCropBtn" class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                    应用裁剪
+                </button>
+            </div>
+            
+            <!-- 旋转面板 -->
+            <div id="rotatePanel" class="p-4">
+                <h3 class="text-lg font-medium mb-4">旋转与翻转</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="rotateLeftBtn" class="flex items-center justify-center space-x-2 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                        <i class="fa fa-rotate-left"></i>
+                        <span>向左旋转</span>
+                    </button>
+                    <button id="rotateRightBtn" class="flex items-center justify-center space-x-2 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                        <i class="fa fa-rotate-right"></i>
+                        <span>向右旋转</span>
+                    </button>
+                    <button id="flipHorizontalBtn" class="flex items-center justify-center space-x-2 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                        <i class="fa fa-arrows-h"></i>
+                        <span>水平翻转</span>
+                    </button>
+                    <button id="flipVerticalBtn" class="flex items-center justify-center space-x-2 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all">
+                        <i class="fa fa-arrows-v"></i>
+                        <span>垂直翻转</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // 全局状态管理
+        const state = {
+            originalImage: null,
+            currentImage: null,
+            history: [],
+            historyIndex: -1,
+            activeTool: null,
+            filters: {
+                brightness: 100,
+                contrast: 100,
+                saturation: 100,
+                currentFilter: 'none'
+            },
+            transform: {
+                rotation: 0,
+                flipX: 1,
+                flipY: 1
+            }
+        };
+        
+        // DOM 元素
+        const elements = {
+            fileInput: document.getElementById('fileInput'),
+            uploadBtn: document.getElementById('uploadBtn'),
+            previewContainer: document.getElementById('previewContainer'),
+            previewImage: document.getElementById('previewImage'),
+            initialState: document.getElementById('initialState'),
+            editPanel: document.getElementById('editPanel'),
+            editCanvas: document.getElementById('editCanvas'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            undoBtn: document.getElementById('undoBtn'),
+            redoBtn: document.getElementById('redoBtn'),
+            dropOverlay: document.getElementById('dropOverlay'),
+            brightnessSlider: document.getElementById('brightnessSlider'),
+            brightnessValue: document.getElementById('brightnessValue'),
+            contrastSlider: document.getElementById('contrastSlider'),
+            contrastValue: document.getElementById('contrastValue'),
+            saturationSlider: document.getElementById('saturationSlider'),
+            saturationValue: document.getElementById('saturationValue'),
+            rotateLeftBtn: document.getElementById('rotateLeftBtn'),
+            rotateRightBtn: document.getElementById('rotateRightBtn'),
+            flipHorizontalBtn: document.getElementById('flipHorizontalBtn'),
+            flipVerticalBtn: document.getElementById('flipVerticalBtn'),
+            toolButtons: document.querySelectorAll('.tool-btn[data-tool]'),
+            filterButtons: document.querySelectorAll('.filter-btn[data-filter]'),
+            cropRatioButtons: document.querySelectorAll('.crop-ratio-btn[data-ratio]'),
+            applyCropBtn: document.getElementById('applyCropBtn')
+        };
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 文件上传
+            elements.fileInput.addEventListener('change', handleFileUpload);
+            elements.uploadBtn.addEventListener('click', () => elements.fileInput.click());
+            
+            // 下载图片
+            elements.downloadBtn.addEventListener('click', downloadImage);
+            
+            // 重置图片
+            elements.resetBtn.addEventListener('click', resetImage);
+            
+            // 撤销重做
+            elements.undoBtn.addEventListener('click', undoEdit);
+            elements.redoBtn.addEventListener('click', redoEdit);
+            
+            // 工具选择
+            elements.toolButtons.forEach(btn => {
+                btn.addEventListener('click', () => selectTool(btn.dataset.tool));
+            });
+            
+            // 滤镜选择
+            elements.filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+            });
+            
+            // 裁剪比例选择
+            elements.cropRatioButtons.forEach(btn => {
+                btn.addEventListener('click', () => selectCropRatio(btn.dataset.ratio));
+            });
+            
+            // 应用裁剪
+            elements.applyCropBtn.addEventListener('click', applyCrop);
+            
+            // 旋转和翻转
+            elements.rotateLeftBtn.addEventListener('click', () => rotateImage(-90));
+            elements.rotateRightBtn.addEventListener('click', () => rotateImage(90));
+            elements.flipHorizontalBtn.addEventListener('click', flipHorizontal);
+            elements.flipVerticalBtn.addEventListener('click', flipVertical);
+            
+            // 滑块调节
+            elements.brightnessSlider.addEventListener('input', (e) => {
+                state.filters.brightness = parseInt(e.target.value);
+                elements.brightnessValue.textContent = `${state.filters.brightness}%`;
+                applyImageEffects();
+            });
+            
+            elements.contrastSlider.addEventListener('input', (e) => {
+                state.filters.contrast = parseInt(e.target.value);
+                elements.contrastValue.textContent = `${state.filters.contrast}%`;
+                applyImageEffects();
+            });
+            
+            elements.saturationSlider.addEventListener('input', (e) => {
+                state.filters.saturation = parseInt(e.target.value);
+                elements.saturationValue.textContent = `${state.filters.saturation}%`;
+                applyImageEffects();
+            });
+            
+            // 拖放上传
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                document.body.addEventListener(eventName, highlightDropArea, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                document.body.addEventListener(eventName, unhighlightDropArea, false);
+            });
+            
+            function highlightDropArea() {
+                if (state.originalImage) return;
+                elements.dropOverlay.classList.remove('hidden');
+            }
+            
+            function unhighlightDropArea() {
+                elements.dropOverlay.classList.add('hidden');
+            }
+            
+            document.body.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                
+                if (file && file.type.match('image.*')) {
+                    handleImageFile(file);
+                }
+            }
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageFile(file);
+            }
+        }
+        
+        // 处理图片文件
+        function handleImageFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // 保存原始图片
+                    state.originalImage = img;
+                    state.currentImage = img;
+                    
+                    // 重置状态
+                    resetState();
+                    
+                    // 保存初始状态到历史记录
+                    saveToHistory();
+                    
+                    // 更新UI
+                    elements.previewImage.src = e.target.result;
+                    elements.initialState.classList.add('hidden');
+                    elements.previewContainer.classList.remove('hidden');
+                    elements.editPanel.classList.remove('hidden');
+                    elements.downloadBtn.classList.remove('hidden');
+                    elements.downloadBtn.classList.add('flex');
+                    
+                    // 默认选择第一个工具
+                    selectTool('brightness');
+                    
+                    // 初始化Canvas
+                    initCanvas(img);
+                };
+                img.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // 初始化Canvas
+        function initCanvas(img) {
+            const canvas = elements.editCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            ctx.drawImage(img, 0, 0);
+        }
+        
+        // 选择工具
+        function selectTool(tool) {
+            state.activeTool = tool;
+            
+            // 更新按钮状态
+            elements.toolButtons.forEach(btn => {
+                if (btn.dataset.tool === tool) {
+                    btn.classList.add('filter-active', 'bg-primary/10');
+                } else {
+                    btn.classList.remove('filter-active', 'bg-primary/10');
+                }
+            });
+            
+            // 显示对应的面板
+            ['brightness', 'contrast', 'saturation', 'crop', 'rotate'].forEach(panel => {
+                const element = document.getElementById(`${panel}Panel`);
+                if (panel === tool) {
+                    element.classList.remove('hidden');
+                } else {
+                    element.classList.add('hidden');
+                }
+            });
+        }
+        
+        // 应用滤镜
+        function applyFilter(filter) {
+            state.filters.currentFilter = filter;
+            
+            // 更新按钮状态
+            elements.filterButtons.forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
+                }
+            });
+            
+            applyImageEffects();
+        }
+        
+        // 选择裁剪比例
+        function selectCropRatio(ratio) {
+            // 更新按钮状态
+            elements.cropRatioButtons.forEach(btn => {
+                if (btn.dataset.ratio === ratio) {
+                    btn.classList.add('bg-primary/10', 'border-primary');
+                } else {
+                    btn.classList.remove('bg-primary/10', 'border-primary');
+                }
+            });
+            
+            // 这里只是模拟裁剪比例选择，实际裁剪功能需要更复杂的实现
+            console.log(`选择裁剪比例: ${ratio}`);
+        }
+        
+        // 应用裁剪
+        function applyCrop() {
+            // 模拟裁剪操作
+            saveToHistory();
+            showNotification('裁剪已应用');
+        }
+        
+        // 旋转图片
+        function rotateImage(degrees) {
+            state.transform.rotation = (state.transform.rotation + degrees) % 360;
+            applyImageTransformations();
+            saveToHistory();
+        }
+        
+        // 水平翻转
+        function flipHorizontal() {
+            state.transform.flipX *= -1;
+            applyImageTransformations();
+            saveToHistory();
+        }
+        
+        // 垂直翻转
+        function flipVertical() {
+            state.transform.flipY *= -1;
+            applyImageTransformations();
+            saveToHistory();
+        }
+        
+        // 应用图片变换
+        function applyImageTransformations() {
+            const style = elements.previewImage.style;
+            
+            // 应用旋转
+            style.transform = `rotate(${state.transform.rotation}deg) scaleX(${state.transform.flipX}) scaleY(${state.transform.flipY})`;
+            
+            // 重新应用滤镜效果
+            applyFilterEffects();
+        }
+        
+        // 应用图片效果
+        function applyImageEffects() {
+            applyFilterEffects();
+            saveToHistory();
+        }
+        
+        // 应用滤镜效果
+        function applyFilterEffects() {
+            const img = elements.previewImage;
+            let filter = '';
+            
+            // 基础滤镜
+            filter += `brightness(${state.filters.brightness}%) `;
+            filter += `contrast(${state.filters.contrast}%) `;
+            filter += `saturate(${state.filters.saturation}%) `;
+            
+            // 特效滤镜
+            switch(state.filters.currentFilter) {
+                case 'vintage':
+                    filter += 'sepia(30%) hue-rotate(-10deg)';
+                    break;
+                case 'blackwhite':
+                    filter += 'grayscale(100%)';
+                    break;
+                case 'cool':
+                    filter += 'hue-rotate(180deg) saturate(120%)';
+                    break;
+                case 'warm':
+                    filter += 'hue-rotate(30deg) saturate(120%)';
+                    break;
+                case 'bright':
+                    filter += 'brightness(110%) contrast(110%)';
+                    break;
+                case 'dark':
+                    filter += 'brightness(80%) contrast(120%)';
+                    break;
+                case 'sharp':
+                    filter += 'contrast(120%) saturate(110%)';
+                    break;
+                default:
+                    // 无特效滤镜
+                    break;
+            }
+            
+            img.style.filter = filter;
+        }
+        
+        // 保存到历史记录
+        function saveToHistory() {
+            // 如果在历史记录中间，清除后面的记录
+            if (state.historyIndex < state.history.length - 1) {
+                state.history = state.history.slice(0, state.historyIndex + 1);
+            }
+            
+            // 保存当前状态
+            const currentState = {
+                filters: {...state.filters},
+                transform: {...state.transform},
+                imageSrc: elements.previewImage.src
+            };
+            
+            state.history.push(currentState);
+            state.historyIndex = state.history.length - 1;
+            
+            // 更新撤销/重做按钮状态
+            updateHistoryButtons();
+        }
+        
+        // 更新历史按钮状态
+        function updateHistoryButtons() {
+            if (state.historyIndex > 0) {
+                elements.undoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                elements.undoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            
+            if (state.historyIndex < state.history.length - 1) {
+                elements.redoBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                elements.redoBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+        
+        // 撤销操作
+        function undoEdit() {
+            if (state.historyIndex > 0) {
+                state.historyIndex--;
+                restoreFromHistory();
+                updateHistoryButtons();
+            }
+        }
+        
+        // 重做操作
+        function redoEdit() {
+            if (state.historyIndex < state.history.length - 1) {
+                state.historyIndex++;
+                restoreFromHistory();
+                updateHistoryButtons();
+            }
+        }
+        
+        // 从历史记录恢复
+        function restoreFromHistory() {
+            const savedState = state.history[state.historyIndex];
+            
+            // 恢复滤镜设置
+            state.filters = {...savedState.filters};
+            elements.brightnessSlider.value = state.filters.brightness;
+            elements.brightnessValue.textContent = `${state.filters.brightness}%`;
+            elements.contrastSlider.value = state.filters.contrast;
+            elements.contrastValue.textContent = `${state.filters.contrast}%`;
+            elements.saturationSlider.value = state.filters.saturation;
+            elements.saturationValue.textContent = `${state.filters.saturation}%`;
+            
+            // 恢复变换设置
+            state.transform = {...savedState.transform};
+            
+            // 恢复滤镜按钮状态
+            elements.filterButtons.forEach(btn => {
+                if (btn.dataset.filter === state.filters.currentFilter) {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
+                }
+            });
+            
+            // 应用恢复的设置
+            applyImageTransformations();
+        }
+        
+        // 下载图片
+        function downloadImage() {
+            // 创建一个临时Canvas来绘制最终图像
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            
+            img.onload = function() {
+                // 根据旋转角度调整Canvas尺寸
+                let width = img.width;
+                let height = img.height;
+                
+                if (state.transform.rotation % 180 !== 0) {
+                    [width, height] = [height, width];
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 应用变换
+                ctx.save();
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate(state.transform.rotation * Math.PI / 180);
+                ctx.scale(state.transform.flipX, state.transform.flipY);
+                ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                ctx.restore();
+                
+                // 应用滤镜效果 (实际实现可能需要更复杂的处理)
+                // 这里简化处理，直接使用当前预览图
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.download = '美化后的图片.jpg';
+                link.href = canvas.toDataURL('image/jpeg');
+                link.click();
+                
+                showNotification('图片已下载');
+            };
+            
+            img.src = state.originalImage.src;
+        }
+        
+        // 重置图片
+        function resetImage() {
+            if (state.originalImage) {
+                resetState();
+                elements.previewImage.src = state.originalImage.src;
+                applyImageTransformations();
+                saveToHistory();
+                showNotification('图片已重置');
+            }
+        }
+        
+        // 重置状态
+        function resetState() {
+            state.filters = {
+                brightness: 100,
+                contrast: 100,
+                saturation: 100,
+                currentFilter: 'none'
+            };
+            
+            state.transform = {
+                rotation: 0,
+                flipX: 1,
+                flipY: 1
+            };
+            
+            // 重置UI
+            elements.brightnessSlider.value = 100;
+            elements.brightnessValue.textContent = '100%';
+            elements.contrastSlider.value = 100;
+            elements.contrastValue.textContent = '100%';
+            elements.saturationSlider.value = 100;
+            elements.saturationValue.textContent = '100%';
+            
+            elements.filterButtons.forEach(btn => {
+                if (btn.dataset.filter === 'none') {
+                    btn.classList.add('filter-active');
+                } else {
+                    btn.classList.remove('filter-active');
+                }
+            });
+            
+            elements.previewImage.style.transform = 'none';
+            elements.previewImage.style.filter = 'none';
+            
+            // 重置历史记录
+            state.history = [];
+            state.historyIndex = -1;
+            updateHistoryButtons();
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 检查是否已有通知
+            let notification = document.querySelector('.notification');
+            if (notification) {
+                notification.remove();
+            }
+            
+            // 创建新通知
+            notification = document.createElement('div');
+            notification.className = 'notification fixed bottom-4 right-4 bg-dark text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-10 opacity-0 transition-all duration-300 z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // 初始化应用
+        function initApp() {
+            initEventListeners();
+        }
+        
+        // 启动应用
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

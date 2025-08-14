@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务清单 | 高效管理你的待办事项</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .task-item {
+                @apply bg-white rounded-lg p-4 mb-3 flex items-center justify-between shadow-sm border border-gray-100 transition-all duration-200 hover:shadow;
+            }
+            .task-item.completed {
+                @apply opacity-70 border-green-100;
+            }
+            .btn-action {
+                @apply p-2 rounded-full hover:bg-gray-100 transition-colors duration-200;
+            }
+            .category-pill {
+                @apply text-xs px-2 py-0.5 rounded-full font-medium;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen flex flex-col">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center space-x-2 mb-3 md:mb-0">
+                <i class="fa fa-check-square-o text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold">任务清单</h1>
+            </div>
+            
+            <div class="flex items-center space-x-2 w-full md:w-auto">
+                <button id="filter-all" class="px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
+                    全部
+                </button>
+                <button id="filter-active" class="px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                    待完成
+                </button>
+                <button id="filter-completed" class="px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                    已完成
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- 主内容区 -->
+    <main class="flex-1 container mx-auto px-4 py-6 md:py-8">
+        <!-- 任务统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-gray-500 font-medium">总任务数</h3>
+                    <i class="fa fa-tasks text-primary text-xl"></i>
+                </div>
+                <p id="total-tasks" class="text-2xl font-bold mt-2">0</p>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-gray-500 font-medium">待完成</h3>
+                    <i class="fa fa-clock-o text-warning text-xl"></i>
+                </div>
+                <p id="active-tasks" class="text-2xl font-bold mt-2">0</p>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-gray-500 font-medium">已完成</h3>
+                    <i class="fa fa-check-circle text-secondary text-xl"></i>
+                </div>
+                <p id="completed-tasks" class="text-2xl font-bold mt-2">0</p>
+            </div>
+        </div>
+        
+        <!-- 添加任务 -->
+        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 mb-6">
+            <form id="add-task-form" class="flex flex-col md:flex-row gap-3">
+                <input 
+                    type="text" 
+                    id="task-input" 
+                    placeholder="添加新任务..." 
+                    class="flex-1 px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    required
+                >
+                
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <select id="task-category" class="px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                        <option value="work">工作</option>
+                        <option value="personal">个人</option>
+                        <option value="study">学习</option>
+                        <option value="other">其他</option>
+                    </select>
+                    
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa fa-plus"></i>
+                        <span>添加</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- 任务列表 -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="font-bold">任务列表</h2>
+                <button id="clear-completed" class="text-sm text-gray-500 hover:text-danger transition-colors">
+                    <i class="fa fa-trash-o mr-1"></i> 清除已完成
+                </button>
+            </div>
+            
+            <div id="task-list" class="p-3 max-h-[500px] overflow-y-auto scrollbar-thin">
+                <!-- 任务项将通过JavaScript动态添加 -->
+                <div class="text-center text-gray-400 py-10">
+                    <i class="fa fa-inbox text-4xl mb-3 opacity-30"></i>
+                    <p>还没有任务，添加你的第一个任务吧！</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // DOM 元素引用
+        const taskForm = document.getElementById('add-task-form');
+        const taskInput = document.getElementById('task-input');
+        const taskCategory = document.getElementById('task-category');
+        const taskList = document.getElementById('task-list');
+        const totalTasksEl = document.getElementById('total-tasks');
+        const activeTasksEl = document.getElementById('active-tasks');
+        const completedTasksEl = document.getElementById('completed-tasks');
+        const clearCompletedBtn = document.getElementById('clear-completed');
+        const filterAllBtn = document.getElementById('filter-all');
+        const filterActiveBtn = document.getElementById('filter-active');
+        const filterCompletedBtn = document.getElementById('filter-completed');
+        
+        // 任务数据
+        let tasks = [];
+        let currentFilter = 'all';
+        
+        // 初始化
+        function init() {
+            // 从本地存储加载任务
+            const savedTasks = localStorage.getItem('tasks');
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+                renderTasks();
+            }
+            
+            // 绑定事件监听器
+            taskForm.addEventListener('submit', addTask);
+            clearCompletedBtn.addEventListener('click', clearCompletedTasks);
+            filterAllBtn.addEventListener('click', () => setFilter('all'));
+            filterActiveBtn.addEventListener('click', () => setFilter('active'));
+            filterCompletedBtn.addEventListener('click', () => setFilter('completed'));
+        }
+        
+        // 添加新任务
+        function addTask(e) {
+            e.preventDefault();
+            
+            const taskText = taskInput.value.trim();
+            const category = taskCategory.value;
+            
+            if (taskText) {
+                const newTask = {
+                    id: Date.now().toString(),
+                    text: taskText,
+                    category: category,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                tasks.unshift(newTask);
+                saveTasks();
+                renderTasks();
+                
+                // 清空输入框
+                taskInput.value = '';
+                taskInput.focus();
+            }
+        }
+        
+        // 渲染任务列表
+        function renderTasks() {
+            // 清空列表
+            taskList.innerHTML = '';
+            
+            // 过滤任务
+            let filteredTasks = tasks;
+            if (currentFilter === 'active') {
+                filteredTasks = tasks.filter(task => !task.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = tasks.filter(task => task.completed);
+            }
+            
+            // 显示过滤后的任务
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="text-center text-gray-400 py-10">
+                        <i class="fa fa-folder-open text-4xl mb-3 opacity-30"></i>
+                        <p>没有符合条件的任务</p>
+                    </div>
+                `;
+            } else {
+                filteredTasks.forEach(task => {
+                    const taskEl = createTaskElement(task);
+                    taskList.appendChild(taskEl);
+                });
+            }
+            
+            // 更新统计
+            updateStats();
+        }
+        
+        // 创建任务元素
+        function createTaskElement(task) {
+            const div = document.createElement('div');
+            div.className = `task-item ${task.completed ? 'completed' : ''}`;
+            div.dataset.id = task.id;
+            
+            // 根据分类设置不同的颜色
+            let categoryClass = '';
+            let categoryText = '';
+            
+            switch(task.category) {
+                case 'work':
+                    categoryClass = 'bg-blue-100 text-blue-800';
+                    categoryText = '工作';
+                    break;
+                case 'personal':
+                    categoryClass = 'bg-purple-100 text-purple-800';
+                    categoryText = '个人';
+                    break;
+                case 'study':
+                    categoryClass = 'bg-green-100 text-green-800';
+                    categoryText = '学习';
+                    break;
+                case 'other':
+                    categoryClass = 'bg-gray-100 text-gray-800';
+                    categoryText = '其他';
+                    break;
+            }
+            
+            div.innerHTML = `
+                <div class="flex items-center flex-1">
+                    <button class="toggle-complete btn-action mr-3 text-gray-400 ${task.completed ? 'text-secondary' : ''}" data-id="${task.id}">
+                        <i class="fa ${task.completed ? 'fa-check-circle' : 'fa-circle-o'}"></i>
+                    </button>
+                    <div>
+                        <p class="${task.completed ? 'line-through text-gray-500' : ''}">${task.text}</p>
+                        <span class="category-pill ${categoryClass} mt-1 inline-block">${categoryText}</span>
+                    </div>
+                </div>
+                <button class="delete-task btn-action text-gray-400 hover:text-danger" data-id="${task.id}">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+            `;
+            
+            // 添加事件监听器
+            div.querySelector('.toggle-complete').addEventListener('click', toggleComplete);
+            div.querySelector('.delete-task').addEventListener('click', deleteTask);
+            
+            return div;
+        }
+        
+        // 切换任务完成状态
+        function toggleComplete(e) {
+            const taskId = e.currentTarget.dataset.id;
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                renderTasks();
+            }
+        }
+        
+        // 删除任务
+        function deleteTask(e) {
+            const taskId = e.currentTarget.dataset.id;
+            tasks = tasks.filter(task => task.id !== taskId);
+            saveTasks();
+            renderTasks();
+        }
+        
+        // 清除所有已完成任务
+        function clearCompletedTasks() {
+            tasks = tasks.filter(task => !task.completed);
+            saveTasks();
+            renderTasks();
+        }
+        
+        // 设置过滤器
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            // 更新按钮样式
+            filterAllBtn.className = filter === 'all' 
+                ? 'px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors'
+                : 'px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition-colors';
+                
+            filterActiveBtn.className = filter === 'active' 
+                ? 'px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors'
+                : 'px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition-colors';
+                
+            filterCompletedBtn.className = filter === 'completed' 
+                ? 'px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors'
+                : 'px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200 transition-colors';
+            
+            // 重新渲染任务
+            renderTasks();
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const total = tasks.length;
+            const completed = tasks.filter(task => task.completed).length;
+            const active = total - completed;
+            
+            totalTasksEl.textContent = total;
+            activeTasksEl.textContent = active;
+            completedTasksEl.textContent = completed;
+        }
+        
+        // 保存任务到本地存储
+        function saveTasks() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+        
+        // 启动应用
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+    

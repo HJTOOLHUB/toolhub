@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日期计算器 | 简单实用的日期计算工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        neutral: '#64748B',
+                        dark: '#1E293B',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+                        'elevation-2': '0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12)',
+                        'elevation-3': '0 10px 20px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.10)',
+                    }
+                },
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-elevation-3 hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-primary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50;
+            }
+            .btn-secondary {
+                @apply bg-secondary text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-secondary/90 active:bg-secondary/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary/50;
+            }
+            .input-field {
+                @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+            }
+            .section-transition {
+                @apply transition-all duration-500 ease-in-out;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-dark min-h-screen">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-elevation-1 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-calendar text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">日期计算器</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <button id="nav-calculate-days" class="nav-btn font-medium text-primary border-b-2 border-primary py-1">计算天数差</button>
+                <button id="nav-add-days" class="nav-btn font-medium text-neutral hover:text-primary transition-colors">日期加减</button>
+                <button id="nav-weekday" class="nav-btn font-medium text-neutral hover:text-primary transition-colors">星期查询</button>
+            </nav>
+            <button id="mobile-menu-btn" class="md:hidden text-dark text-xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full shadow-elevation-2">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <button id="mobile-nav-calculate-days" class="mobile-nav-btn py-2 text-left font-medium text-primary">计算天数差</button>
+                <button id="mobile-nav-add-days" class="mobile-nav-btn py-2 text-left font-medium text-neutral">日期加减</button>
+                <button id="mobile-nav-weekday" class="mobile-nav-btn py-2 text-left font-medium text-neutral">星期查询</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 英雄区 -->
+        <section class="text-center mb-12">
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">简单、快速的日期计算工具</h2>
+            <p class="text-neutral max-w-2xl mx-auto text-[clamp(1rem,1.5vw,1.1rem)]">轻松计算两个日期之间的天数差，在指定日期上加减天数，查询任意日期是星期几</p>
+        </section>
+
+        <!-- 计算天数差 -->
+        <section id="calculate-days-section" class="section-transition mb-12">
+            <div class="bg-white rounded-xl shadow-elevation-2 p-6 md:p-8 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                        <i class="fa fa-exchange text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">计算两个日期之间的天数差</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="start-date" class="block text-sm font-medium text-gray-700 mb-1">开始日期</label>
+                        <input type="date" id="start-date" class="input-field" value="2023-01-01">
+                    </div>
+                    <div>
+                        <label for="end-date" class="block text-sm font-medium text-gray-700 mb-1">结束日期</label>
+                        <input type="date" id="end-date" class="input-field" value="2023-12-31">
+                    </div>
+                </div>
+                
+                <div class="flex justify-center mb-6">
+                    <button id="calculate-days-btn" class="btn-primary flex items-center">
+                        <i class="fa fa-calculator mr-2"></i> 计算天数差
+                    </button>
+                </div>
+                
+                <div id="days-result" class="hidden bg-gray-50 rounded-lg p-6 border border-gray-100">
+                    <h4 class="font-medium text-gray-700 mb-2">计算结果</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">开始日期</p>
+                            <p id="result-start-date" class="font-medium"></p>
+                        </div>
+                        <div class="text-primary text-xl">
+                            <i class="fa fa-long-arrow-right md:rotate-90"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">结束日期</p>
+                            <p id="result-end-date" class="font-medium"></p>
+                        </div>
+                        <div class="h-12 w-px bg-gray-200 hidden md:block"></div>
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">相差天数</p>
+                            <p id="result-days" class="font-bold text-2xl text-primary"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 日期加减 -->
+        <section id="add-days-section" class="section-transition hidden mb-12">
+            <div class="bg-white rounded-xl shadow-elevation-2 p-6 md:p-8 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center mr-3">
+                        <i class="fa fa-calendar-plus-o text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">日期加减计算</h3>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="base-date" class="block text-sm font-medium text-gray-700 mb-1">基准日期</label>
+                        <input type="date" id="base-date" class="input-field" value="2023-06-15">
+                    </div>
+                    <div>
+                        <label for="days-to-add" class="block text-sm font-medium text-gray-700 mb-1">天数 (正数为加，负数为减)</label>
+                        <input type="number" id="days-to-add" class="input-field" value="30" min="-10000" max="10000">
+                    </div>
+                </div>
+                
+                <div class="flex justify-center mb-6">
+                    <button id="add-days-btn" class="btn-secondary flex items-center">
+                        <i class="fa fa-calculator mr-2"></i> 计算结果日期
+                    </button>
+                </div>
+                
+                <div id="add-result" class="hidden bg-gray-50 rounded-lg p-6 border border-gray-100">
+                    <h4 class="font-medium text-gray-700 mb-2">计算结果</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">基准日期</p>
+                            <p id="add-result-base" class="font-medium"></p>
+                        </div>
+                        <div class="text-secondary text-xl">
+                            <i class="fa fa-plus-circle"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">天数</p>
+                            <p id="add-result-days" class="font-medium"></p>
+                        </div>
+                        <div class="text-secondary text-xl">
+                            <i class="fa fa-equals"></i>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-neutral text-sm">结果日期</p>
+                            <p id="add-result-date" class="font-bold text-2xl text-secondary"></p>
+                            <p id="add-result-weekday" class="text-sm text-neutral mt-1"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 星期查询 -->
+        <section id="weekday-section" class="section-transition hidden mb-12">
+            <div class="bg-white rounded-xl shadow-elevation-2 p-6 md:p-8 card-hover">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center mr-3">
+                        <i class="fa fa-calendar-check-o text-accent"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">查询日期是星期几</h3>
+                </div>
+                
+                <div class="max-w-md mx-auto mb-6">
+                    <label for="weekday-date" class="block text-sm font-medium text-gray-700 mb-1">请选择日期</label>
+                    <input type="date" id="weekday-date" class="input-field" value="2023-10-01">
+                </div>
+                
+                <div class="flex justify-center mb-6">
+                    <button id="weekday-btn" class="bg-accent text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-accent/90 active:bg-accent/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/50 flex items-center">
+                        <i class="fa fa-search mr-2"></i> 查询星期
+                    </button>
+                </div>
+                
+                <div id="weekday-result" class="hidden bg-gray-50 rounded-lg p-6 border border-gray-100">
+                    <h4 class="font-medium text-gray-700 mb-2">查询结果</h4>
+                    <div class="flex flex-col items-center justify-center p-6 bg-white rounded-lg shadow-sm">
+                        <div class="text-4xl text-accent mb-4">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <p id="weekday-result-date" class="font-bold text-xl mb-2"></p>
+                        <p class="text-neutral mb-1">是</p>
+                        <p id="weekday-result-name" class="font-bold text-2xl text-accent"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能说明卡片 -->
+        <section class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-elevation-1 p-6 card-hover">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <i class="fa fa-exchange text-primary text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">计算天数差</h3>
+                <p class="text-neutral">输入两个日期，快速计算它们之间相差的天数，精确到每一天。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-elevation-1 p-6 card-hover">
+                <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4">
+                    <i class="fa fa-calendar-plus-o text-secondary text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">日期加减</h3>
+                <p class="text-neutral">在指定日期上加上或减去特定天数，立即得到结果日期，还能显示是星期几。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-elevation-1 p-6 card-hover">
+                <div class="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                    <i class="fa fa-calendar-check-o text-accent text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-2">星期查询</h3>
+                <p class="text-neutral">查询任意日期是星期几，无论是过去、现在还是未来的日期都能准确显示。</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript 功能实现 -->
+    <script>
+        // 导航功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航按钮
+            const navButtons = {
+                'nav-calculate-days': 'calculate-days-section',
+                'nav-add-days': 'add-days-section',
+                'nav-weekday': 'weekday-section',
+                'mobile-nav-calculate-days': 'calculate-days-section',
+                'mobile-nav-add-days': 'add-days-section',
+                'mobile-nav-weekday': 'weekday-section'
+            };
+            
+            // 移动端菜单切换
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    mobileMenuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+                } else {
+                    mobileMenuBtn.innerHTML = '<i class="fa fa-times"></i>';
+                }
+            });
+            
+            // 导航切换功能
+            Object.keys(navButtons).forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('click', function() {
+                        // 隐藏所有部分
+                        document.querySelectorAll('section[id$="-section"]').forEach(section => {
+                            section.classList.add('hidden');
+                        });
+                        
+                        // 显示选中的部分
+                        document.getElementById(navButtons[buttonId]).classList.remove('hidden');
+                        
+                        // 更新导航按钮样式
+                        document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
+                            btn.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                            btn.classList.add('text-neutral');
+                        });
+                        
+                        this.classList.remove('text-neutral');
+                        this.classList.add('text-primary');
+                        if (this.classList.contains('nav-btn')) {
+                            this.classList.add('border-b-2', 'border-primary');
+                        }
+                        
+                        // 如果是移动端，点击后关闭菜单
+                        if (buttonId.startsWith('mobile-')) {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+                        }
+                        
+                        // 滚动到顶部
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    });
+                }
+            });
+            
+            // 日期格式化函数
+            function formatDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}年${month}月${day}日`;
+            }
+            
+            // 星期格式化函数
+            function getWeekdayName(date) {
+                const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                return weekdays[date.getDay()];
+            }
+            
+            // 计算天数差功能
+            const calculateDaysBtn = document.getElementById('calculate-days-btn');
+            if (calculateDaysBtn) {
+                calculateDaysBtn.addEventListener('click', function() {
+                    const startDateInput = document.getElementById('start-date');
+                    const endDateInput = document.getElementById('end-date');
+                    
+                    const startDate = new Date(startDateInput.value);
+                    const endDate = new Date(endDateInput.value);
+                    
+                    // 计算天数差（取绝对值）
+                    const timeDiff = Math.abs(endDate - startDate);
+                    const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                    
+                    // 显示结果
+                    const resultSection = document.getElementById('days-result');
+                    document.getElementById('result-start-date').textContent = formatDate(startDate);
+                    document.getElementById('result-end-date').textContent = formatDate(endDate);
+                    document.getElementById('result-days').textContent = dayDiff + ' 天';
+                    
+                    resultSection.classList.remove('hidden');
+                    
+                    // 添加显示动画
+                    resultSection.classList.add('animate-fadeIn');
+                    setTimeout(() => {
+                        resultSection.classList.remove('animate-fadeIn');
+                    }, 500);
+                    
+                    // 滚动到结果区域
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            }
+            
+            // 日期加减功能
+            const addDaysBtn = document.getElementById('add-days-btn');
+            if (addDaysBtn) {
+                addDaysBtn.addEventListener('click', function() {
+                    const baseDateInput = document.getElementById('base-date');
+                    const daysToAddInput = document.getElementById('days-to-add');
+                    
+                    const baseDate = new Date(baseDateInput.value);
+                    const daysToAdd = parseInt(daysToAddInput.value, 10);
+                    
+                    // 计算结果日期
+                    const resultDate = new Date(baseDate);
+                    resultDate.setDate(baseDate.getDate() + daysToAdd);
+                    
+                    // 显示结果
+                    const resultSection = document.getElementById('add-result');
+                    document.getElementById('add-result-base').textContent = formatDate(baseDate);
+                    document.getElementById('add-result-days').textContent = daysToAdd + ' 天';
+                    document.getElementById('add-result-date').textContent = formatDate(resultDate);
+                    document.getElementById('add-result-weekday').textContent = `(${getWeekdayName(resultDate)})`;
+                    
+                    resultSection.classList.remove('hidden');
+                    
+                    // 滚动到结果区域
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            }
+            
+            // 星期查询功能
+            const weekdayBtn = document.getElementById('weekday-btn');
+            if (weekdayBtn) {
+                weekdayBtn.addEventListener('click', function() {
+                    const dateInput = document.getElementById('weekday-date');
+                    const date = new Date(dateInput.value);
+                    
+                    // 显示结果
+                    const resultSection = document.getElementById('weekday-result');
+                    document.getElementById('weekday-result-date').textContent = formatDate(date);
+                    document.getElementById('weekday-result-name').textContent = getWeekdayName(date);
+                    
+                    resultSection.classList.remove('hidden');
+                    
+                    // 滚动到结果区域
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+            }
+            
+            // 设置今天的日期为默认值
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                if (!input.value) {
+                    input.value = today;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

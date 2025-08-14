@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能数据计算工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5', // 深紫色作为主色调
+                        secondary: '#10B981', // 绿色作为辅助色
+                        accent: '#F59E0B', // 橙色作为强调色
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .glass {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            .calc-btn {
+                @apply transition-all duration-200 rounded-xl font-medium flex items-center justify-center;
+            }
+            .calc-btn:hover {
+                @apply transform scale-105 shadow-lg;
+            }
+            .calc-btn:active {
+                @apply transform scale-95;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gradient-to-br from-slate-50 to-slate-100 text-dark min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="sticky top-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md shadow-sm">
+        <div class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <i class="fa fa-calculator text-primary text-xl"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                    智能计算工具
+                </h1>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#calculators" class="text-slate-600 hover:text-primary transition-colors font-medium">计算工具</a>
+                <a href="#features" class="text-slate-600 hover:text-primary transition-colors font-medium">功能特性</a>
+                <a href="#examples" class="text-slate-600 hover:text-primary transition-colors font-medium">使用示例</a>
+                <button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">
+                    <i class="fa fa-history mr-2"></i> 
+            </nav>
+            
+            <button class="md:hidden text-slate-700 focus:outline-none" id="menuToggle">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white shadow-lg absolute w-full" id="mobileMenu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#calculators" class="text-slate-600 hover:text-primary py-2 transition-colors">计算工具</a>
+                <a href="#features" class="text-slate-600 hover:text-primary py-2 transition-colors">功能特性</a>
+                <a href="#examples" class="text-slate-600 hover:text-primary py-2 transition-colors">使用示例</a>
+                <button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg transition-all duration-300 w-full">
+                    <i class="fa fa-history mr-2"></i>计算历史
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <!-- 英雄区域 -->
+        <section class="relative overflow-hidden py-16 md:py-24 bg-gradient-to-br from-primary/90 to-indigo-700 text-white">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-white"></div>
+                <div class="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-white"></div>
+                <div class="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-white"></div>
+            </div>
+            
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight mb-6 tracking-tight">
+                        专业数据计算，<br class="md:hidden">一键精准完成
+                    </h2>
+                    <p class="text-[clamp(1rem,2vw,1.25rem)] mb-8 text-indigo-100 max-w-2xl mx-auto">
+                        集成多种高级计算工具，从基础运算到复杂数据分析，满足您的各类计算需求
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="#calculators" class="bg-white text-primary font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                            立即开始 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#features" class="bg-transparent border-2 border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white/10 transition-all duration-300">
+                            了解更多 <i class="fa fa-info-circle ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 计算工具区域 -->
+        <section id="calculators" class="py-16">
+            <div class="container mx-auto px-4">
+                <div class="max-w-6xl mx-auto">
+                    <div class="text-center mb-12">
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4 bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
+                            计算工具集
+                        </h2>
+                        <p class="text-slate-600 max-w-2xl mx-auto">选择所需的计算工具，输入数据即可获取精确结果与可视化分析</p>
+                    </div>
+                    
+                    <!-- 工具选择标签 -->
+                    <div class="flex overflow-x-auto pb-2 mb-8 scrollbar-hide gap-2">
+                        <div class="calculator-tab active flex-shrink-0 px-6 py-3 bg-primary text-white font-medium rounded-lg cursor-pointer transition-all duration-300 shadow-md" data-tab="basic">
+                            <i class="fa fa-calculator mr-2"></i>基础计算
+                        </div>
+                        <div class="calculator-tab flex-shrink-0 px-6 py-3 bg-white text-slate-700 font-medium rounded-lg cursor-pointer hover:bg-slate-50 transition-all duration-300 shadow-sm" data-tab="statistics">
+                            <i class="fa fa-bar-chart mr-2"></i>统计分析
+                        </div>
+                        <div class="calculator-tab flex-shrink-0 px-6 py-3 bg-white text-slate-700 font-medium rounded-lg cursor-pointer hover:bg-slate-50 transition-all duration-300 shadow-sm" data-tab="financial">
+                            <i class="fa fa-money mr-2"></i>金融计算
+                        </div>
+                        <div class="calculator-tab flex-shrink-0 px-6 py-3 bg-white text-slate-700 font-medium rounded-lg cursor-pointer hover:bg-slate-50 transition-all duration-300 shadow-sm" data-tab="conversion">
+                            <i class="fa fa-exchange mr-2"></i>单位转换
+                        </div>
+                        <div class="calculator-tab flex-shrink-0 px-6 py-3 bg-white text-slate-700 font-medium rounded-lg cursor-pointer hover:bg-slate-50 transition-all duration-300 shadow-sm" data-tab="equation">
+                            <i class="fa fa-superscript mr-2"></i>方程求解
+                        </div>
+                    </div>
+                    
+                    <!-- 计算器容器 -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 transform hover:shadow-2xl">
+                        <!-- 基础计算器 -->
+                        <div class="calculator-content active p-6 md:p-8" id="basic-calculator">
+                            <h3 class="text-xl font-semibold mb-6 flex items-center text-slate-700">
+                                <i class="fa fa-calculator text-primary mr-2"></i>基础计算器
+                            </h3>
+                            
+                            <!-- 显示屏 -->
+                            <div class="mb-6">
+                                <div class="text-right text-slate-500 min-h-6 mb-1 font-medium" id="basic-calc-history"></div>
+                                <div class="bg-slate-50 rounded-xl p-4 md:p-6 text-right text-3xl md:text-4xl font-semibold min-h-16 md:min-h-20 flex items-end justify-end" id="basic-calc-display">0</div>
+                            </div>
+                            
+                            <!-- 按钮区域 -->
+                            <div class="grid grid-cols-4 gap-3">
+                                <button class="calc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 px-2 text-lg" data-value="C">C</button>
+                                <button class="calc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 px-2 text-lg" data-value="±">±</button>
+                                <button class="calc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 py-4 px-2 text-lg" data-value="%">%</button>
+                                <button class="calc-btn bg-primary/10 hover:bg-primary/20 text-primary py-4 px-2 text-lg" data-value="/">÷</button>
+                                
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="7">7</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="8">8</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="9">9</button>
+                                <button class="calc-btn bg-primary/10 hover:bg-primary/20 text-primary py-4 px-2 text-lg" data-value="*">×</button>
+                                
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="4">4</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="5">5</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="6">6</button>
+                                <button class="calc-btn bg-primary/10 hover:bg-primary/20 text-primary py-4 px-2 text-lg" data-value="-">-</button>
+                                
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="1">1</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="2">2</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value="3">3</button>
+                                <button class="calc-btn bg-primary/10 hover:bg-primary/20 text-primary py-4 px-2 text-lg" data-value="+">+</button>
+                                
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm col-span-2" data-value="0">0</button>
+                                <button class="calc-btn bg-white hover:bg-slate-50 text-slate-800 py-4 px-2 text-lg shadow-sm" data-value=".">.</button>
+                                <button class="calc-btn bg-primary hover:bg-primary/90 text-white py-4 px-2 text-lg" data-value="=">=</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 统计分析计算器 -->
+                        <div class="calculator-content hidden p-6 md:p-8" id="statistics-calculator">
+                            <h3 class="text-xl font-semibold mb-6 flex items-center text-slate-700">
+                                <i class="fa fa-bar-chart text-primary mr-2"></i>统计分析计算器
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">输入数据（用逗号、空格分隔或每行一个）</label>
+                                    <textarea id="stats-data" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" rows="6" placeholder="例如：12, 15, 18, 22, 25 或每行输入一个数值"></textarea>
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <button id="calculate-stats" class="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                        <i class="fa fa-calculator mr-2"></i>计算统计值
+                                    </button>
+                                </div>
+                                
+                                <!-- 统计结果 -->
+                                <div id="stats-results" class="hidden">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">数据数量</p>
+                                            <p class="text-2xl font-semibold" id="stats-count">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">总和</p>
+                                            <p class="text-2xl font-semibold" id="stats-sum">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">平均值</p>
+                                            <p class="text-2xl font-semibold" id="stats-mean">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">中位数</p>
+                                            <p class="text-2xl font-semibold" id="stats-median">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">最小值</p>
+                                            <p class="text-2xl font-semibold" id="stats-min">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">最大值</p>
+                                            <p class="text-2xl font-semibold" id="stats-max">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">数据范围</p>
+                                            <p class="text-2xl font-semibold" id="stats-range">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">方差</p>
+                                            <p class="text-2xl font-semibold" id="stats-variance">0</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">标准差</p>
+                                            <p class="text-2xl font-semibold" id="stats-std">0</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 图表展示 -->
+                                    <div class="mt-8 border-t pt-6">
+                                        <h4 class="font-medium mb-4 text-slate-700">数据分布图表</h4>
+                                        <div class="h-64 md:h-80">
+                                            <canvas id="stats-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 金融计算器 -->
+                        <div class="calculator-content hidden p-6 md:p-8" id="financial-calculator">
+                            <h3 class="text-xl font-semibold mb-6 flex items-center text-slate-700">
+                                <i class="fa fa-money text-primary mr-2"></i>金融计算器
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">计算类型</label>
+                                        <select id="finance-type" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                                            <option value="compound">复利计算</option>
+                                            <option value="loan">贷款计算</option>
+                                            <option value="investment">投资回报</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">本金金额 (¥)</label>
+                                        <input type="number" id="principal" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入本金" step="0.01" min="0">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">年利率 (%)</label>
+                                        <input type="number" id="interest-rate" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入年利率" step="0.01" min="0">
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">期限 (年)</label>
+                                        <input type="number" id="years" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入年数" step="1" min="1">
+                                    </div>
+                                    
+                                    <div id="monthly-payment-container" class="hidden">
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">每月还款 (¥)</label>
+                                        <input type="number" id="monthly-payment" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入每月还款" step="0.01" min="0">
+                                    </div>
+                                    
+                                    <div id="contribution-container" class="hidden">
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">每月追加投资 (¥)</label>
+                                        <input type="number" id="monthly-contribution" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入每月追加投资" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <button id="calculate-finance" class="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                        <i class="fa fa-calculator mr-2"></i>计算结果
+                                    </button>
+                                </div>
+                                
+                                <!-- 金融计算结果 -->
+                                <div id="finance-results" class="hidden">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">最终金额</p>
+                                            <p class="text-2xl font-semibold" id="finance-final-amount">¥0.00</p>
+                                        </div>
+                                        <div class="bg-slate-50 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                            <p class="text-sm text-slate-500 mb-1">总利息/收益</p>
+                                            <p class="text-2xl font-semibold" id="finance-total-interest">¥0.00</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 图表展示 -->
+                                    <div class="mt-8 border-t pt-6">
+                                        <h4 class="font-medium mb-4 text-slate-700">增长曲线图</h4>
+                                        <div class="h-64 md:h-80">
+                                            <canvas id="finance-chart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 单位转换 -->
+                        <div class="calculator-content hidden p-6 md:p-8" id="conversion-calculator">
+                            <h3 class="text-xl font-semibold mb-6 flex items-center text-slate-700">
+                                <i class="fa fa-exchange text-primary mr-2"></i>单位转换工具
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">转换类型</label>
+                                        <select id="conversion-type" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                                            <option value="length">长度</option>
+                                            <option value="weight">重量</option>
+                                            <option value="volume">体积</option>
+                                            <option value="area">面积</option>
+                                            <option value="temperature">温度</option>
+                                            <option value="currency">货币</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">从</label>
+                                        <select id="from-unit" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                                            <!-- 选项将通过JavaScript动态生成 -->
+                                        </select>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-2">到</label>
+                                        <select id="to-unit" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all">
+                                            <!-- 选项将通过JavaScript动态生成 -->
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-2">输入值</label>
+                                    <div class="flex">
+                                        <input type="number" id="conversion-value" class="flex-1 px-4 py-3 border border-slate-300 rounded-l-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入要转换的值" step="any">
+                                        <button id="convert-button" class="bg-primary hover:bg-primary/90 text-white font-medium px-6 py-3 rounded-r-lg transition-all duration-300">
+                                            转换
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 转换结果 -->
+                                <div id="conversion-result" class="hidden mt-6">
+                                    <div class="bg-slate-50 rounded-xl p-6 text-center">
+                                        <p class="text-lg text-slate-500 mb-2" id="conversion-formula"></p>
+                                        <p class="text-4xl font-bold text-primary" id="conversion-result-value">0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 方程求解 -->
+                        <div class="calculator-content hidden p-6 md:p-8" id="equation-calculator">
+                            <h3 class="text-xl font-semibold mb-6 flex items-center text-slate-700">
+                                <i class="fa fa-superscript text-primary mr-2"></i>方程求解工具
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <label class="block text-sm font-medium text-slate-700 mb-2">方程类型</label>
+                                <select id="equation-type" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all mb-6">
+                                    <option value="linear">一元一次方程 (ax + b = 0)</option>
+                                    <option value="quadratic">一元二次方程 (ax² + bx + c = 0)</option>
+                                    <option value="system">二元一次方程组</option>
+                                </select>
+                                
+                                <div id="linear-equation" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-2">系数 a</label>
+                                            <input type="number" id="linear-a" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入a的值" step="any">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-2">常数项 b</label>
+                                            <input type="number" id="linear-b" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入b的值" step="any">
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-600 text-sm">方程形式: ax + b = 0</p>
+                                </div>
+                                
+                                <div id="quadratic-equation" class="space-y-6 hidden">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-2">系数 a</label>
+                                            <input type="number" id="quadratic-a" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入a的值" step="any">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-2">系数 b</label>
+                                            <input type="number" id="quadratic-b" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入b的值" step="any">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-2">常数项 c</label>
+                                            <input type="number" id="quadratic-c" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入c的值" step="any">
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-600 text-sm">方程形式: ax² + bx + c = 0</p>
+                                </div>
+                                
+                                <div id="system-equation" class="space-y-6 hidden">
+                                    <div class="space-y-6">
+                                        <div>
+                                            <p class="text-slate-700 mb-3">第一个方程: a₁x + b₁y = c₁</p>
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">a₁</label>
+                                                    <input type="number" id="system-a1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入a₁的值" step="any">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">b₁</label>
+                                                    <input type="number" id="system-b1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入b₁的值" step="any">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">c₁</label>
+                                                    <input type="number" id="system-c1" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入c₁的值" step="any">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="text-slate-700 mb-3">第二个方程: a₂x + b₂y = c₂</p>
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">a₂</label>
+                                                    <input type="number" id="system-a2" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入a₂的值" step="any">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">b₂</label>
+                                                    <input type="number" id="system-b2" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入b₂的值" step="any">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 mb-2">c₂</label>
+                                                    <input type="number" id="system-c2" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入c₂的值" step="any">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-center">
+                                    <button id="solve-equation" class="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                        <i class="fa fa-calculator mr-2"></i>求解方程
+                                    </button>
+                                </div>
+                                
+                                <!-- 方程求解结果 -->
+                                <div id="equation-result" class="hidden">
+                                    <div class="bg-slate-50 rounded-xl p-6">
+                                        <h4 class="font-medium mb-4 text-slate-700">求解结果</h4>
+                                        <div id="equation-result-content" class="text-lg">
+                                            <!-- 结果将通过JavaScript动态生成 -->
+                                        </div>
+                                        <div id="equation-solution-steps" class="mt-4 text-slate-600 text-sm space-y-2">
+                                            <!-- 求解步骤将通过JavaScript动态生成 -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特性 -->
+        <section id="features" class="py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4 bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
+                        功能特性
+                    </h2>
+                    <p class="text-slate-600 max-w-2xl mx-auto">强大而全面的计算功能，满足您在工作和学习中的各种需求</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <!-- 特点1 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-calculator text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">多功能计算工具</h3>
+                        <p class="text-slate-600">集成基础计算、统计分析、金融计算、单位转换和方程求解等多种工具，一站式解决各类计算问题。</p>
+                    </div>
+                    
+                    <!-- 特点2 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-line-chart text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">数据可视化</h3>
+                        <p class="text-slate-600">通过直观的图表展示计算结果，帮助您更好地理解数据分布和趋势变化，支持多种图表类型。</p>
+                    </div>
+                    
+                    <!-- 特点3 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-bolt text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">快速精准</h3>
+                        <p class="text-slate-600">采用高效算法，确保计算结果准确无误，同时提供快速响应，即时获取计算结果和分析。</p>
+                    </div>
+                    
+                    <!-- 特点4 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-mobile text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">全平台适配</h3>
+                        <p class="text-slate-600">完美适配各种设备，包括电脑、平板和手机，随时随地进行计算，无需安装任何软件。</p>
+                    </div>
+                    
+                    <!-- 特点5 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-lock text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">隐私保护</h3>
+                        <p class="text-slate-600">所有计算均在本地完成，不会上传您的数据到服务器，确保您的敏感信息安全保密。</p>
+                    </div>
+                    
+                    <!-- 特点6 -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                        <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fa fa-history text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3 text-slate-800">计算历史</h3>
+                        <p class="text-slate-600">自动记录您的计算历史，方便查阅和复用之前的计算结果，提高工作效率。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 使用示例 -->
+        <section id="examples" class="py-16">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-4 bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
+                        使用示例
+                    </h2>
+                    <p class="text-slate-600 max-w-2xl mx-auto">看看我们的计算工具如何解决实际问题</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <!-- 示例1 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/id/180/600/400" alt="统计数据分析示例" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 flex items-center text-slate-800">
+                                <i class="fa fa-bar-chart text-primary mr-2"></i>统计数据分析
+                            </h3>
+                            <p class="text-slate-600 mb-4">分析销售数据，计算平均值、中位数、标准差等统计量，了解销售表现和波动情况。</p>
+                            <a href="#calculators" class="inline-block text-primary font-medium hover:text-primary/80 transition-colors flex items-center" data-tab="statistics">
+                                尝试统计计算 <i class="fa fa-arrow-right ml-1 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 示例2 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/id/160/600/400" alt="投资回报计算示例" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 flex items-center text-slate-800">
+                                <i class="fa fa-money text-primary mr-2"></i>投资回报计算
+                            </h3>
+                            <p class="text-slate-600 mb-4">计算不同投资方案的复利收益，比较不同利率和期限下的投资回报，做出明智决策。</p>
+                            <a href="#calculators" class="inline-block text-primary font-medium hover:text-primary/80 transition-colors flex items-center" data-tab="financial">
+                                尝试金融计算 <i class="fa fa-arrow-right ml-1 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 示例3 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/id/111/600/400" alt="单位转换示例" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 flex items-center text-slate-800">
+                                <i class="fa fa-exchange text-primary mr-2"></i>单位转换
+                            </h3>
+                            <p class="text-slate-600 mb-4">在国际项目中快速转换长度、重量、温度等单位，确保数据沟通准确无误。</p>
+                            <a href="#calculators" class="inline-block text-primary font-medium hover:text-primary/80 transition-colors flex items-center" data-tab="conversion">
+                                尝试单位转换 <i class="fa fa-arrow-right ml-1 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 示例4 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                        <div class="h-48 overflow-hidden">
+                            <img src="https://picsum.photos/id/201/600/400" alt="方程求解示例" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 flex items-center text-slate-800">
+                                <i class="fa fa-superscript text-primary mr-2"></i>方程求解
+                            </h3>
+                            <p class="text-slate-600 mb-4">解决数学问题中的方程求解，获取精确解并查看详细解题步骤，辅助学习和工作。</p>
+                            <a href="#calculators" class="inline-block text-primary font-medium hover:text-primary/80 transition-colors flex items-center" data-tab="equation">
+                                尝试方程求解 <i class="fa fa-arrow-right ml-1 transition-transform duration-300 group-hover:translate-x-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 行动召唤 -->
+        <section class="py-16 bg-gradient-to-r from-primary to-indigo-700 text-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-1/4 right-1/3 w-64 h-64 rounded-full bg-white"></div>
+                <div class="absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-white"></div>
+            </div>
+            
+            <div class="container mx-auto px-4 text-center relative z-10">
+                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-6">准备好开始计算了吗？</h2>
+                <p class="text-lg mb-8 max-w-2xl mx-auto text-indigo-100">使用我们的免费数据计算工具，解决您的各种计算难题</p>
+                <a href="#calculators" class="inline-block bg-white text-primary font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    立即使用 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('header');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-3', 'md:py-4');
+            } else {
+                navbar.classList.add('py-3', 'md:py-4');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+        
+        // 移动端菜单切换
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动菜单（如果打开）
+                    document.getElementById('mobileMenu').classList.add('hidden');
+                    
+                    // 如果是示例中的链接，切换到对应的计算器
+                    const tab = this.getAttribute('data-tab');
+                    if (tab) {
+                        setTimeout(() => {
+                            switchCalculator(tab);
+                        }, 500);
+                    }
+                }
+            });
+        });
+        
+        // 计算器标签切换
+        const calculatorTabs = document.querySelectorAll('.calculator-tab');
+        const calculatorContents = document.querySelectorAll('.calculator-content');
+        
+        calculatorTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                switchCalculator(tabId);
+            });
+        });
+        
+        function switchCalculator(tabId) {
+            // 更新标签状态
+            calculatorTabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active', 'bg-primary', 'text-white', 'shadow-md');
+                    tab.classList.remove('bg-white', 'text-slate-700', 'hover:bg-slate-50', 'shadow-sm');
+                } else {
+                    tab.classList.remove('active', 'bg-primary', 'text-white', 'shadow-md');
+                    tab.classList.add('bg-white', 'text-slate-700', 'hover:bg-slate-50', 'shadow-sm');
+                }
+            });
+            
+            // 更新内容区域
+            calculatorContents.forEach(content => {
+                if (content.id === `${tabId}-calculator`) {
+                    content.classList.add('active');
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.remove('active');
+                    content.classList.add('hidden');
+                }
+            });
+        }
+        
+        // 基础计算器功能
+        const display = document.getElementById('basic-calc-display');
+        const history = document.getElementById('basic-calc-history');
+        const calcButtons = document.querySelectorAll('.calc-btn');
+        let currentValue = '0';
+        let calculationHistory = '';
+        let lastOperator = null;
+        let resetOnNextInput = false;
+        
+        calcButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                
+                // 添加按钮点击动画
+                this.classList.add('scale-90');
+                setTimeout(() => {
+                    this.classList.remove('scale-90');
+                }, 150);
+                
+                // 数字和小数点
+                if (/[0-9.]/.test(value)) {
+                    if (resetOnNextInput) {
+                        currentValue = '0';
+                        resetOnNextInput = false;
+                    }
+                    
+                    // 处理小数点
+                    if (value === '.') {
+                        if (!currentValue.includes('.')) {
+                            currentValue += '.';
+                        }
+                    } 
+                    // 处理数字
+                    else {
+                        if (currentValue === '0') {
+                            currentValue = value;
+                        } else {
+                            currentValue += value;
+                        }
+                    }
+                    
+                    updateDisplay();
+                } 
+                // 运算符
+                else if (/[+\-*/]/.test(value)) {
+                    if (lastOperator && !resetOnNextInput) {
+                        // 计算当前结果
+                        calculateResult();
+                    }
+                    
+                    lastOperator = value;
+                    calculationHistory = currentValue + ' ' + value;
+                    history.textContent = calculationHistory;
+                    resetOnNextInput = true;
+                } 
+                // 等于
+                else if (value === '=') {
+                    if (lastOperator) {
+                        calculateResult();
+                        lastOperator = null;
+                        calculationHistory = '';
+                        history.textContent = '';
+                        resetOnNextInput = true;
+                    }
+                } 
+                // 清除
+                else if (value === 'C') {
+                    currentValue = '0';
+                    calculationHistory = '';
+                    lastOperator = null;
+                    resetOnNextInput = false;
+                    history.textContent = '';
+                    updateDisplay();
+                } 
+                // 正负号
+                else if (value === '±') {
+                    currentValue = (parseFloat(currentValue) * -1).toString();
+                    updateDisplay();
+                } 
+                // 百分比
+                else if (value === '%') {
+                    currentValue = (parseFloat(currentValue) / 100).toString();
+                    updateDisplay();
+                }
+            });
+        });
+        
+        function updateDisplay() {
+            // 格式化数字显示
+            if (currentValue.includes('.')) {
+                const parts = currentValue.split('.');
+                if (parts[0].length > 3) {
+                    parts[0] = parseFloat(parts[0]).toLocaleString();
+                }
+                display.textContent = parts[0] + '.' + parts[1];
+            } else {
+                display.textContent = parseFloat(currentValue).toLocaleString();
+            }
+        }
+        
+        function calculateResult() {
+            const expression = calculationHistory + ' ' + currentValue;
+            try {
+                // 使用更安全的计算方式替代eval
+                const result = calculateExpression(expression);
+                currentValue = result.toString();
+                updateDisplay();
+                calculationHistory = expression + ' =';
+                history.textContent = calculationHistory;
+            } catch (e) {
+                currentValue = '错误';
+                updateDisplay();
+            }
+        }
+        
+        // 简单的表达式计算函数，替代不安全的eval
+        function calculateExpression(expression) {
+            // 仅支持数字和+、-、*、/运算符
+            const tokens = expression.split(' ');
+            if (tokens.length !== 3) return 0;
+            
+            const num1 = parseFloat(tokens[0]);
+            const operator = tokens[1];
+            const num2 = parseFloat(tokens[2]);
+            
+            switch(operator) {
+                case '+': return num1 + num2;
+                case '-': return num1 - num2;
+                case '*': return num1 * num2;
+                case '/': 
+                    if (num2 === 0) throw new Error('除数不能为零');
+                    return num1 / num2;
+                default: return 0;
+            }
+        }
+        
+        // 统计计算器功能
+        const statsDataInput = document.getElementById('stats-data');
+        const calculateStatsBtn = document.getElementById('calculate-stats');
+        const statsResults = document.getElementById('stats-results');
+        let statsChart = null;
+        
+        calculateStatsBtn.addEventListener('click', function() {
+            // 添加按钮点击动画
+            this.classList.add('scale-95');
+            setTimeout(() => {
+                this.classList.remove('scale-95');
+            }, 150);
+            
+            const input = statsDataInput.value.trim();
+            if (!input) {
+                alert('请输入数据');
+                return;
+            }
+            
+            // 解析输入数据
+            let data = [];
+            if (input.includes('\n')) {
+                // 按行解析
+                const lines = input.split('\n');
+                data = lines.map(line => parseFloat(line.trim())).filter(num => !isNaN(num));
+            } else {
+                // 按逗号或空格解析
+                data = input.split(/[,\s]+/).map(item => parseFloat(item.trim())).filter(num => !isNaN(num));
+            }
+            
+            if (data.length < 1) {
+                alert('未能识别有效的数据，请检查输入格式');
+                return;
+            }
+            
+            // 计算统计值
+            const count = data.length;
+            const sum = data.reduce((acc, val) => acc + val, 0);
+            const mean = sum / count;
+            const sorted = [...data].sort((a, b) => a - b);
+            const median = count % 2 === 1 
+                ? sorted[Math.floor(count / 2)] 
+                : (sorted[count / 2 - 1] + sorted[count / 2]) / 2;
+            const min = sorted[0];
+            const max = sorted[sorted.length - 1];
+            const range = max - min;
+            const variance = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / count;
+            const std = Math.sqrt(variance);
+            
+            // 更新结果显示
+            document.getElementById('stats-count').textContent = count;
+            document.getElementById('stats-sum').textContent = sum.toFixed(2);
+            document.getElementById('stats-mean').textContent = mean.toFixed(2);
+            document.getElementById('stats-median').textContent = median.toFixed(2);
+            document.getElementById('stats-min').textContent = min.toFixed(2);
+            document.getElementById('stats-max').textContent = max.toFixed(2);
+            document.getElementById('stats-range').textContent = range.toFixed(2);
+            document.getElementById('stats-variance').textContent = variance.toFixed(4);
+            document.getElementById('stats-std').textContent = std.toFixed(4);
+            
+            // 显示结果并添加动画
+            statsResults.classList.remove('hidden');
+            statsResults.classList.add('animate-fadeIn');
+            
+            // 绘制图表
+            const ctx = document.getElementById('stats-chart').getContext('2d');
+            
+            // 销毁现有图表
+            if (statsChart) {
+                statsChart.destroy();
+            }
+            
+            // 创建直方图数据
+            const binCount = Math.min(10, Math.floor(Math.sqrt(data.length)));
+            const bins = Array(binCount).fill(0);
+            const binWidth = range / binCount;
+            
+            data.forEach(value => {
+                const binIndex = Math.min(binCount - 1, Math.floor((value - min) / binWidth));
+                bins[binIndex]++;
+            });
+            
+            const binLabels = bins.map((_, i) => {
+                const start = (min + i * binWidth).toFixed(1);
+                const end = (min + (i + 1) * binWidth).toFixed(1);
+                return `${start}-${end}`;
+            });
+            
+            // 创建图表
+            statsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: binLabels,
+                    datasets: [{
+                        label: '数据分布',
+                        data: bins,
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '频数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '数值范围'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        
+        // 金融计算器功能
+        const financeTypeSelect = document.getElementById('finance-type');
+        const monthlyPaymentContainer = document.getElementById('monthly-payment-container');
+        const contributionContainer = document.getElementById('contribution-container');
+        const calculateFinanceBtn = document.getElementById('calculate-finance');
+        const financeResults = document.getElementById('finance-results');
+        let financeChart = null;
+        
+        // 根据金融计算类型显示/隐藏相应字段
+        financeTypeSelect.addEventListener('change', function() {
+            const type = this.value;
+            monthlyPaymentContainer.classList.add('hidden');
+            contributionContainer.classList.add('hidden');
+            
+            if (type === 'loan') {
+                monthlyPaymentContainer.classList.remove('hidden');
+                monthlyPaymentContainer.classList.add('animate-fadeIn');
+            } else if (type === 'investment') {
+                contributionContainer.classList.remove('hidden');
+                contributionContainer.classList.add('animate-fadeIn');
+            }
+        });
+        
+        calculateFinanceBtn.addEventListener('click', function() {
+            // 添加按钮点击动画
+            this.classList.add('scale-95');
+            setTimeout(() => {
+                this.classList.remove('scale-95');
+            }, 150);
+            
+            const type = financeTypeSelect.value;
+            const principal = parseFloat(document.getElementById('principal').value) || 0;
+            const rate = parseFloat(document.getElementById('interest-rate').value) || 0;
+            const years = parseInt(document.getElementById('years').value) || 0;
+            
+            if (principal <= 0 || rate <= 0 || years <= 0) {
+                alert('请输入有效的本金、利率和期限');
+                return;
+            }
+            
+            let finalAmount = 0;
+            let totalInterest = 0;
+            let yearlyData = [];
+            
+            if (type === 'compound') {
+                // 复利计算
+                const monthlyRate = rate / 100 / 12;
+                const months = years * 12;
+                finalAmount = principal * Math.pow(1 + monthlyRate, months);
+                totalInterest = finalAmount - principal;
+                
+                // 生成年度数据用于图表
+                yearlyData.push({ year: 0, amount: principal });
+                for (let i = 1; i <= years; i++) {
+                    const yearlyAmount = principal * Math.pow(1 + monthlyRate, i * 12);
+                    yearlyData.push({ year: i, amount: yearlyAmount });
+                }
+            } else if (type === 'loan') {
+                // 贷款计算
+                const monthlyPayment = parseFloat(document.getElementById('monthly-payment').value) || 0;
+                if (monthlyPayment <= 0) {
+                    alert('请输入有效的每月还款金额');
+                    return;
+                }
+                
+                const monthlyRate = rate / 100 / 12;
+                const months = years * 12;
+                const totalPaid = monthlyPayment * months;
+                totalInterest = totalPaid - principal;
+                finalAmount = totalPaid;
+                
+                // 生成年度数据用于图表
+                let remaining = principal;
+                yearlyData.push({ year: 0, amount: remaining });
+                
+                for (let i = 1; i <= years; i++) {
+                    for (let j = 0; j < 12; j++) {
+                        const interestPayment = remaining * monthlyRate;
+                        const principalPayment = monthlyPayment - interestPayment;
+                        remaining -= principalPayment;
+                        if (remaining < 0) remaining = 0;
+                    }
+                    yearlyData.push({ year: i, amount: remaining });
+                }
+            } else if (type === 'investment') {
+                // 投资回报计算
+                const monthlyContribution = parseFloat(document.getElementById('monthly-contribution').value) || 0;
+                const monthlyRate = rate / 100 / 12;
+                const months = years * 12;
+                
+                // 计算最终金额
+                let amount = principal;
+                for (let i = 0; i < months; i++) {
+                    amount = amount * (1 + monthlyRate) + monthlyContribution;
+                }
+                finalAmount = amount;
+                const totalContributions = principal + monthlyContribution * months;
+                totalInterest = finalAmount - totalContributions;
+                
+                // 生成年度数据用于图表
+                amount = principal;
+                yearlyData.push({ year: 0, amount: amount });
+                
+                for (let i = 1; i <= years; i++) {
+                    for (let j = 0; j < 12; j++) {
+                        amount = amount * (1 + monthlyRate) + monthlyContribution;
+                    }
+                    yearlyData.push({ year: i, amount: amount });
+                }
+            }
+            
+            // 更新结果显示
+            document.getElementById('finance-final-amount').textContent = '¥' + finalAmount.toFixed(2);
+            document.getElementById('finance-total-interest').textContent = '¥' + totalInterest.toFixed(2);
+            
+            // 显示结果并添加动画
+            financeResults.classList.remove('hidden');
+            financeResults.classList.add('animate-fadeIn');
+            
+            // 绘制图表
+            const ctx = document.getElementById('finance-chart').getContext('2d');
+            
+            // 销毁现有图表
+            if (financeChart) {
+                financeChart.destroy();
+            }
+            
+            // 创建图表
+            financeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: yearlyData.map(item => `第${item.year}年`),
+                    datasets: [{
+                        label: type === 'loan' ? '剩余本金' : '累计金额',
+                        data: yearlyData.map(item => item.amount),
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: type === 'loan',
+                            title: {
+                                display: true,
+                                text: '金额 (¥)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '¥' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ¥${context.raw.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+        
+        // 单位转换功能
+        const conversionTypeSelect = document.getElementById('conversion-type');
+        const fromUnitSelect = document.getElementById('from-unit');
+        const toUnitSelect = document.getElementById('to-unit');
+        const conversionValueInput = document.getElementById('conversion-value');
+        const convertButton = document.getElementById('convert-button');
+        const conversionResult = document.getElementById('conversion-result');
+        const conversionFormula = document.getElementById('conversion-formula');
+        const conversionResultValue = document.getElementById('conversion-result-value');
+        
+        // 单位转换因子数据
+        const unitConversions = {
+            length: {
+                units: ['毫米 (mm)', '厘米 (cm)', '米 (m)', '千米 (km)', '英寸 (in)', '英尺 (ft)', '码 (yd)', '英里 (mi)'],
+                factors: {
+                    '毫米 (mm)': 1,
+                    '厘米 (cm)': 10,
+                    '米 (m)': 1000,
+                    '千米 (km)': 1000000,
+                    '英寸 (in)': 25.4,
+                    '英尺 (ft)': 304.8,
+                    '码 (yd)': 914.4,
+                    '英里 (mi)': 1609344
+                }
+            },
+            weight: {
+                units: ['克 (g)', '千克 (kg)', '吨 (t)', '盎司 (oz)', '磅 (lb)'],
+                factors: {
+                    '克 (g)': 1,
+                    '千克 (kg)': 1000,
+                    '吨 (t)': 1000000,
+                    '盎司 (oz)': 28.3495,
+                    '磅 (lb)': 453.592
+                }
+            },
+            volume: {
+                units: ['毫升 (ml)', '升 (l)', '立方厘米 (cm³)', '立方米 (m³)', '美制加仑 (gal)', '英制加仑 (gal_uk)', ' fluid盎司 (fl oz)'],
+                factors: {
+                    '毫升 (ml)': 1,
+                    '升 (l)': 1000,
+                    '立方厘米 (cm³)': 1,
+                    '立方米 (m³)': 1000000,
+                    '美制加仑 (gal)': 3785.41,
+                    '英制加仑 (gal_uk)': 4546.09,
+                    ' fluid盎司 (fl oz)': 29.5735
+                }
+            },
+            area: {
+                units: ['平方厘米 (cm²)', '平方米 (m²)', '公顷 (ha)', '平方千米 (km²)', '平方英寸 (in²)', '平方英尺 (ft²)', '平方码 (yd²)', '英亩 (acre)'],
+                factors: {
+                    '平方厘米 (cm²)': 1,
+                    '平方米 (m²)': 10000,
+                    '公顷 (ha)': 100000000,
+                    '平方千米 (km²)': 10000000000,
+                    '平方英寸 (in²)': 6.4516,
+                    '平方英尺 (ft²)': 929.03,
+                    '平方码 (yd²)': 8361.27,
+                    '英亩 (acre)': 40468564.224
+                }
+            },
+            temperature: {
+                units: ['摄氏度 (°C)', '华氏度 (°F)', '开尔文 (K)'],
+                convert: function(value, fromUnit, toUnit) {
+                    if (fromUnit === toUnit) return value;
+                    
+                    // 先转换为摄氏度
+                    let celsius;
+                    switch(fromUnit) {
+                        case '摄氏度 (°C)':
+                            celsius = value;
+                            break;
+                        case '华氏度 (°F)':
+                            celsius = (value - 32) * 5 / 9;
+                            break;
+                        case '开尔文 (K)':
+                            celsius = value - 273.15;
+                            break;
+                    }
+                    
+                    // 转换为目标单位
+                    switch(toUnit) {
+                        case '摄氏度 (°C)':
+                            return celsius;
+                        case '华氏度 (°F)':
+                            return celsius * 9 / 5 + 32;
+                        case '开尔文 (K)':
+                            return celsius + 273.15;
+                    }
+                }
+            },
+            currency: {
+                units: ['人民币 (CNY)', '美元 (USD)', '欧元 (EUR)', '英镑 (GBP)', '日元 (JPY)', '港元 (HKD)'],
+                rates: {
+                    '人民币 (CNY)': 1,
+                    '美元 (USD)': 0.14,    // 1 CNY ≈ 0.14 USD (示例汇率)
+                    '欧元 (EUR)': 0.13,    // 1 CNY ≈ 0.13 EUR
+                    '英镑 (GBP)': 0.11,    // 1 CNY ≈ 0.11 GBP
+                    '日元 (JPY)': 19.47,   // 1 CNY ≈ 19.47 JPY
+                    '港元 (HKD)': 1.08     // 1 CNY ≈ 1.08 HKD
+                }
+            }
+        };
+        
+        // 初始化单位选择下拉框
+        function initUnitSelects() {
+            const type = conversionTypeSelect.value;
+            const units = unitConversions[type].units;
+            
+            // 清空现有选项
+            fromUnitSelect.innerHTML = '';
+            toUnitSelect.innerHTML = '';
+            
+            // 添加新选项
+            units.forEach(unit => {
+                const fromOption = document.createElement('option');
+                fromOption.value = unit;
+                fromOption.textContent = unit;
+                fromUnitSelect.appendChild(fromOption);
+                
+                const toOption = document.createElement('option');
+                toOption.value = unit;
+                toOption.textContent = unit;
+                toUnitSelect.appendChild(toOption);
+            });
+            
+            // 默认选择不同的单位
+            if (units.length > 1) {
+                toUnitSelect.selectedIndex = 1;
+            }
+        }
+        
+        // 初始化单位选择
+        initUnitSelects();
+        
+        // 当转换类型改变时更新单位选择
+        conversionTypeSelect.addEventListener('change', initUnitSelects);
+        
+        // 执行单位转换
+        convertButton.addEventListener('click', function() {
+            // 添加按钮点击动画
+            this.classList.add('scale-95');
+            setTimeout(() => {
+                this.classList.remove('scale-95');
+            }, 150);
+            
+            const type = conversionTypeSelect.value;
+            const fromUnit = fromUnitSelect.value;
+            const toUnit = toUnitSelect.value;
+            const value = parseFloat(conversionValueInput.value);
+            
+            if (isNaN(value)) {
+                alert('请输入有效的数值');
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                conversionFormula.textContent = `${value} ${fromUnit} = ${value} ${toUnit}`;
+                conversionResultValue.textContent = `${value} ${toUnit}`;
+                conversionResult.classList.remove('hidden');
+                conversionResult.classList.add('animate-fadeIn');
+                return;
+            }
+            
+            let result;
+            
+            if (type === 'temperature') {
+                // 温度转换
+                result = unitConversions[type].convert(value, fromUnit, toUnit);
+            } else if (type === 'currency') {
+                // 货币转换
+                const fromRate = unitConversions[type].rates[fromUnit];
+                const toRate = unitConversions[type].rates[toUnit];
+                result = value * (toRate / fromRate);
+            } else {
+                // 其他单位转换
+                const fromFactor = unitConversions[type].factors[fromUnit];
+                const toFactor = unitConversions[type].factors[toUnit];
+                result = value * (fromFactor / toFactor);
+            }
+            
+            // 显示结果并添加动画
+            // 显示结果并添加动画
+            conversionFormula.textContent = `${value} ${fromUnit} = ${result.toFixed(6)} ${toUnit}`;
+            conversionResultValue.textContent = `${result.toFixed(6)} ${toUnit}`;
+            conversionResult.classList.remove('hidden');
+            conversionResult.classList.add('animate-fadeIn');
+        });
+        
+        // 方程求解功能
+        const equationTypeSelect = document.getElementById('equation-type');
+        const linearEquation = document.getElementById('linear-equation');
+        const quadraticEquation = document.getElementById('quadratic-equation');
+        const systemEquation = document.getElementById('system-equation');
+        const solveEquationBtn = document.getElementById('solve-equation');
+        const equationResult = document.getElementById('equation-result');
+        const equationResultContent = document.getElementById('equation-result-content');
+        const equationSolutionSteps = document.getElementById('equation-solution-steps');
+        
+        // 根据方程类型显示/隐藏相应字段
+        equationTypeSelect.addEventListener('change', function() {
+            const type = this.value;
+            linearEquation.classList.add('hidden');
+            quadraticEquation.classList.add('hidden');
+            systemEquation.classList.add('hidden');
+            
+            if (type === 'linear') {
+                linearEquation.classList.remove('hidden');
+                linearEquation.classList.add('animate-fadeIn');
+            } else if (type === 'quadratic') {
+                quadraticEquation.classList.remove('hidden');
+                quadraticEquation.classList.add('animate-fadeIn');
+            } else if (type === 'system') {
+                systemEquation.classList.remove('hidden');
+                systemEquation.classList.add('animate-fadeIn');
+            }
+        });
+        
+        solveEquationBtn.addEventListener('click', function() {
+            // 添加按钮点击动画
+            this.classList.add('scale-95');
+            setTimeout(() => {
+                this.classList.remove('scale-95');
+            }, 150);
+            
+            const type = equationTypeSelect.value;
+            let resultHTML = '';
+            let stepsHTML = '';
+            
+            if (type === 'linear') {
+                // 一元一次方程: ax + b = 0
+                const a = parseFloat(document.getElementById('linear-a').value) || 0;
+                const b = parseFloat(document.getElementById('linear-b').value) || 0;
+                
+                if (a === 0) {
+                    if (b === 0) {
+                        resultHTML = '<p>方程有无数解（任何实数都是解）</p>';
+                        stepsHTML = '<p>方程形式：0x + 0 = 0，无论x取何值，等式都成立。</p>';
+                    } else {
+                        resultHTML = '<p>方程无解</p>';
+                        stepsHTML = `<p>方程形式：0x + ${b} = 0，化简后得到 ${b} = 0，显然不成立，因此方程无解。</p>`;
+                    }
+                } else {
+                    const x = -b / a;
+                    resultHTML = `<p>方程的解：x = <span class="font-bold text-primary">${x.toFixed(6)}</span></p>`;
+                    stepsHTML = `
+                        <p>1. 方程形式：${a}x + ${b} = 0</p>
+                        <p>2. 移项：${a}x = -${b}</p>
+                        <p>3. 两边同时除以${a}：x = -${b}/${a}</p>
+                        <p>4. 计算结果：x = ${x.toFixed(6)}</p>
+                    `;
+                }
+            } else if (type === 'quadratic') {
+                // 一元二次方程: ax² + bx + c = 0
+                const a = parseFloat(document.getElementById('quadratic-a').value) || 0;
+                const b = parseFloat(document.getElementById('quadratic-b').value) || 0;
+                const c = parseFloat(document.getElementById('quadratic-c').value) || 0;
+                
+                if (a === 0) {
+                    resultHTML = '<p>这不是一元二次方程（a不能为0）</p>';
+                    stepsHTML = '<p>一元二次方程要求二次项系数a不能为0，请检查输入。</p>';
+                } else {
+                    const discriminant = b * b - 4 * a * c;
+                    
+                    if (discriminant < 0) {
+                        const realPart = (-b / (2 * a)).toFixed(6);
+                        const imaginaryPart = (Math.sqrt(-discriminant) / (2 * a)).toFixed(6);
+                        resultHTML = `
+                            <p>方程有两个共轭复根：</p>
+                            <p>x₁ = <span class="font-bold text-primary">${realPart} + ${imaginaryPart}i</span></p>
+                            <p>x₂ = <span class="font-bold text-primary">${realPart} - ${imaginaryPart}i</span></p>
+                        `;
+                        stepsHTML = `
+                            <p>1. 方程形式：${a}x² + ${b}x + ${c} = 0</p>
+                            <p>2. 计算判别式：Δ = b² - 4ac = ${b}² - 4×${a}×${c} = ${discriminant}</p>
+                            <p>3. 因为Δ < 0，方程有两个共轭复根：</p>
+                            <p>4. x = [-b ± √(-Δ)i]/(2a) = [-${b} ± √(${ -discriminant })i]/(2×${a})</p>
+                            <p>5. 计算结果：x₁ = ${realPart} + ${imaginaryPart}i，x₂ = ${realPart} - ${imaginaryPart}i</p>
+                        `;
+                    } else if (discriminant === 0) {
+                        const x = (-b / (2 * a)).toFixed(6);
+                        resultHTML = `<p>方程有两个相等的实根：x₁ = x₂ = <span class="font-bold text-primary">${x}</span></p>`;
+                        stepsHTML = `
+                            <p>1. 方程形式：${a}x² + ${b}x + ${c} = 0</p>
+                            <p>2. 计算判别式：Δ = b² - 4ac = ${b}² - 4×${a}×${c} = 0</p>
+                            <p>3. 因为Δ = 0，方程有两个相等的实根：</p>
+                            <p>4. x = -b/(2a) = -${b}/(2×${a}) = ${x}</p>
+                        `;
+                    } else {
+                        const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                        const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                        resultHTML = `
+                            <p>方程有两个不相等的实根：</p>
+                            <p>x₁ = <span class="font-bold text-primary">${x1.toFixed(6)}</span></p>
+                            <p>x₂ = <span class="font-bold text-primary">${x2.toFixed(6)}</span></p>
+                        `;
+                        stepsHTML = `
+                            <p>1. 方程形式：${a}x² + ${b}x + ${c} = 0</p>
+                            <p>2. 计算判别式：Δ = b² - 4ac = ${b}² - 4×${a}×${c} = ${discriminant}</p>
+                            <p>3. 因为Δ > 0，方程有两个不相等的实根：</p>
+                            <p>4. x = [-b ± √Δ]/(2a) = [-${b} ± √${discriminant}]/(2×${a})</p>
+                            <p>5. 计算结果：x₁ = ${x1.toFixed(6)}，x₂ = ${x2.toFixed(6)}</p>
+                        `;
+                    }
+                }
+            } else if (type === 'system') {
+                // 二元一次方程组
+                const a1 = parseFloat(document.getElementById('system-a1').value) || 0;
+                const b1 = parseFloat(document.getElementById('system-b1').value) || 0;
+                const c1 = parseFloat(document.getElementById('system-c1').value) || 0;
+                const a2 = parseFloat(document.getElementById('system-a2').value) || 0;
+                const b2 = parseFloat(document.getElementById('system-b2').value) || 0;
+                const c2 = parseFloat(document.getElementById('system-c2').value) || 0;
+                
+                const determinant = a1 * b2 - a2 * b1;
+                
+                if (determinant === 0) {
+                    // 行列式为0，方程组无解或有无数解
+                    const check = a1 * c2 - a2 * c1;
+                    if (check === 0) {
+                        resultHTML = '<p>方程组有无数解</p>';
+                        stepsHTML = `
+                            <p>1. 方程组：</p>
+                            <p>&nbsp;&nbsp;${a1}x + ${b1}y = ${c1}</p>
+                            <p>&nbsp;&nbsp;${a2}x + ${b2}y = ${c2}</p>
+                            <p>2. 计算系数行列式：D = ${a1}×${b2} - ${a2}×${b1} = 0</p>
+                            <p>3. 计算Dₓ = ${c1}×${b2} - ${c2}×${b1} = 0</p>
+                            <p>4. 因为D = 0且Dₓ = 0，方程组有无数解。</p>
+                        `;
+                    } else {
+                        resultHTML = '<p>方程组无解</p>';
+                        stepsHTML = `
+                            <p>1. 方程组：</p>
+                            <p>&nbsp;&nbsp;${a1}x + ${b1}y = ${c1}</p>
+                            <p>&nbsp;&nbsp;${a2}x + ${b2}y = ${c2}</p>
+                            <p>2. 计算系数行列式：D = ${a1}×${b2} - ${a2}×${b1} = 0</p>
+                            <p>3. 计算Dₓ = ${c1}×${b2} - ${c2}×${b1} = ${check} ≠ 0</p>
+                            <p>4. 因为D = 0但Dₓ ≠ 0，方程组无解。</p>
+                        `;
+                    }
+                } else {
+                    // 行列式不为0，方程组有唯一解
+                    const x = (c1 * b2 - c2 * b1) / determinant;
+                    const y = (a1 * c2 - a2 * c1) / determinant;
+                    
+                    resultHTML = `
+                        <p>方程组的解：</p>
+                        <p>x = <span class="font-bold text-primary">${x.toFixed(6)}</span></p>
+                        <p>y = <span class="font-bold text-primary">${y.toFixed(6)}</span></p>
+                    `;
+                    stepsHTML = `
+                        <p>1. 方程组：</p>
+                        <p>&nbsp;&nbsp;${a1}x + ${b1}y = ${c1}</p>
+                        <p>&nbsp;&nbsp;${a2}x + ${b2}y = ${c2}</p>
+                        <p>2. 计算系数行列式：D = ${a1}×${b2} - ${a2}×${b1} = ${determinant}</p>
+                        <p>3. 计算Dₓ = ${c1}×${b2} - ${c2}×${b1} = ${c1 * b2 - c2 * b1}</p>
+                        <p>4. 计算Dᵧ = ${a1}×${c2} - ${a2}×${c1} = ${a1 * c2 - a2 * c1}</p>
+                        <p>5. 根据克拉默法则：</p>
+                        <p>&nbsp;&nbsp;x = Dₓ/D = ${c1 * b2 - c2 * b1}/${determinant} = ${x.toFixed(6)}</p>
+                        <p>&nbsp;&nbsp;y = Dᵧ/D = ${a1 * c2 - a2 * c1}/${determinant} = ${y.toFixed(6)}</p>
+                    `;
+                }
+            }
+            
+            // 显示结果并添加动画
+            equationResultContent.innerHTML = resultHTML;
+            equationSolutionSteps.innerHTML = stepsHTML;
+            equationResult.classList.remove('hidden');
+            equationResult.classList.add('animate-fadeIn');
+        });
+        
+        // 添加自定义动画
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 0.5s ease-out forwards;
+                }
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            </style>
+        `);
+    </script>
+</body>
+</html>
+    

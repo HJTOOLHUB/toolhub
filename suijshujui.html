@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>随机数据生成工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    // Tailwind 配置
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36D399',
+            warning: '#FF9F43',
+            danger: '#F87171',
+            dark: '#1E293B',
+            light: '#F8FAFC'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .input-focus {
+        @apply focus:ring-2 focus:ring-primary/50 focus:border-primary focus:outline-none;
+      }
+      .tab-active {
+        @apply border-primary text-primary font-medium;
+      }
+      .slide-in {
+        animation: slideIn 0.3s ease forwards;
+      }
+      @keyframes slideIn {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark min-h-screen">
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm sticky top-0 z-10">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-random text-primary text-2xl"></i>
+        <h1 class="text-[clamp(1.25rem,3vw,1.75rem)] font-bold text-dark">随机数据生成工具</h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-4">
+        <button class="text-gray-600 hover:text-primary transition-colors duration-200">
+          <i class="fa fa-question-circle mr-1"></i>帮助
+        </button>
+        <button class="bg-primary/10 text-primary px-4 py-2 rounded-lg hover:bg-primary/20 transition-colors duration-200">
+          <i class="fa fa-history mr-1"></i>历史记录
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 标签页导航 -->
+    <div class="mb-6 border-b border-gray-200">
+      <div class="flex overflow-x-auto md:overflow-visible scrollbar-hide space-x-8">
+        <button class="tab-btn tab-active py-4 px-1 border-b-2 -mb-[1px] transition-all duration-200" data-tab="number">
+          <i class="fa fa-hashtag mr-2"></i>随机数
+        </button>
+        <button class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-500 -mb-[1px] transition-all duration-200" data-tab="string">
+          <i class="fa fa-font mr-2"></i>字符串
+        </button>
+        <button class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-500 -mb-[1px] transition-all duration-200" data-tab="password">
+          <i class="fa fa-key mr-2"></i>密码
+        </button>
+        <button class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-500 -mb-[1px] transition-all duration-200" data-tab="testdata">
+          <i class="fa fa-database mr-2"></i>测试数据
+        </button>
+      </div>
+    </div>
+
+    <!-- 生成器卡片 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 左侧：设置面板 -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl p-6 card-shadow slide-in">
+          <h2 class="text-xl font-semibold mb-5" id="settings-title">随机数设置</h2>
+          
+          <!-- 随机数设置面板 -->
+          <div class="tab-content active" id="number-settings">
+            <div class="space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">数值范围</label>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs text-gray-500 mb-1 block">最小值</label>
+                    <input type="number" id="num-min" value="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                  </div>
+                  <div>
+                    <label class="text-xs text-gray-500 mb-1 block">最大值</label>
+                    <input type="number" id="num-max" value="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">生成数量</label>
+                <input type="number" id="num-count" min="1" max="100" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">数字类型</label>
+                <div class="flex space-x-4">
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="num-type" value="integer" checked class="text-primary focus:ring-primary">
+                    <span class="ml-2">整数</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="num-type" value="decimal" class="text-primary focus:ring-primary">
+                    <span class="ml-2">小数</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div id="decimal-settings" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-1">小数位数</label>
+                <input type="number" id="decimal-places" min="1" max="10" value="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="allow-duplicates" checked class="text-primary focus:ring-primary rounded">
+                  <span class="ml-2 text-sm text-gray-700">允许重复值</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 字符串设置面板 -->
+          <div class="tab-content hidden" id="string-settings">
+            <div class="space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">字符串长度</label>
+                <input type="number" id="str-length" min="1" max="100" value="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">生成数量</label>
+                <input type="number" id="str-count" min="1" max="100" value="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">字符类型</label>
+                <div class="space-y-2">
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-uppercase" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">大写字母 (A-Z)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-lowercase" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">小写字母 (a-z)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-numbers" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">数字 (0-9)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-symbols" class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">特殊字符 (!@#$等)</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="str-allow-duplicates" checked class="text-primary focus:ring-primary rounded">
+                  <span class="ml-2 text-sm text-gray-700">允许重复字符串</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 密码设置面板 -->
+          <div class="tab-content hidden" id="password-settings">
+            <div class="space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">密码长度</label>
+                <input type="number" id="pwd-length" min="6" max="100" value="12" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">生成数量</label>
+                <input type="number" id="pwd-count" min="1" max="50" value="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">字符类型</label>
+                <div class="space-y-2">
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="pwd-uppercase" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">大写字母 (A-Z)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="pwd-lowercase" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">小写字母 (a-z)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="pwd-numbers" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">数字 (0-9)</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="pwd-symbols" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">特殊字符 (!@#$等)</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="exclude-similar" checked class="text-primary focus:ring-primary rounded">
+                  <span class="ml-2 text-sm text-gray-700">排除相似字符 (i, l, 1, L, o, 0, O)</span>
+                </label>
+              </div>
+              
+              <div class="pt-2">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm font-medium text-gray-700">密码强度</span>
+                  <span id="pwd-strength" class="text-xs px-2 py-1 rounded-full bg-warning/20 text-warning">中等</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div id="strength-meter" class="bg-warning h-2 rounded-full" style="width: 60%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 测试数据设置面板 -->
+          <div class="tab-content hidden" id="testdata-settings">
+            <div class="space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">生成数量</label>
+                <input type="number" id="testdata-count" min="1" max="100" value="10" class="w-full px-3 py-2 border border-gray-300 rounded-lg input-focus">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">数据类型</label>
+                <div class="space-y-2">
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-names" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">姓名</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-emails" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">邮箱</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-phones" checked class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">电话号码</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-ids" class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">身份证号</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="checkbox" id="include-addresses" class="text-primary focus:ring-primary rounded">
+                    <span class="ml-2 text-sm text-gray-700">地址</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">姓名类型</label>
+                <div class="flex space-x-4">
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="name-type" value="chinese" checked class="text-primary focus:ring-primary">
+                    <span class="ml-2">中文</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="name-type" value="english" class="text-primary focus:ring-primary">
+                    <span class="ml-2">英文</span>
+                  </label>
+                </div>
+              </div>
+              
+              <div>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" id="format-json" class="text-primary focus:ring-primary rounded">
+                  <span class="ml-2 text-sm text-gray-700">以JSON格式输出</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <button id="generate-btn" class="mt-8 w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center">
+            <i class="fa fa-refresh mr-2"></i>生成数据
+          </button>
+        </div>
+      </div>
+      
+      <!-- 右侧：结果展示区 -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl p-6 card-shadow h-full slide-in" style="animation-delay: 0.1s">
+          <div class="flex justify-between items-center mb-5">
+            <h2 class="text-xl font-semibold" id="result-title">生成结果</h2>
+            <div class="flex space-x-2">
+              <button id="copy-btn" class="text-gray-600 hover:text-primary px-3 py-1.5 rounded-lg border border-gray-300 hover:border-primary transition-colors duration-200 flex items-center opacity-50 cursor-not-allowed">
+                <i class="fa fa-copy mr-1"></i>复制
+              </button>
+              <button id="download-btn" class="text-gray-600 hover:text-primary px-3 py-1.5 rounded-lg border border-gray-300 hover:border-primary transition-colors duration-200 flex items-center opacity-50 cursor-not-allowed">
+                <i class="fa fa-download mr-1"></i>下载
+              </button>
+            </div>
+          </div>
+          
+          <div id="empty-state" class="py-16 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+              <i class="fa fa-magic text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">准备生成数据</h3>
+            <p class="text-gray-500 max-w-md mx-auto">设置左侧参数，点击"生成数据"按钮开始创建随机数据</p>
+          </div>
+          
+          <div id="result-container" class="hidden">
+            <div id="result-content" class="p-4 bg-gray-50 rounded-lg border border-gray-200 max-h-[500px] overflow-auto mb-4 text-sm font-mono"></div>
+            <div class="text-xs text-gray-500 flex justify-between items-center">
+              <span id="result-stats">生成了 5 条数据</span>
+              <span id="copy-notification" class="hidden text-secondary"><i class="fa fa-check mr-1"></i>已复制到剪贴板</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // DOM 元素
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const settingsTitle = document.getElementById('settings-title');
+    const resultTitle = document.getElementById('result-title');
+    const generateBtn = document.getElementById('generate-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const emptyState = document.getElementById('empty-state');
+    const resultContainer = document.getElementById('result-container');
+    const resultContent = document.getElementById('result-content');
+    const resultStats = document.getElementById('result-stats');
+    const copyNotification = document.getElementById('copy-notification');
+    
+    // 随机数相关元素
+    const numMin = document.getElementById('num-min');
+    const numMax = document.getElementById('num-max');
+    const numCount = document.getElementById('num-count');
+    const numTypeRadios = document.querySelectorAll('input[name="num-type"]');
+    const decimalSettings = document.getElementById('decimal-settings');
+    const decimalPlaces = document.getElementById('decimal-places');
+    const allowDuplicates = document.getElementById('allow-duplicates');
+    
+    // 字符串相关元素
+    const strLength = document.getElementById('str-length');
+    const strCount = document.getElementById('str-count');
+    const includeUppercase = document.getElementById('include-uppercase');
+    const includeLowercase = document.getElementById('include-lowercase');
+    const includeNumbers = document.getElementById('include-numbers');
+    const includeSymbols = document.getElementById('include-symbols');
+    const strAllowDuplicates = document.getElementById('str-allow-duplicates');
+    
+    // 密码相关元素
+    const pwdLength = document.getElementById('pwd-length');
+    const pwdCount = document.getElementById('pwd-count');
+    const pwdUppercase = document.getElementById('pwd-uppercase');
+    const pwdLowercase = document.getElementById('pwd-lowercase');
+    const pwdNumbers = document.getElementById('pwd-numbers');
+    const pwdSymbols = document.getElementById('pwd-symbols');
+    const excludeSimilar = document.getElementById('exclude-similar');
+    const pwdStrength = document.getElementById('pwd-strength');
+    const strengthMeter = document.getElementById('strength-meter');
+    
+    // 测试数据相关元素
+    const testdataCount = document.getElementById('testdata-count');
+    const includeNames = document.getElementById('include-names');
+    const includeEmails = document.getElementById('include-emails');
+    const includePhones = document.getElementById('include-phones');
+    const includeIds = document.getElementById('include-ids');
+    const includeAddresses = document.getElementById('include-addresses');
+    const nameTypeRadios = document.querySelectorAll('input[name="name-type"]');
+    const formatJson = document.getElementById('format-json');
+    
+    // 当前激活的标签
+    let activeTab = 'number';
+    
+    // 标签切换
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 移除所有激活状态
+        tabBtns.forEach(b => b.classList.remove('tab-active'));
+        tabBtns.forEach(b => b.classList.add('border-transparent', 'text-gray-500'));
+        tabContents.forEach(c => c.classList.add('hidden'));
+        
+        // 设置新的激活状态
+        const tab = btn.getAttribute('data-tab');
+        btn.classList.add('tab-active');
+        btn.classList.remove('border-transparent', 'text-gray-500');
+        document.getElementById(`${tab}-settings`).classList.remove('hidden');
+        
+        // 更新标题
+        const titles = {
+          'number': '随机数设置',
+          'string': '字符串设置',
+          'password': '密码设置',
+          'testdata': '测试数据设置'
+        };
+        settingsTitle.textContent = titles[tab];
+        resultTitle.textContent = `${titles[tab].replace('设置', '')}结果`;
+        
+        // 重置结果区域
+        emptyState.classList.remove('hidden');
+        resultContainer.classList.add('hidden');
+        copyBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        downloadBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // 更新当前激活标签
+        activeTab = tab;
+        
+        // 如果是密码标签，更新密码强度
+        if (tab === 'password') {
+          updatePasswordStrength();
+        }
+      });
+    });
+    
+    // 数字类型切换
+    numTypeRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (radio.value === 'decimal') {
+          decimalSettings.classList.remove('hidden');
+        } else {
+          decimalSettings.classList.add('hidden');
+        }
+      });
+    });
+    
+    // 密码设置变化时更新强度
+    [pwdLength, pwdUppercase, pwdLowercase, pwdNumbers, pwdSymbols].forEach(el => {
+      el.addEventListener('change', updatePasswordStrength);
+      el.addEventListener('input', updatePasswordStrength);
+    });
+    
+    // 更新密码强度
+    function updatePasswordStrength() {
+      let length = parseInt(pwdLength.value) || 0;
+      let types = 0;
+      
+      if (pwdUppercase.checked) types++;
+      if (pwdLowercase.checked) types++;
+      if (pwdNumbers.checked) types++;
+      if (pwdSymbols.checked) types++;
+      
+      // 计算强度 (0-100)
+      let strength = (length / 20) * 40 + (types / 4) * 60;
+      strength = Math.min(Math.max(strength, 0), 100);
+      
+      // 设置强度指示器
+      strengthMeter.style.width = `${strength}%`;
+      
+      // 更新强度文本和颜色
+      if (strength < 30) {
+        strengthMeter.className = 'bg-danger h-2 rounded-full';
+        pwdStrength.className = 'text-xs px-2 py-1 rounded-full bg-danger/20 text-danger';
+        pwdStrength.textContent = '弱';
+      } else if (strength < 70) {
+        strengthMeter.className = 'bg-warning h-2 rounded-full';
+        pwdStrength.className = 'text-xs px-2 py-1 rounded-full bg-warning/20 text-warning';
+        pwdStrength.textContent = '中等';
+      } else {
+        strengthMeter.className = 'bg-secondary h-2 rounded-full';
+        pwdStrength.className = 'text-xs px-2 py-1 rounded-full bg-secondary/20 text-secondary';
+        pwdStrength.textContent = '强';
+      }
+    }
+    
+    // 生成按钮点击事件
+    generateBtn.addEventListener('click', () => {
+      let results = [];
+      let resultText = '';
+      let count = 0;
+      
+      // 根据当前标签生成对应的数据
+      switch (activeTab) {
+        case 'number':
+          results = generateRandomNumbers();
+          count = parseInt(numCount.value);
+          resultText = results.join('\n');
+          break;
+        case 'string':
+          results = generateRandomStrings();
+          count = parseInt(strCount.value);
+          resultText = results.join('\n');
+          break;
+        case 'password':
+          results = generateRandomPasswords();
+          count = parseInt(pwdCount.value);
+          resultText = results.join('\n');
+          break;
+        case 'testdata':
+          results = generateTestData();
+          count = parseInt(testdataCount.value);
+          resultText = formatTestData(results);
+          break;
+      }
+      
+      // 显示结果
+      emptyState.classList.add('hidden');
+      resultContainer.classList.remove('hidden');
+      resultContent.textContent = resultText;
+      resultStats.textContent = `生成了 ${count} 条数据`;
+      
+      // 启用复制和下载按钮
+      copyBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      downloadBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    });
+    
+    // 复制按钮点击事件
+    copyBtn.addEventListener('click', () => {
+      const text = resultContent.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        // 显示复制成功提示
+        copyNotification.classList.remove('hidden');
+        setTimeout(() => {
+          copyNotification.classList.add('hidden');
+        }, 2000);
+      });
+    });
+    
+    // 下载按钮点击事件
+    downloadBtn.addEventListener('click', () => {
+      const text = resultContent.textContent;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${activeTab}-data.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    
+    // 生成随机数
+    function generateRandomNumbers() {
+      const min = parseFloat(numMin.value);
+      const max = parseFloat(numMax.value);
+      const count = parseInt(numCount.value);
+      const isDecimal = document.querySelector('input[name="num-type"][value="decimal"]').checked;
+      const decimalPlaces = isDecimal ? parseInt(decimalPlaces.value) : 0;
+      const allowDupes = allowDuplicates.checked;
+      
+      const numbers = [];
+      
+      // 确保范围有效
+      if (min >= max) {
+        alert('最小值必须小于最大值');
+        return [];
+      }
+      
+      while (numbers.length < count) {
+        let num;
+        if (isDecimal) {
+          num = Math.random() * (max - min) + min;
+          num = parseFloat(num.toFixed(decimalPlaces));
+        } else {
+          num = Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        if (allowDupes || !numbers.includes(num)) {
+          numbers.push(num);
+        } else if (numbers.length >= (max - min + 1)) {
+          // 如果不允许重复且已生成所有可能的值，退出循环
+          break;
+        }
+      }
+      
+      return numbers;
+    }
+    
+    // 生成随机字符串
+    function generateRandomStrings() {
+      const length = parseInt(strLength.value);
+      const count = parseInt(strCount.value);
+      const uppercase = includeUppercase.checked;
+      const lowercase = includeLowercase.checked;
+      const numbers = includeNumbers.checked;
+      const symbols = includeSymbols.checked;
+      const allowDupes = strAllowDuplicates.checked;
+      
+      // 检查是否至少选择了一种字符类型
+      if (!uppercase && !lowercase && !numbers && !symbols) {
+        alert('请至少选择一种字符类型');
+        return [];
+      }
+      
+      // 构建字符集
+      let chars = '';
+      if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (numbers) chars += '0123456789';
+      if (symbols) chars += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+      
+      const strings = [];
+      
+      while (strings.length < count) {
+        let str = '';
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          str += chars[randomIndex];
+        }
+        
+        if (allowDupes || !strings.includes(str)) {
+          strings.push(str);
+        }
+      }
+      
+      return strings;
+    }
+    
+    // 生成随机密码
+    function generateRandomPasswords() {
+      const length = parseInt(pwdLength.value);
+      const count = parseInt(pwdCount.value);
+      const uppercase = pwdUppercase.checked;
+      const lowercase = pwdLowercase.checked;
+      const numbers = pwdNumbers.checked;
+      const symbols = pwdSymbols.checked;
+      const excludeSim = excludeSimilar.checked;
+      
+      // 检查是否至少选择了一种字符类型
+      if (!uppercase && !lowercase && !numbers && !symbols) {
+        alert('请至少选择一种字符类型');
+        return [];
+      }
+      
+      // 构建字符集
+      let chars = '';
+      if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (numbers) chars += '0123456789';
+      if (symbols) chars += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+      
+      // 排除相似字符
+      if (excludeSim) {
+        const similarChars = 'il1Lo0O';
+        chars = chars.split('').filter(c => !similarChars.includes(c)).join('');
+      }
+      
+      const passwords = [];
+      
+      while (passwords.length < count) {
+        let password = '';
+        const usedTypes = new Set();
+        
+        // 确保包含所有选择的字符类型
+        while (usedTypes.size < [uppercase, lowercase, numbers, symbols].filter(Boolean).length) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          const char = chars[randomIndex];
+          
+          if (/[A-Z]/.test(char)) usedTypes.add('uppercase');
+          else if (/[a-z]/.test(char)) usedTypes.add('lowercase');
+          else if (/[0-9]/.test(char)) usedTypes.add('numbers');
+          else usedTypes.add('symbols');
+          
+          password += char;
+          
+          // 防止无限循环
+          if (password.length > length * 2) break;
+        }
+        
+        // 补充剩余长度
+        while (password.length < length) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          password += chars[randomIndex];
+        }
+        
+        // 打乱密码
+        password = password.split('').sort(() => 0.5 - Math.random()).join('');
+        
+        passwords.push(password);
+      }
+      
+      return passwords;
+    }
+    
+    // 生成测试数据
+    function generateTestData() {
+      const count = parseInt(testdataCount.value);
+      const includeNamesVal = includeNames.checked;
+      const includeEmailsVal = includeEmails.checked;
+      const includePhonesVal = includePhones.checked;
+      const includeIdsVal = includeIds.checked;
+      const includeAddressesVal = includeAddresses.checked;
+      const nameType = document.querySelector('input[name="name-type"]:checked').value;
+      
+      // 检查是否至少选择了一种数据类型
+      if (!includeNamesVal && !includeEmailsVal && !includePhonesVal && !includeIdsVal && !includeAddressesVal) {
+        alert('请至少选择一种数据类型');
+        return [];
+      }
+      
+      const testData = [];
+      
+      for (let i = 0; i < count; i++) {
+        const data = {};
+        
+        if (includeNamesVal) {
+          data.name = nameType === 'chinese' ? generateChineseName() : generateEnglishName();
+        }
+        
+        if (includeEmailsVal) {
+          const username = data.name ? data.name.replace(/\s/g, '').toLowerCase() + Math.floor(Math.random() * 100) : 
+                          'user' + Math.floor(Math.random() * 10000);
+          const domains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'example.com', 'test.com'];
+          const domain = domains[Math.floor(Math.random() * domains.length)];
+          data.email = `${username}@${domain}`;
+        }
+        
+        if (includePhonesVal) {
+          data.phone = generatePhoneNumber();
+        }
+        
+        if (includeIdsVal) {
+          data.idCard = generateIdCard();
+        }
+        
+        if (includeAddressesVal) {
+          data.address = generateAddress();
+        }
+        
+        testData.push(data);
+      }
+      
+      return testData;
+    }
+    
+    // 格式化测试数据
+    function formatTestData(data) {
+      if (formatJson.checked) {
+        return JSON.stringify(data, null, 2);
+      } else {
+        let text = '';
+        data.forEach((item, index) => {
+          text += `数据 ${index + 1}:\n`;
+          Object.entries(item).forEach(([key, value]) => {
+            text += `  ${key}: ${value}\n`;
+          });
+          text += '\n';
+        });
+        return text.trim();
+      }
+    }
+    
+    // 辅助函数：生成中文姓名
+    function generateChineseName() {
+      const familyNames = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许', '何', '吕', '施', '张', '孔', '曹', '严', '华', '金', '魏', '陶', '姜'];
+      const givenNames = ['伟', '芳', '娜', '秀英', '敏', '静', '强', '磊', '军', '洋', '勇', '艳', '杰', '娟', '涛', '明', '超', '秀兰', '霞', '平', '刚', '桂英', '红', '光', '辉', '军', '秀荣', '玉', '萍'];
+      
+      const familyName = familyNames[Math.floor(Math.random() * familyNames.length)];
+      const givenName = givenNames[Math.floor(Math.random() * givenNames.length)];
+      
+      return familyName + givenName;
+    }
+    
+    // 辅助函数：生成英文姓名
+    function generateEnglishName() {
+      const firstNames = ['John', 'Jane', 'Michael', 'Emily', 'David', 'Sarah', 'James', 'Jennifer', 'Robert', 'Linda', 'William', 'Elizabeth', 'Richard', 'Barbara', 'Joseph', 'Susan'];
+      const lastNames = ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin'];
+      
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      
+      return `${firstName} ${lastName}`;
+    }
+    
+    // 辅助函数：生成电话号码
+    function generatePhoneNumber() {
+      // 中国手机号格式: 1xx xxxx xxxx
+      const prefixes = ['130', '131', '132', '133', '134', '135', '136', '137', '138', '139', '150', '151', '152', '153', '155', '156', '157', '158', '159', '170', '176', '177', '178', '180', '181', '182', '183', '184', '185', '186', '187', '188', '189'];
+      const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      const suffix = Math.floor(Math.random() * 100000000).toString().padStart(8, '0');
+      
+      return `${prefix}${suffix.substring(0,4)}${suffix.substring(4,8)}`;
+    }
+    
+    // 辅助函数：生成身份证号 (简化版)
+    function generateIdCard() {
+      // 前6位地址码 (随机选择)
+      const areaCodes = ['110000', '120000', '130000', '140000', '150000', '210000', '220000', '230000', '310000', '320000', '330000', '340000', '350000', '360000', '370000'];
+      const areaCode = areaCodes[Math.floor(Math.random() * areaCodes.length)];
+      
+      // 8位出生日期 (1950-2000年之间)
+      const year = Math.floor(Math.random() * 51) + 1950;
+      const month = Math.floor(Math.random() * 12) + 1;
+      const day = Math.floor(Math.random() * 28) + 1; // 简化处理，统一按28天算
+      const birthDate = `${year}${month.toString().padStart(2, '0')}${day.toString().padStart(2, '0')}`;
+      
+      // 3位顺序码
+      const orderCode = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      
+      // 1位校验码 (简化处理，随机生成)
+      const checkCodes = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'X'];
+      const checkCode = checkCodes[Math.floor(Math.random() * checkCodes.length)];
+      
+      return `${areaCode}${birthDate}${orderCode}${checkCode}`;
+    }
+    
+    // 辅助函数：生成地址 (简化版)
+    function generateAddress() {
+      const provinces = ['北京市', '上海市', '广东省', '江苏省', '浙江省', '四川省', '山东省', '河南省', '河北省', '湖南省'];
+      const cities = ['市辖区', '县', '区', '市', '自治县', '盟', '自治州'];
+      const districts = ['街道', '镇', '乡', '社区', '村落', '园区'];
+      const roads = ['大道', '路', '街', '巷', '胡同', '里'];
+      const buildings = ['小区', '大厦', '公寓', '花园', '别墅', '楼'];
+      
+      const province = provinces[Math.floor(Math.random() * provinces.length)];
+      const city = `${Math.floor(Math.random() * 10) + 1}${cities[Math.floor(Math.random() * cities.length)]}`;
+      const district = `${Math.floor(Math.random() * 100) + 1}${districts[Math.floor(Math.random() * districts.length)]}`;
+      const road = `${Math.floor(Math.random() * 100) + 1}${roads[Math.floor(Math.random() * roads.length)]}`;
+      const building = `${Math.floor(Math.random() * 100) + 1}${buildings[Math.floor(Math.random() * buildings.length)]}`;
+      const room = `${Math.floor(Math.random() * 20) + 1}栋${Math.floor(Math.random() * 30) + 1}单元${Math.floor(Math.random() * 100) + 1}室`;
+      
+      return `${province}${city}${district}${road}${building}${room}`;
+    }
+  </script>
+</body>
+</html>

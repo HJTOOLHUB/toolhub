@@ -1,0 +1,422 @@
+<html lang="zh-CN"><head>
+    <link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时区转换器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        accent: '#8B5CF6'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .time-shadow {
+                box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-slate-50 text-dark min-h-screen">
+    <!-- 顶部导航 -->
+    <header class="gradient-bg text-white shadow-md">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fa fa-clock-o text-2xl" aria-hidden="true"></i>
+                    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold">时区转换器</h1>
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-white/20 transition-colors">
+                    <i class="fa fa-moon-o text-xl" aria-hidden="true"></i>
+                </button>
+            </div>
+            <p class="mt-2 text-white/80 max-w-2xl">使用我们直观的工具轻松在不同时区之间转换时间</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- 时间转换表单 -->
+        <section class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8 mb-10">
+            <h2 class="text-2xl font-semibold mb-6 text-center">转换时区</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 源时区 -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-slate-700">源时区</label>
+                    <div class="relative">
+                        <select id="from-timezone" class="block w-full pl-4 pr-10 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none bg-white">
+                            <!-- 选项将通过JS填充 -->
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <i class="fa fa-chevron-down text-slate-400" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    
+                    <label class="block text-sm font-medium text-slate-700">日期和时间</label>
+                    <input type="datetime-local" id="source-datetime" class="block w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                </div>
+                
+                <!-- 目标时区 -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-medium text-slate-700">目标时区</label>
+                    <div class="relative">
+                        <select id="to-timezone" class="block w-full pl-4 pr-10 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none bg-white">
+                            <!-- 选项将通过JS填充 -->
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <i class="fa fa-chevron-down text-slate-400" aria-hidden="true"></i>
+                        </div>
+                    </div>
+                    
+                    <label class="block text-sm font-medium text-slate-700">转换后的时间</label>
+                    <div id="converted-time" class="block w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-700 min-h-[45px] flex items-center">
+                        --:--:--
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-center">
+                <button id="convert-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center space-x-2">
+                    <i class="fa fa-exchange" aria-hidden="true"></i>
+                    <span>转换时间</span>
+                </button>
+            </div>
+            
+            <div class="mt-6 flex justify-center">
+                <button id="swap-btn" class="text-primary hover:text-primary/80 font-medium py-2 px-4 rounded-lg transition-all flex items-center space-x-2">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                    <span>交换时区</span>
+                </button>
+            </div>
+        </section>
+        
+        <!-- 常用时区卡片 -->
+        <section class="max-w-6xl mx-auto mb-8">
+            <h2 class="text-2xl font-semibold mb-6 text-center">主要城市当前时间</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 时区卡片将通过JS动态生成 -->
+            </div>
+        </section>
+        
+        <!-- 世界时钟可视化 -->
+        <section class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <h2 class="text-2xl font-semibold mb-6 text-center">世界时钟概览</h2>
+            
+            <div class="relative h-64 md:h-80 bg-slate-100 rounded-lg overflow-hidden">
+                <div id="clock-visualization" class="w-full h-full">
+                    <!-- 时钟可视化将通过JS生成 -->
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i class="fa fa-globe text-6xl text-primary/30 animate-pulse" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 时区数据 - 包含主要城市和它们的时区
+        const timezones = [
+            { name: '纽约', zone: 'America/New_York', offset: -5, flag: '🇺🇸' },
+            { name: '伦敦', zone: 'Europe/London', offset: 0, flag: '🇬🇧' },
+            { name: '巴黎', zone: 'Europe/Paris', offset: 1, flag: '🇫🇷' },
+            { name: '东京', zone: 'Asia/Tokyo', offset: 9, flag: '🇯🇵' },
+            { name: '悉尼', zone: 'Australia/Sydney', offset: 11, flag: '🇦🇺' },
+            { name: '北京', zone: 'Asia/Shanghai', offset: 8, flag: '🇨🇳' },
+            { name: '迪拜', zone: 'Asia/Dubai', offset: 4, flag: '🇦🇪' },
+            { name: '莫斯科', zone: 'Europe/Moscow', offset: 3, flag: '🇷🇺' },
+            { name: '洛杉矶', zone: 'America/Los_Angeles', offset: -8, flag: '🇺🇸' },
+            { name: '新加坡', zone: 'Asia/Singapore', offset: 8, flag: '🇸🇬' },
+            { name: '新德里', zone: 'Asia/Kolkata', offset: 5.5, flag: '🇮🇳' },
+            { name: '巴西利亚', zone: 'America/Sao_Paulo', offset: -3, flag: '🇧🇷' }
+        ];
+
+        // DOM 元素
+        const fromTimezoneSelect = document.getElementById('from-timezone');
+        const toTimezoneSelect = document.getElementById('to-timezone');
+        const sourceDatetimeInput = document.getElementById('source-datetime');
+        const convertedTimeDisplay = document.getElementById('converted-time');
+        const convertBtn = document.getElementById('convert-btn');
+        const swapBtn = document.getElementById('swap-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const timezoneCardsContainer = document.querySelector('.grid.grid-cols-1');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 填充时区选择器
+            populateTimezoneSelectors();
+            
+            // 设置默认日期时间为当前时间
+            setDefaultDateTime();
+            
+            // 生成常用时区卡片
+            generateTimezoneCards();
+            
+            // 添加事件监听器
+            convertBtn.addEventListener('click', convertTimezone);
+            swapBtn.addEventListener('click', swapTimezones);
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // 初始转换
+            convertTimezone();
+            
+            // 每60秒更新一次时钟
+            setInterval(updateTimezoneCards, 60000);
+        });
+
+        // 填充时区选择器
+        function populateTimezoneSelectors() {
+            timezones.forEach(timezone => {
+                const option1 = document.createElement('option');
+                const option2 = document.createElement('option');
+                
+                const offsetText = timezone.offset >= 0 ? `+${timezone.offset}` : timezone.offset;
+                const displayText = `${timezone.flag} ${timezone.name} (GMT${offsetText})`;
+                
+                option1.value = timezone.zone;
+                option1.textContent = displayText;
+                option2.value = timezone.zone;
+                option2.textContent = displayText;
+                
+                fromTimezoneSelect.appendChild(option1);
+                toTimezoneSelect.appendChild(option2);
+            });
+            
+            // 设置默认选择
+            fromTimezoneSelect.value = 'America/New_York';
+            toTimezoneSelect.value = 'Asia/Shanghai';
+        }
+
+        // 设置默认日期时间为当前时间
+        function setDefaultDateTime() {
+            const now = new Date();
+            // 格式化为YYYY-MM-DDThh:mm
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+            sourceDatetimeInput.value = formattedDateTime;
+        }
+
+        // 转换时区
+        function convertTimezone() {
+            const sourceDateTime = new Date(sourceDatetimeInput.value);
+            if (isNaN(sourceDateTime.getTime())) {
+                alert('请选择有效的日期和时间');
+                return;
+            }
+            
+            const fromTimezone = getTimezoneByName(fromTimezoneSelect.value);
+            const toTimezone = getTimezoneByName(toTimezoneSelect.value);
+            
+            // 计算时差（小时）
+            const timeDifference = toTimezone.offset - fromTimezone.offset;
+            
+            // 转换时间
+            const convertedDateTime = new Date(sourceDateTime);
+            convertedDateTime.setHours(convertedDateTime.getHours() + timeDifference);
+            
+            // 显示转换后的时间
+            displayConvertedTime(convertedDateTime, toTimezone);
+        }
+
+        // 显示转换后的时间
+        function displayConvertedTime(date, timezone) {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit',
+                hour12: false
+            };
+            
+            const offsetText = timezone.offset >= 0 ? `+${timezone.offset}` : timezone.offset;
+            const formattedTime = date.toLocaleString('zh-CN', options);
+            
+            convertedTimeDisplay.innerHTML = `
+                <div class="flex flex-col">
+                    <span class="text-lg font-medium">${formattedTime}</span>
+                    <span class="text-sm text-slate-500">GMT${offsetText}</span>
+                </div>
+            `;
+            
+            // 添加动画效果
+            convertedTimeDisplay.classList.add('animate-pulse');
+            setTimeout(() => {
+                convertedTimeDisplay.classList.remove('animate-pulse');
+            }, 500);
+        }
+
+        // 交换时区
+        function swapTimezones() {
+            const temp = fromTimezoneSelect.value;
+            fromTimezoneSelect.value = toTimezoneSelect.value;
+            toTimezoneSelect.value = temp;
+            
+            // 重新转换
+            convertTimezone();
+            
+            // 添加动画效果
+            const selects = [fromTimezoneSelect, toTimezoneSelect];
+            selects.forEach(select => {
+                select.classList.add('ring-2', 'ring-secondary');
+                setTimeout(() => {
+                    select.classList.remove('ring-2', 'ring-secondary');
+                }, 500);
+            });
+        }
+
+        // 生成时区卡片
+        function generateTimezoneCards() {
+            timezoneCardsContainer.innerHTML = '';
+            
+            timezones.forEach(timezone => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md p-6 card-hover time-shadow';
+                card.id = `card-${timezone.zone}`;
+                
+                const now = new Date();
+                const localTime = new Date(now.getTime() + (timezone.offset * 3600000) + (now.getTimezoneOffset() * 60000));
+                
+                const options = { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: false
+                };
+                
+                const dateOptions = { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric'
+                };
+                
+                const offsetText = timezone.offset >= 0 ? `+${timezone.offset}` : timezone.offset;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-semibold flex items-center">
+                            ${timezone.flag} ${timezone.name}
+                        </h3>
+                        <span class="text-sm bg-slate-100 px-2 py-1 rounded text-slate-600">GMT${offsetText}</span>
+                    </div>
+                    <div class="time-display text-2xl font-mono font-medium mb-2">${localTime.toLocaleString('zh-CN', options)}</div>
+                    <div class="date-display text-sm text-slate-500">${localTime.toLocaleString('zh-CN', dateOptions)}</div>
+                `;
+                
+                timezoneCardsContainer.appendChild(card);
+            });
+        }
+
+        // 更新时区卡片
+        function updateTimezoneCards() {
+            timezones.forEach(timezone => {
+                const card = document.getElementById(`card-${timezone.zone}`);
+                if (card) {
+                    const now = new Date();
+                    const localTime = new Date(now.getTime() + (timezone.offset * 3600000) + (now.getTimezoneOffset() * 60000));
+                    
+                    const options = { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: false
+                    };
+                    
+                    const timeDisplay = card.querySelector('.time-display');
+                    timeDisplay.textContent = localTime.toLocaleString('zh-CN', options);
+                    
+                    // 添加微妙的动画效果
+                    timeDisplay.classList.add('scale-105');
+                    setTimeout(() => {
+                        timeDisplay.classList.remove('scale-105');
+                    }, 100);
+                }
+            });
+        }
+
+        // 根据名称获取时区信息
+        function getTimezoneByName(zoneName) {
+            return timezones.find(tz => tz.zone === zoneName);
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const body = document.body;
+            const isDarkMode = body.classList.toggle('dark');
+            
+            const icon = themeToggle.querySelector('i');
+            if (isDarkMode) {
+                icon.classList.remove('fa-moon-o');
+                icon.classList.add('fa-sun-o');
+                body.classList.add('bg-slate-900', 'text-white');
+                body.classList.remove('bg-slate-50', 'text-dark');
+            } else {
+                icon.classList.remove('fa-sun-o');
+                icon.classList.add('fa-moon-o');
+                body.classList.remove('bg-slate-900', 'text-white');
+                body.classList.add('bg-slate-50', 'text-dark');
+            }
+            
+            // 更新卡片背景
+            document.querySelectorAll('.bg-white').forEach(el => {
+                el.classList.toggle('bg-slate-800');
+                el.classList.toggle('bg-white');
+            });
+            
+            // 更新其他元素
+            document.querySelectorAll('.bg-slate-100').forEach(el => {
+                el.classList.toggle('bg-slate-700');
+                el.classList.toggle('bg-slate-100');
+            });
+            
+            document.querySelectorAll('.text-slate-500').forEach(el => {
+                el.classList.toggle('text-slate-400');
+                el.classList.toggle('text-slate-500');
+            });
+            
+            document.querySelectorAll('.text-slate-600').forEach(el => {
+                el.classList.toggle('text-slate-300');
+                el.classList.toggle('text-slate-600');
+            });
+        }
+    </script>
+
+
+</body></html>

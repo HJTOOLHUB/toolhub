@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://youke1.picui.cn/s1/2025/08/14/689dfc5bcfc2d.ico" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片格式转换工具</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#64748b',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        neutral: '#f1f5f9'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card {
+                @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg;
+            }
+            .btn {
+                @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary/50;
+            }
+            .btn-secondary {
+                @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-400/50;
+            }
+            .btn-danger {
+                @apply bg-danger text-white hover:bg-danger/90 focus:ring-danger/50;
+            }
+            .format-badge {
+                @apply px-2 py-1 text-xs font-medium rounded-full;
+            }
+            .drop-area {
+                @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300;
+            }
+            .drop-area-active {
+                @apply border-primary bg-primary/5;
+            }
+            .progress-bar {
+                @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+            }
+            .progress-value {
+                @apply h-full bg-primary rounded-full transition-all duration-300 w-0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-exchange text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-gray-800">图片格式转换工具</h1>
+            </div>
+            <div>
+                <button id="helpBtn" class="btn btn-secondary flex items-center space-x-1">
+                    <i class="fa fa-question-circle"></i>
+                    <span>使用帮助</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 左侧：上传和设置 -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- 图片上传区域 -->
+                <div class="card p-6">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fa fa-upload text-primary mr-2"></i>上传图片
+                    </h2>
+                    
+                    <div id="dropArea" class="drop-area mb-4">
+                        <input type="file" id="fileInput" class="hidden" accept="image/*" multiple>
+                        <i class="fa fa-image text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-600 mb-2">拖放图片到此处，或点击选择图片</p>
+                        <p class="text-xs text-gray-500">支持 JPG、PNG、WebP、BMP、GIF 格式</p>
+                        <button id="browseBtn" class="mt-4 btn btn-primary">
+                            <i class="fa fa-folder-open mr-1"></i>选择图片
+                        </button>
+                    </div>
+                    
+                    <div id="fileList" class="hidden">
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">已选择图片</h3>
+                        <ul id="selectedFiles" class="space-y-2 max-h-40 overflow-y-auto pr-2"></ul>
+                        <button id="clearFilesBtn" class="mt-3 text-sm text-danger hover:underline flex items-center">
+                            <i class="fa fa-trash-o mr-1"></i>清除所有
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 转换设置 -->
+                <div id="conversionSettings" class="card p-6 hidden">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fa fa-cogs text-primary mr-2"></i>转换设置
+                    </h2>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label for="outputFormat" class="block text-sm font-medium text-gray-700 mb-2">输出格式</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+                                <button data-format="jpg" class="format-btn py-2 px-3 border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium">JPG</button>
+                                <button data-format="png" class="format-btn py-2 px-3 border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium">PNG</button>
+                                <button data-format="webp" class="format-btn py-2 px-3 border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium">WebP</button>
+                                <button data-format="bmp" class="format-btn py-2 px-3 border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium">BMP</button>
+                                <button data-format="gif" class="format-btn py-2 px-3 border border-gray-300 rounded-md hover:border-primary hover:bg-primary/5 transition-all text-sm font-medium">GIF</button>
+                            </div>
+                            <input type="hidden" id="outputFormat" value="">
+                        </div>
+                        
+                        <div>
+                            <label for="quality" class="block text-sm font-medium text-gray-700 mb-1">图片质量 (JPG/WebP)</label>
+                            <div class="flex items-center space-x-3">
+                                <input type="range" id="quality" min="10" max="100" value="90" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                <span id="qualityValue" class="text-sm font-medium min-w-[3rem] text-center">90%</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="resize" class="block text-sm font-medium text-gray-700 mb-1">调整尺寸</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="resize" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="resize" class="text-sm text-gray-700">按比例缩小图片</label>
+                            </div>
+                            
+                            <div id="resizeOptions" class="mt-3 pl-6 hidden">
+                                <div class="flex items-center space-x-3">
+                                    <input type="range" id="scale" min="10" max="100" value="100" 
+                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                                    <span id="scaleValue" class="text-sm font-medium min-w-[3rem] text-center">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="convertBtn" class="w-full btn btn-primary flex items-center justify-center">
+                            <i class="fa fa-exchange mr-2"></i>开始转换
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧：预览和结果 -->
+            <div class="lg:col-span-2">
+                <div class="card p-6 h-full flex flex-col">
+                    <h2 class="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                        <i class="fa fa-eye text-primary mr-2"></i>预览与结果
+                    </h2>
+                    
+                    <!-- 初始状态 -->
+                    <div id="initialState" class="flex-1 flex flex-col items-center justify-center text-center p-6">
+                        <div class="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-picture-o text-5xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">准备转换图片格式</h3>
+                        <p class="text-gray-500 max-w-md">上传图片后，您可以在这里预览原图和转换后的效果对比</p>
+                    </div>
+                    
+                    <!-- 上传后预览 -->
+                    <div id="previewState" class="flex-1 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                    <i class="fa fa-file-image-o mr-1"></i>原图
+                                    <span id="originalFormatBadge" class="format-badge bg-gray-100 text-gray-800 ml-2"></span>
+                                </h3>
+                                <div class="bg-gray-50 rounded-lg p-3 flex items-center justify-center min-h-[200px]">
+                                    <img id="originalImage" src="" alt="原图预览" class="max-w-full max-h-[300px] object-contain">
+                                </div>
+                                <div class="mt-2 text-sm text-gray-600">
+                                    <p><span id="originalSize">--</span> · <span id="originalDimensions">--</span></p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                    <i class="fa fa-check-circle text-success mr-1"></i>转换后
+                                    <span id="convertedFormatBadge" class="format-badge bg-gray-100 text-gray-800 ml-2 hidden"></span>
+                                </h3>
+                                <div class="bg-gray-50 rounded-lg p-3 flex items-center justify-center min-h-[200px]">
+                                    <div id="convertedPlaceholder" class="text-center">
+                                        <i class="fa fa-image text-4xl text-gray-400 mb-2"></i>
+                                        <p class="text-gray-500">转换后的图片将显示在这里</p>
+                                    </div>
+                                    <img id="convertedImage" src="" alt="转换后图片预览" class="max-w-full max-h-[300px] object-contain hidden">
+                                </div>
+                                <div id="convertedInfo" class="mt-2 text-sm text-gray-600 hidden">
+                                    <p><span id="convertedSize">--</span> · <span id="convertedDimensions">--</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 转换进度 -->
+                    <div id="progressState" class="flex-1 hidden flex flex-col justify-center">
+                        <div class="mb-4">
+                            <p class="text-gray-700 mb-2 flex items-center">
+                                <i class="fa fa-spinner fa-spin mr-2"></i>正在转换图片格式...
+                            </p>
+                            <div class="progress-bar">
+                                <div id="progressValue" class="progress-value"></div>
+                            </div>
+                        </div>
+                        <p id="progressMessage" class="text-sm text-gray-500">处理中，请稍候...</p>
+                    </div>
+                    
+                    <!-- 转换完成 -->
+                    <div id="resultState" class="mt-6 hidden">
+                        <div class="border-t pt-4 flex flex-wrap gap-3 justify-between items-center">
+                            <div class="text-success font-medium flex items-center">
+                                <i class="fa fa-check-circle mr-2"></i>
+                                <span>转换完成!</span>
+                            </div>
+                            <div class="flex gap-3">
+                                <button id="downloadBtn" class="btn btn-primary flex items-center">
+                                    <i class="fa fa-download mr-1"></i>下载图片
+                                </button>
+                                <button id="newConversionBtn" class="btn btn-secondary flex items-center">
+                                    <i class="fa fa-plus mr-1"></i>转换新图片
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 帮助模态框 -->
+    <div id="helpModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-800">使用帮助</h3>
+                    <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-1">如何转换图片格式？</h4>
+                    <ol class="list-decimal pl-5 text-gray-600 space-y-1 text-sm">
+                        <li>点击"选择图片"按钮或拖放图片到上传区域</li>
+                        <li>选择需要转换的目标格式</li>
+                        <li>根据需要调整图片质量和尺寸（可选）</li>
+                        <li>点击"开始转换"按钮</li>
+                        <li>转换完成后，点击"下载图片"保存结果</li>
+                    </ol>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-1">支持的图片格式</h4>
+                    <p class="text-gray-600 text-sm">输入格式：JPG、PNG、WebP、BMP、GIF</p>
+                    <p class="text-gray-600 text-sm">输出格式：JPG、PNG、WebP、BMP、GIF</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-800 mb-1">格式特点说明</h4>
+                    <ul class="list-disc pl-5 text-gray-600 space-y-1 text-sm">
+                        <li><strong>JPG</strong>：适合照片，文件较小，不支持透明</li>
+                        <li><strong>PNG</strong>：支持透明，质量高，文件较大</li>
+                        <li><strong>WebP</strong>：现代格式，压缩效率高，支持透明</li>
+                        <li><strong>BMP</strong>：无压缩，文件大，兼容性好</li>
+                        <li><strong>GIF</strong>：支持动画，最多256种颜色</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed top-4 right-4 px-4 py-3 rounded-md shadow-lg transform translate-x-full transition-transform duration-300 flex items-center space-x-2 z-50 max-w-xs">
+        <i id="notificationIcon" class="fa fa-check-circle text-white"></i>
+        <span id="notificationText" class="text-white"></span>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const fileList = document.getElementById('fileList');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const clearFilesBtn = document.getElementById('clearFilesBtn');
+        const conversionSettings = document.getElementById('conversionSettings');
+        const formatBtns = document.querySelectorAll('.format-btn');
+        const outputFormat = document.getElementById('outputFormat');
+        const quality = document.getElementById('quality');
+        const qualityValue = document.getElementById('qualityValue');
+        const resize = document.getElementById('resize');
+        const resizeOptions = document.getElementById('resizeOptions');
+        const scale = document.getElementById('scale');
+        const scaleValue = document.getElementById('scaleValue');
+        const convertBtn = document.getElementById('convertBtn');
+        const initialState = document.getElementById('initialState');
+        const previewState = document.getElementById('previewState');
+        const originalImage = document.getElementById('originalImage');
+        const originalSize = document.getElementById('originalSize');
+        const originalDimensions = document.getElementById('originalDimensions');
+        const originalFormatBadge = document.getElementById('originalFormatBadge');
+        const convertedImage = document.getElementById('convertedImage');
+        const convertedPlaceholder = document.getElementById('convertedPlaceholder');
+        const convertedInfo = document.getElementById('convertedInfo');
+        const convertedSize = document.getElementById('convertedSize');
+        const convertedDimensions = document.getElementById('convertedDimensions');
+        const convertedFormatBadge = document.getElementById('convertedFormatBadge');
+        const progressState = document.getElementById('progressState');
+        const progressValue = document.getElementById('progressValue');
+        const progressMessage = document.getElementById('progressMessage');
+        const resultState = document.getElementById('resultState');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const newConversionBtn = document.getElementById('newConversionBtn');
+        const helpBtn = document.getElementById('helpBtn');
+        const helpModal = document.getElementById('helpModal');
+        const closeHelpBtn = document.getElementById('closeHelpBtn');
+        const notification = document.getElementById('notification');
+        const notificationIcon = document.getElementById('notificationIcon');
+        const notificationText = document.getElementById('notificationText');
+        
+        // 存储选中的文件和转换后的图片
+        let selectedImages = [];
+        let convertedImageBlob = null;
+        let originalFormat = '';
+        
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            notificationText.textContent = message;
+            
+            // 设置通知类型样式
+            notification.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-primary');
+            notificationIcon.classList.remove('fa-check-circle', 'fa-exclamation-circle', 'fa-info-circle');
+            
+            switch(type) {
+                case 'success':
+                    notification.classList.add('bg-success');
+                    notificationIcon.classList.add('fa-check-circle');
+                    break;
+                case 'error':
+                    notification.classList.add('bg-danger');
+                    notificationIcon.classList.add('fa-exclamation-circle');
+                    break;
+                case 'warning':
+                    notification.classList.add('bg-warning');
+                    notificationIcon.classList.add('fa-exclamation-circle');
+                    break;
+                case 'info':
+                    notification.classList.add('bg-primary');
+                    notificationIcon.classList.add('fa-info-circle');
+                    break;
+            }
+            
+            // 显示通知
+            notification.classList.remove('translate-x-full');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+            }, 3000);
+        }
+        
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // 获取文件扩展名
+        function getFileExtension(fileName) {
+            return fileName.split('.').pop().toLowerCase();
+        }
+        
+        // 获取MIME类型
+        function getMimeType(format) {
+            const mimeTypes = {
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg',
+                'png': 'image/png',
+                'webp': 'image/webp',
+                'bmp': 'image/bmp',
+                'gif': 'image/gif'
+            };
+            return mimeTypes[format.toLowerCase()] || 'image/jpeg';
+        }
+        
+        // 处理文件选择
+        function handleFiles(files) {
+            // 清空之前的选择
+            selectedImages = [];
+            selectedFiles.innerHTML = '';
+            outputFormat.value = '';
+            formatBtns.forEach(btn => btn.classList.remove('border-primary', 'bg-primary/5'));
+            
+            // 过滤非图片文件
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length === 0) {
+                showNotification('请选择图片文件', 'error');
+                return;
+            }
+            
+            // 限制只处理第一张图片
+            const file = imageFiles[0];
+            selectedImages.push(file);
+            
+            // 获取原始格式
+            originalFormat = getFileExtension(file.name);
+            originalFormatBadge.textContent = originalFormat.toUpperCase();
+            originalFormatBadge.classList.remove('hidden');
+            
+            // 显示文件列表
+            const li = document.createElement('li');
+            li.className = 'flex items-center justify-between p-2 bg-gray-50 rounded';
+            li.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fa fa-file-image-o text-primary mr-2"></i>
+                    <span class="truncate max-w-[200px] text-sm">${file.name}</span>
+                </div>
+                <span class="format-badge bg-gray-100 text-gray-800">${originalFormat.toUpperCase()}</span>
+            `;
+            selectedFiles.appendChild(li);
+            
+            // 显示文件列表区域
+            fileList.classList.remove('hidden');
+            
+            // 显示转换设置
+            conversionSettings.classList.remove('hidden');
+            
+            // 预览原图
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                originalImage.src = e.target.result;
+                
+                // 获取图片尺寸
+                const img = new Image();
+                img.onload = function() {
+                    originalDimensions.textContent = `${this.width} × ${this.height} px`;
+                };
+                img.src = e.target.result;
+                
+                // 显示图片大小
+                originalSize.textContent = formatFileSize(file.size);
+                
+                // 切换到预览状态
+                initialState.classList.add('hidden');
+                previewState.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            
+            // 重置转换结果区域
+            convertedImage.src = '';
+            convertedImage.classList.add('hidden');
+            convertedPlaceholder.classList.remove('hidden');
+            convertedInfo.classList.add('hidden');
+            convertedFormatBadge.classList.add('hidden');
+            resultState.classList.add('hidden');
+            
+            showNotification(`已选择 1 张图片`);
+        }
+        
+        // 模拟格式转换过程
+        function convertImage() {
+            if (selectedImages.length === 0) return;
+            if (!outputFormat.value) {
+                showNotification('请选择目标格式', 'warning');
+                return;
+            }
+            
+            const file = selectedImages[0];
+            const targetFormat = outputFormat.value;
+            const qualityValue = parseInt(quality.value) / 100;
+            const shouldResize = resize.checked;
+            const scaleValue = parseInt(scale.value) / 100;
+            
+            // 切换到进度状态
+            previewState.classList.add('hidden');
+            progressState.classList.remove('hidden');
+            progressValue.style.width = '0%';
+            progressMessage.textContent = '准备转换...';
+            
+            // 读取图片并转换（模拟过程）
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // 创建canvas
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // 计算尺寸
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // 如果需要调整尺寸
+                    if (shouldResize) {
+                        width = Math.round(width * scaleValue);
+                        height = Math.round(height * scaleValue);
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // 绘制图片
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // 模拟转换进度
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 5;
+                        progressValue.style.width = `${progress}%`;
+                        
+                        if (progress <= 30) {
+                            progressMessage.textContent = '正在处理图片...';
+                        } else if (progress <= 70) {
+                            progressMessage.textContent = '正在转换格式...';
+                        } else {
+                            progressMessage.textContent = '即将完成...';
+                        }
+                        
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            
+                            // 获取目标MIME类型
+                            const mimeType = getMimeType(targetFormat);
+                            
+                            // 转换canvas为blob
+                            const options = targetFormat === 'jpg' || targetFormat === 'webp' 
+                                ? { quality: qualityValue } 
+                                : {};
+                                
+                            canvas.toBlob(function(blob) {
+                                convertedImageBlob = blob;
+                                
+                                // 显示转换后的图片
+                                const url = URL.createObjectURL(blob);
+                                convertedImage.src = url;
+                                convertedImage.classList.remove('hidden');
+                                convertedPlaceholder.classList.add('hidden');
+                                
+                                // 显示转换信息
+                                convertedSize.textContent = formatFileSize(blob.size);
+                                convertedDimensions.textContent = `${width} × ${height} px`;
+                                convertedInfo.classList.remove('hidden');
+                                
+                                // 显示格式徽章
+                                convertedFormatBadge.textContent = targetFormat.toUpperCase();
+                                convertedFormatBadge.classList.remove('hidden');
+                                
+                                // 切换到结果状态
+                                progressState.classList.add('hidden');
+                                previewState.classList.remove('hidden');
+                                resultState.classList.remove('hidden');
+                                
+                                showNotification(`图片已成功转换为${targetFormat.toUpperCase()}格式`);
+                            }, mimeType, options);
+                        }
+                    }, 50);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 下载转换后的图片
+        function downloadConvertedImage() {
+            if (!convertedImageBlob || !outputFormat.value) return;
+            
+            const file = selectedImages[0];
+            const originalName = file.name.split('.').slice(0, -1).join('.');
+            const targetFormat = outputFormat.value;
+                
+            const fileName = `${originalName}.${targetFormat}`;
+            
+            // 创建下载链接
+            const url = URL.createObjectURL(convertedImageBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            
+            // 清理
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('图片已下载');
+        }
+        
+        // 事件监听器 - 浏览按钮
+        browseBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // 事件监听器 - 文件选择
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFiles(e.target.files);
+            }
+        });
+        
+        // 事件监听器 - 拖放区域
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('drop-area-active');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('drop-area-active');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        }
+        
+        // 事件监听器 - 清除文件
+        clearFilesBtn.addEventListener('click', () => {
+            selectedImages = [];
+            selectedFiles.innerHTML = '';
+            fileList.classList.add('hidden');
+            conversionSettings.classList.add('hidden');
+            previewState.classList.add('hidden');
+            initialState.classList.remove('hidden');
+            resultState.classList.add('hidden');
+            fileInput.value = '';
+            outputFormat.value = '';
+            formatBtns.forEach(btn => btn.classList.remove('border-primary', 'bg-primary/5'));
+            originalFormatBadge.classList.add('hidden');
+            
+            showNotification('已清除所有图片');
+        });
+        
+        // 事件监听器 - 格式选择按钮
+        formatBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const format = btn.getAttribute('data-format');
+                outputFormat.value = format;
+                
+                // 更新按钮状态
+                formatBtns.forEach(b => b.classList.remove('border-primary', 'bg-primary/5'));
+                btn.classList.add('border-primary', 'bg-primary/5');
+                
+                // 对于GIF格式，提示质量设置不适用
+                if (format === 'gif') {
+                    document.querySelector('label[for="quality"]').classList.add('text-gray-400');
+                    quality.disabled = true;
+                } else {
+                    document.querySelector('label[for="quality"]').classList.remove('text-gray-400');
+                    quality.disabled = false;
+                }
+            });
+        });
+        
+        // 事件监听器 - 质量调整
+        quality.addEventListener('input', () => {
+            qualityValue.textContent = `${quality.value}%`;
+        });
+        
+        // 事件监听器 - 调整尺寸复选框
+        resize.addEventListener('change', () => {
+            if (resize.checked) {
+                resizeOptions.classList.remove('hidden');
+            } else {
+                resizeOptions.classList.add('hidden');
+            }
+        });
+        
+        // 事件监听器 - 缩放比例调整
+        scale.addEventListener('input', () => {
+            scaleValue.textContent = `${scale.value}%`;
+        });
+        
+        // 事件监听器 - 转换按钮
+        convertBtn.addEventListener('click', convertImage);
+        
+        // 事件监听器 - 下载按钮
+        downloadBtn.addEventListener('click', downloadConvertedImage);
+        
+        // 事件监听器 - 新转换按钮
+        newConversionBtn.addEventListener('click', () => {
+            // 重置转换结果区域
+            convertedImage.src = '';
+            convertedImage.classList.add('hidden');
+            convertedPlaceholder.classList.remove('hidden');
+            convertedInfo.classList.add('hidden');
+            convertedFormatBadge.classList.add('hidden');
+            resultState.classList.add('hidden');
+            
+            showNotification('准备转换新图片');
+        });
+        
+        // 事件监听器 - 帮助按钮
+        helpBtn.addEventListener('click', () => {
+            helpModal.classList.remove('hidden');
+            helpModal.classList.add('flex');
+        });
+        
+        // 事件监听器 - 关闭帮助
+        closeHelpBtn.addEventListener('click', () => {
+            helpModal.classList.add('hidden');
+            helpModal.classList.remove('flex');
+        });
+        
+        // 点击模态框外部关闭
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.classList.add('hidden');
+                helpModal.classList.remove('flex');
+            }
+        });
+    </script>
+</body>
+</html>
+    
