@@ -179,7 +179,60 @@
       <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
       <button class="announcement-btn next" onclick="nextAnnouncement()"><i class="fa fa-chevron-right"></i></button>
     </div>
+<!-- 用户认证区域 -->
+    <div class="w-full max-w-md mt-12 bg-white rounded-2xl clock-shadow p-6 card-hover">
+      <h2 class="text-2xl font-bold text-center mb-6 text-neutral-900">账号登录</h2>
 
+      <div class="space-y-4">
+        <div class="relative">
+          <i class="fa fa-user text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="username" placeholder="请输入用户名" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <div class="relative">
+          <i class="fa fa-lock text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="password" id="password" placeholder="请输入密码" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <button id="loginBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+          <i class="fa fa-sign-in mr-2"></i>
+          <span>登录</span>
+        </button>
+        <div id="loginMessage" class="text-center text-sm"></div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-neutral-500">
+          还没有账号？
+          <a href="#" id="registerLink" class="text-primary font-medium hover:underline">立即注册</a>
+        </p>
+      </div>
+
+      <!-- 注册表单，默认隐藏 -->
+      <div id="registerForm" class="space-y-4 hidden">
+        <div class="relative">
+          <i class="fa fa-user text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="registerUsername" placeholder="用户名" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <div class="relative">
+          <i class="fa fa-lock text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input type="password" id="registerPassword" placeholder="密码" class="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-lg focus:outline-none focus:border-primary transition-colors">
+        </div>
+
+        <button id="registerBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+          <i class="fa fa-user-plus mr-2"></i>
+          <span>注册</span>
+        </button>
+        <div id="registerMessage" class="text-center text-sm"></div>
+      </div>
+
+      <!-- 退出登录按钮 -->
+      <button id="logoutBtn" class="hidden w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+        <i class="fa fa-sign-out mr-2"></i>
+        <span>退出登录</span>
+      </button>
+    </div>
     
     // 时钟功能实现
     function updateClock() {
@@ -455,4 +508,5 @@
 
 
 </html>
+
 
