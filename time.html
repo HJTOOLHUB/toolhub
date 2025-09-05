@@ -179,7 +179,7 @@
       <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
       <button class="announcement-btn next" onclick="nextAnnouncement()"><i class="fa fa-chevron-right"></i></button>
     </div>
-<!-- 用户认证区域 -->
+ <!-- 用户认证区域 -->
     <div class="w-full max-w-md mt-12 bg-white rounded-2xl clock-shadow p-6 card-hover">
       <h2 class="text-2xl font-bold text-center mb-6 text-neutral-900">账号登录</h2>
 
@@ -233,280 +233,29 @@
         <span>退出登录</span>
       </button>
     </div>
-    
-    // 时钟功能实现
-    function updateClock() {
-      const now = new Date();
 
-      // 时钟显示
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      document.getElementById('clockDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+    <!-- 每日签到区域 -->
+    <div class="w-full max-w-md mt-8 bg-white rounded-2xl clock-shadow p-6 card-hover">
+      <h2 class="text-2xl font-bold text-center mb-4 text-neutral-900">每日签到</h2>
+      <button id="checkInBtn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center">
+        <i class="fa fa-check mr-2"></i>
+        <span>签到</span>
+      </button>
+      <div id="checkInMessage" class="text-center text-sm mt-2"></div>
+      <div id="userPoints" class="text-center text-sm mt-2"></div>
+      <h2 class="text-2xl font-bold text-center mt-4 mb-2 text-neutral-900">签到排行榜(登陆后方可显示)</h2>
+      <ul id="pointsRanking" class="text-center text-sm"></ul>
+    </div>
+  </main>
 
-      // 日期显示
-      const year = now.getFullYear();
-      const month = (now.getMonth() + 1).toString().padStart(2, '0');
-      const day = now.getDate().toString().padStart(2, '0');
-      const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-      const weekDay = weekDays[now.getDay()];
-      document.getElementById('dateDisplay').textContent = `${year}年${month}月${day}日 ${weekDay}`;
-    }
+  <!-- 页脚 -->
+  <footer class="bg-white border-t border-neutral-200 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center text-neutral-500 text-sm">
+      <p>© 2025 三龍工作室●侯文杰保留一切权利。This web made in ZZ!</p>
+      <p class="mt-2">使用即表示您同意我们的服务条款和隐私政策</p>
+    </div>
+  </footer>
 
-    // 初始化时钟
-    updateClock();
-    setInterval(updateClock, 1000);
-
-    // 全屏功能
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen()
-          .catch(err => console.error(`无法进入全屏模式: ${err.message}`));
-        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-          fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏模式</span>';
-        }
-      }
-    }
-
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-    // 监听全屏状态变化
-    document.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement) {
-        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
-      } else {
-        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏模式</span>';
-      }
-    });
-
-    // 公告翻动功能
-    const announcements = document.querySelectorAll('.announcement');
-    let currentIndex = 0;
-
-    function showAnnouncement(index) {
-      announcements.forEach((announcement, i) => {
-        if (i === index) {
-          announcement.classList.add('active');
-        } else {
-          announcement.classList.remove('active');
-        }
-      });
-    }
-
-    function nextAnnouncement() {
-      currentIndex = (currentIndex + 1) % announcements.length;
-      showAnnouncement(currentIndex);
-    }
-
-    function prevAnnouncement() {
-      currentIndex = (currentIndex - 1 + announcements.length) % announcements.length;
-      showAnnouncement(currentIndex);
-    }
-
-    // 存储用户信息
-    const users = JSON.parse(localStorage.getItem('users')) || {};
-    const userPoints = JSON.parse(localStorage.getItem('userPoints')) || {};
-    const checkedInDates = JSON.parse(localStorage.getItem('checkedInDates')) || {};
-
-    // 注册功能
-    const registerLink = document.getElementById('registerLink');
-    const registerForm = document.getElementById('registerForm');
-    const registerUsername = document.getElementById('registerUsername');
-    const registerPassword = document.getElementById('registerPassword');
-    const registerBtn = document.getElementById('registerBtn');
-    const registerMessage = document.getElementById('registerMessage');
-
-    registerLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      registerForm.classList.remove('hidden');
-    });
-
-    registerBtn.addEventListener('click', () => {
-      const username = registerUsername.value;
-      const password = registerPassword.value;
-
-      if (username && password) {
-        if (users[username]) {
-          registerMessage.textContent = '该用户名已存在，请选择其他用户名。';
-          registerMessage.style.color = 'red';
-        } else {
-          users[username] = password;
-          userPoints[username] = 0;
-          localStorage.setItem('users', JSON.stringify(users));
-          localStorage.setItem('userPoints', JSON.stringify(userPoints));
-          registerMessage.textContent = '注册成功，请登录。';
-          registerMessage.style.color = 'green';
-          registerForm.classList.add('hidden');
-        }
-      } else {
-        registerMessage.textContent = '用户名和密码不能为空，请重新输入。';
-        registerMessage.style.color = 'red';
-      }
-    });
-
-    // 登录功能
-    const loginBtn = document.getElementById('loginBtn');
-    const username = document.getElementById('username');
-    const password = document.getElementById('password');
-    const loginMessage = document.getElementById('loginMessage');
-    const adminModeIndicator = document.getElementById('adminModeIndicator');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    const adminUsername = 'administor for zz';
-    const adminPassword = 'administor666';
-
-    loginBtn.addEventListener('click', () => {
-      const inputUsername = username.value;
-      const inputPassword = password.value;
-
-      if (inputUsername && inputPassword) {
-        if (inputUsername === adminUsername && inputPassword === adminPassword) {
-          loginMessage.textContent = '管理员登录成功！';
-          loginMessage.style.color = 'green';
-          adminModeIndicator.classList.remove('hidden');
-          // 保存登录信息
-          localStorage.setItem('lastLoggedInUser', inputUsername);
-          showLogoutBtn();
-          updateUserPointsDisplay(inputUsername);
-          updatePointsRanking();
-        } else if (users[inputUsername] === inputPassword) {
-          loginMessage.textContent = '恭喜你、登录成功！';
-          loginMessage.style.color = 'green';
-          adminModeIndicator.classList.add('hidden');
-          // 保存登录信息
-          localStorage.setItem('lastLoggedInUser', inputUsername);
-          showLogoutBtn();
-          updateUserPointsDisplay(inputUsername);
-          updatePointsRanking();
-        } else {
-          loginMessage.textContent = '用户名或密码错误，请重新输入。';
-          loginMessage.style.color = 'red';
-          adminModeIndicator.classList.add('hidden');
-          hideLogoutBtn();
-        }
-      } else {
-        loginMessage.textContent = '用户名和密码不能为空，请重新输入。';
-        loginMessage.style.color = 'red';
-        adminModeIndicator.classList.add('hidden');
-        hideLogoutBtn();
-      }
-    });
-
-    // 显示退出登录按钮
-    function showLogoutBtn() {
-      logoutBtn.classList.remove('hidden');
-    }
-
-    // 隐藏退出登录按钮
-    function hideLogoutBtn() {
-      logoutBtn.classList.add('hidden');
-    }
-
-    // 退出登录功能
-    logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('lastLoggedInUser');
-      loginMessage.textContent = '已退出登录。';
-      loginMessage.style.color = 'green';
-      adminModeIndicator.classList.add('hidden');
-      hideLogoutBtn();
-      document.getElementById('checkInMessage').textContent = '';
-      document.getElementById('userPoints').textContent = '';
-      document.getElementById('pointsRanking').innerHTML = '';
-    });
-
-    // 自动登录功能
-    window.addEventListener('load', () => {
-      const lastLoggedInUser = localStorage.getItem('lastLoggedInUser');
-      if (lastLoggedInUser) {
-        const storedPassword = users[lastLoggedInUser];
-        if (lastLoggedInUser === adminUsername && storedPassword === adminPassword) {
-          loginMessage.textContent = '🛃管理员登录成功！🛃';
-          loginMessage.style.color = 'green';
-          adminModeIndicator.classList.remove('hidden');
-          showLogoutBtn();
-          updateUserPointsDisplay(lastLoggedInUser);
-          updatePointsRanking();
-        } else if (storedPassword) {
-          loginMessage.textContent = '自动登录成功666！';
-          loginMessage.style.color = 'green';
-          adminModeIndicator.classList.add('hidden');
-          showLogoutBtn();
-          updateUserPointsDisplay(lastLoggedInUser);
-          updatePointsRanking();
-        } else {
-          loginMessage.textContent = '自动登录失败呜呜呜，请重新登录。';
-          loginMessage.style.color = 'red';
-          hideLogoutBtn();
-        }
-      }
-    });
-
-    // 签到功能
-    const checkInBtn = document.getElementById('checkInBtn');
-    const checkInMessage = document.getElementById('checkInMessage');
-
-    checkInBtn.addEventListener('click', () => {
-      const lastLoggedInUser = localStorage.getItem('lastLoggedInUser');
-      if (!lastLoggedInUser) {
-        checkInMessage.textContent = '请先登录再进行签到。';
-        checkInMessage.style.color = 'red';
-        return;
-      }
-
-      const now = new Date();
-      const today = now.toDateString();
-      const currentHour = now.getHours();
-
-      if (checkedInDates[lastLoggedInUser] === today) {
-        checkInMessage.textContent = '你今天已经签到过了。';
-        checkInMessage.style.color = 'red';
-        return;
-      }
-
-      if (currentHour === 10) {
-        userPoints[lastLoggedInUser] = (userPoints[lastLoggedInUser] || 0) + 10;
-        checkInMessage.textContent = '签到成功，获得10点奖励！';
-        checkInMessage.style.color = 'green';
-      } else {
-        userPoints[lastLoggedInUser] = (userPoints[lastLoggedInUser] || 0) + 1;
-        checkInMessage.textContent = '签到成功，获得1点奖励！';
-        checkInMessage.style.color = 'green';
-      }
-
-      checkedInDates[lastLoggedInUser] = today;
-      localStorage.setItem('userPoints', JSON.stringify(userPoints));
-      localStorage.setItem('checkedInDates', JSON.stringify(checkedInDates));
-      updateUserPointsDisplay(lastLoggedInUser);
-      updatePointsRanking();
-    });
-
-    // 更新用户点数显示
-    function updateUserPointsDisplay(username) {
-      const points = userPoints[username] || 0;
-      document.getElementById('userPoints').textContent = `你的总点数: ${points}`;
-    }
-
-    // 更新点数排行榜
-    function updatePointsRanking() {
-      const rankingList = Object.entries(userPoints).sort((a, b) => b[1] - a[1]);
-      const rankingElement = document.getElementById('pointsRanking');
-      rankingElement.innerHTML = '';
-
-      rankingList.forEach(([username, points], index) => {
-        const listItem = document.createElement('li');
-        listItem.textContent = `${index + 1}. ${username}: ${points} 点`;
-        rankingElement.appendChild(listItem);
-      });
-    }
-  </script>
-</body>
-
-
-</html>
+  <script>
 
 
