@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<link rel="icon" href="https://youke1.picui.cn/s1/2025/09/05/68baf71be3d28.ico" type="image/x-icon">
+ <!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/6946bb631cf1e_1766243171.png" type="image/x-icon">
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -218,10 +218,10 @@
           <label class="block text-sm font-medium text-gray-700">源时区</label>
           <div class="relative">
             <select id="source-timezone" class="w-full p-3 border border-gray-300 rounded-lg appearance-none bg-gray-50 focus:outline-none">
-              <option value="Asia/Shanghai">北京 (Asia/Shanghai)</option>
+              <option value="Asia/Shanghai">北京 (China/HongKong)</option>
               <option value="America/New_York">纽约 (America/New_York)</option>
               <option value="Europe/London">伦敦 (Europe/London)</option>
-              <option value="Asia/Tokyo">东京 (Asia/Tokyo)</option>
+              <option value="Asia/Tokyo">东京 (Japan/Tokyo)</option>
               <option value="UTC">UTC</option>
               <option value="Europe/Paris">巴黎 (Europe/Paris)</option>
               <option value="Asia/Dubai">迪拜 (Asia/Dubai)</option>
@@ -280,38 +280,6 @@
       </div>
     </section>
 
-    <!-- 时区信息 -->
-    <section class="max-w-5xl mx-auto">
-      <h2 class="text-[clamp(1.25rem,2vw,2rem)] font-bold mb-6 text-center">世界时区地图</h2>
-      <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100 overflow-hidden">
-        <div class="relative h-[300px] md:h-[400px] bg-blue-50 rounded-lg overflow-hidden">
-          <img src="https://picsum.photos/id/101/1200/800" alt="世界时区地图" class="w-full h-full object-cover opacity-70">
-          <div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
-          
-          <!-- 时区标记点 -->
-          <div class="absolute top-1/4 left-1/4 w-4 h-4 bg-red-500 rounded-full animate-pulse" title="纽约"></div>
-          <div class="absolute top-1/3 left-2/3 w-4 h-4 bg-green-500 rounded-full animate-pulse" title="伦敦"></div>
-          <div class="absolute top-1/2 right-1/4 w-4 h-4 bg-blue-500 rounded-full animate-pulse" title="北京"></div>
-          <div class="absolute top-1/2 right-1/5 w-4 h-4 bg-yellow-500 rounded-full animate-pulse" title="东京"></div>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <h3 class="font-semibold flex items-center"><i class="fa fa-lightbulb-o text-yellow-500 mr-2"></i> 夏令时说明</h3>
-            <p class="text-sm text-gray-600 mt-2">部分国家和地区会实行夏令时，通常在春季将时间调快1小时，秋季调回。本工具已考虑夏令时因素。</p>
-          </div>
-          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <h3 class="font-semibold flex items-center"><i class="fa fa-info-circle text-primary mr-2"></i> UTC 说明</h3>
-            <p class="text-sm text-gray-600 mt-2">协调世界时(UTC)是世界标准时间，所有时区都以UTC为基准加减。例如北京时间是UTC+8。</p>
-          </div>
-          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
-            <h3 class="font-semibold flex items-center"><i class="fa fa-clock-o text-accent mr-2"></i> 实时更新</h3>
-            <p class="text-sm text-gray-600 mt-2">本工具会实时更新所有显示的时间，精度为秒级，确保您获得准确的时间信息。</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
 
   <script>
     // 初始化日期和时间输入为当前本地时间
