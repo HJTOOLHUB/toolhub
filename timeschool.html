@@ -7,7 +7,7 @@
   <title>在线时钟校园版</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
+  <html class="dark"></html>
   <!-- Tailwind 配置 -->
   <script>
     tailwind.config = {
@@ -140,14 +140,20 @@
     <div class="w-full max-w-7xl bg-white rounded-2xl clock-shadow p-6 md:p-8 card-hover">
       <!-- 日期显示 -->
       <div class="text-center mb-8 md:mb-12">
-        <p class="text-3xl md:text-4xl font-bold mb-4">•时钟校园版•</p>
-        <p id="dateDisplay" class="text-black font-bold text-xl md:text-2.5xl px-4 md:px-10 text-shadow">
+        <p class="text-3xl md:text-6xl font-bold mb-2 text-red-600">8B8晚自习三不准：</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-2.5xl px-4 md:px-10 text-shadow">不准转头</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-2.5xl px-4 md:px-10 text-shadow">不准讲话</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-2.5xl px-4 md:px-10 text-shadow">不准下位</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-2.5xl px-4 md:px-10 text-shadow"> </p>
+        <br>
+        <p class="text-3xl md:text-4xl font-bold mb-3">•时钟校园版•</p>
+        <p id="dateDisplay" class="text-black font-bold text-xl md:text-1.5xl px-3 md:px-10 text-shadow ">
           2025年6月25日 星期三
         </p>
       </div>
 
       <!-- 时钟显示 -->
-      <div class="flex flex-col mb-8 items-center">
+      <div class="flex flex-col mb-2 items-center">
         <div id="clockDisplay" class="text-[clamp(4rem,17vw,13rem)] font-bold text-neutral-900 mb-6 text-shadow">
           14:30:45
         </div>
@@ -163,12 +169,16 @@
     <!-- 公告栏 -->
     <div class="announcement-board mt-6">
       <div class="announcement active">
-        <p>⌊杂杂时钟校园版⌉ 你的校园时间管家</p>
-        <p>•无广告干扰• 拒绝弹窗广告打断学习节奏，利於學生專注學習</p>
-        <p>•页面干净简洁• 拒绝杂乱的UI干扰专注力</p>
+        <p class="text-center font-bold text-xl md:text-2.8xl px-4 md:px-10 text-shadow">8B8晚自习三不准：</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准转头</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准讲话</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准下位</p>
       </div>
       <div class="announcement">
-        <p>欢迎使用本时钟网站，团队会时刻更新</p>
+        <p class="text-center font-bold text-xl md:text-2.8xl px-4 md:px-10 text-shadow">8B8晚自习三不准：</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准转头</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准讲话</p>
+        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow">不准下位</p>
       </div>
 
       <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
@@ -179,7 +189,7 @@
   <!-- 页脚 -->
   <footer class="bg-white border-t border-neutral-200 py-6 mt-12">
     <div class="container mx-auto px-4 text-center text-neutral-500 text-sm">
-      <p>© 2025 三龍工作室●运营团队保留一切权利。This web made in ZZ!</p>
+      <p>© 2025 Hou WenJie●运营团队保留一切权利。This web made in ZZ!</p>
       <p class="mt-2">使用即表示您同意我们的服务条款和隐私政策</p>
     </div>
   </footer>
