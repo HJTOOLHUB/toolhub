@@ -7,12 +7,10 @@
   <title>在线时钟校园版</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- 移除硬编码的dark类，改为动态控制 -->
-  <html></html>
+  <!-- 移除重复的html标签 -->
   <!-- Tailwind 配置 -->
   <script>
     tailwind.config = {
-      darkMode: 'class', // 启用class模式的暗色主题
       theme: {
         extend: {
           colors: {
@@ -45,24 +43,12 @@
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
       }
 
-      .dark .clock-shadow {
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-      }
-
       .btn-glow {
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
       }
 
-      .dark .btn-glow {
-        box-shadow: 0 0 15px rgba(18, 183, 245, 0.5);
-      }
-
       .text-shadow {
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      }
-
-      .dark .text-shadow {
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       .card-hover {
@@ -84,10 +70,6 @@
         margin-bottom: 1rem;
         overflow: hidden;
         position: relative;
-      }
-
-      .dark .announcement-board {
-        background-color: rgb(31, 41, 55);
       }
 
       .announcement {
@@ -123,14 +105,6 @@
         background-color: rgba(0, 0, 0, 0.7);
       }
 
-      .dark .announcement-btn {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-
-      .dark .announcement-btn:hover {
-        background-color: rgba(255, 255, 255, 0.4);
-      }
-
       .announcement-btn.prev {
         left: 1rem;
       }
@@ -159,26 +133,66 @@
         border-left: 4px solid #0F766E; /* 左侧深绿色竖条 */
       }
 
-      .dark .toast {
-        background-color: #1F2937;
-        color: #F5F5F5;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-      }
-
       .toast.show {
         opacity: 1;
         transform: translateX(0);
+      }
+
+      /* 苹果风格开关样式 */
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #12B7F5;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(24px);
       }
     }
   </style>
 </head>
 
-<body class="bg-neutral-100 dark:bg-neutral-900 font-inter text-neutral-800 dark:text-neutral-100 min-h-screen flex flex-col transition-colors duration-300">
+<body class="bg-neutral-100 font-inter text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300">
   <!-- 提示框 -->
   <div id="toast" class="toast"></div>
 
   <!-- 顶部导航 -->
-  <header class="bg-white dark:bg-neutral-800 shadow-sm sticky top-0 z-50 transition-colors duration-300">
+  <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-neutral-800 dark:border-neutral-700 transition-colors duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <i class="fa fa-clock-o text-primary text-2xl"></i>
@@ -186,16 +200,20 @@
       </div>
       <nav>
         <ul class="flex space-x-6 items-center">
-          <li><a href="#" class="text-neutral-600 dark:text-neutral-200 hover:text-primary transition-colors"> </a></li>
-          <li><a href="#" class="text-neutral-600 dark:text-neutral-200 hover:text-primary transition-colors"> </a></li>
-          <li><a href="#" class="text-neutral-600 dark:text-neutral-200 hover:text-primary transition-colors"> </a></li>
-          <!-- 黑夜模式开关 -->
+          <!-- 添加返回首页按钮 -->
           <li>
-            <button id="darkModeToggle" class="flex items-center space-x-1 text-neutral-600 dark:text-neutral-200 hover:text-primary transition-colors focus:outline-none">
-              <i class="fa fa-moon-o dark:hidden text-lg"></i>
-              <i class="fa fa-sun-o hidden dark:block text-lg"></i>
-              <span class="hidden sm:inline">黑夜模式</span>
-            </button>
+            <a href="index.exe" class="flex items-center text-neutral-600 hover:text-primary dark:text-neutral-200 dark:hover:text-primary transition-colors">
+              <i class="fa fa-home mr-1"></i>
+              <span>返回首页</span>
+            </a>
+          </li>
+          <!-- 苹果风格黑夜模式开关 -->
+          <li class="flex items-center space-x-2">
+            <span class="text-neutral-600 dark:text-neutral-200">黑夜模式</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="darkModeToggle">
+              <span class="toggle-slider"></span>
+            </label>
           </li>
         </ul>
       </nav>
@@ -206,23 +224,23 @@
   <!-- 主内容区 -->
   <main class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
     <!-- 时钟卡片 -->
-    <div class="w-full max-w-7xl bg-white dark:bg-neutral-800 rounded-2xl clock-shadow p-6 md:p-8 card-hover transition-colors duration-300">
+    <div class="w-full max-w-7xl bg-white rounded-2xl clock-shadow p-6 md:p-8 card-hover dark:bg-neutral-800 transition-colors duration-300">
       <!-- 日期显示 -->
       <div class="text-center mb-0 md:mb-5">
-        <p class="text-3xl md:text-9xl font-bold mb-2 text-red-600 dark:text-red-400">8B8晚自习三不准：</p>
-        <p class="text-black dark:text-white text-red-600 dark:text-red-400 font-bold text-xl md:text-9xl px-3 md:px-10 text-shadow">不准转头</p>
-        <p class="text-black dark:text-white text-red-600 dark:text-red-400 font-bold text-xl md:text-9xl px-4 md:px-10 text-shadow">不准讲话</p>
-        <p class="text-black dark:text-white text-red-600 dark:text-red-400 font-bold text-xl md:text-9xl px-4 md:px-10 text-shadow">不准下位</p>
+        <p class="text-3xl md:text-5xl font-bold mb-2 text-red-600 dark:text-red-400">8B8晚自习三不准：</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-4xl px-3 md:px-10 text-shadow dark:text-white dark:text-red-400">不准转头</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-4xl px-4 md:px-10 text-shadow dark:text-white dark:text-red-400">不准讲话</p>
+        <p class="text-black text-red-600 font-bold text-xl md:text-4xl px-4 md:px-10 text-shadow dark:text-white dark:text-red-400">不准下位</p>
       </div>
 
       <!-- 时钟显示 -->
       <div class="flex flex-col mb-0 items-center">
-        <div id="clockDisplay" class="text-[clamp(2rem,13vw,12rem)]  md:text-8xl font-bold text-neutral-900 dark:text-white mb-0 text-shadow">
+        <div id="clockDisplay" class="text-[clamp(2rem,13vw,12rem)] font-bold text-neutral-900 mb-0 text-shadow dark:text-white">
           14:30:45
         </div>
  
       <!-- 日期显示 -->
-        <p id="dateDisplay" class="text-3xl font-bold text-x1 md:text-1.5xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">
+        <p id="dateDisplay" class="text-3xl font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">
           2025年6月25日 星期三
         </p>
         <br>
@@ -237,18 +255,18 @@
     </div>
 
     <!-- 公告栏 -->
-    <div class="announcement-board mt-6">
+    <div class="announcement-board mt-6 dark:bg-neutral-800 transition-colors duration-300">
       <div class="announcement active">
-        <p class="text-center font-bold text-xl md:text-2.8xl px-4 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">8B8晚自习三不准：</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准转头</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准讲话</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准下位</p>
+        <p class="text-center font-bold text-xl md:text-3xl px-4 md:px-10 text-shadow dark:text-white">8B8晚自习三不准：</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准转头</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准讲话</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准下位</p>
       </div>
       <div class="announcement">
-        <p class="text-center font-bold text-xl md:text-2.8xl px-4 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">8B8晚自习三不准：</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准转头</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准讲话</p>
-        <p class="text-center font-bold text-xl md:text-1xl px-3 md:px-10 text-shadow text-neutral-800 dark:text-neutral-100">不准下位</p>
+        <p class="text-center font-bold text-xl md:text-3xl px-4 md:px-10 text-shadow dark:text-white">8B8晚自习三不准：</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准转头</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准讲话</p>
+        <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准下位</p>
       </div>
 
       <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
@@ -257,7 +275,7 @@
   </main>
 
   <!-- 页脚 -->
-  <footer class="bg-white dark:bg-neutral-800 border-t border-neutral-200 dark:border-neutral-700 py-6 mt-12 transition-colors duration-300">
+  <footer class="bg-white border-t border-neutral-200 py-6 mt-12 dark:bg-neutral-800 dark:border-neutral-700 transition-colors duration-300">
     <div class="container mx-auto px-4 text-center text-neutral-500 dark:text-neutral-400 text-sm">
       <p>© 2025 Hou WenJie●运营团队保留一切权利。This web made in ZZ!</p>
       <p class="mt-2">使用即表示您同意我们的服务条款和隐私政策</p>
@@ -282,44 +300,9 @@
     // 页面加载完成显示欢迎提示
     window.addEventListener('load', () => {
       showToast('欢迎回来');
-      // 初始化黑夜模式
+      // 初始化黑夜模式状态
       initDarkMode();
     });
-
-    // 黑夜模式功能
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const htmlElement = document.documentElement;
-
-    // 初始化黑夜模式（从本地存储读取）
-    function initDarkMode() {
-      const isDarkMode = localStorage.getItem('darkMode') === 'true';
-      if (isDarkMode) {
-        htmlElement.classList.add('dark');
-      } else {
-        htmlElement.classList.remove('dark');
-      }
-      updateDarkModeButtonText();
-    }
-
-    // 切换黑夜模式
-    function toggleDarkMode() {
-      const isDarkMode = htmlElement.classList.toggle('dark');
-      localStorage.setItem('darkMode', isDarkMode);
-      updateDarkModeButtonText();
-      showToast(isDarkMode ? '已切换到黑夜模式' : '已切换到亮色模式');
-    }
-
-    // 更新黑夜模式按钮文本/图标
-    function updateDarkModeButtonText() {
-      const isDarkMode = htmlElement.classList.contains('dark');
-      const spanElement = darkModeToggle.querySelector('span');
-      if (spanElement) {
-        spanElement.textContent = isDarkMode ? '亮色模式' : '黑夜模式';
-      }
-    }
-
-    // 绑定黑夜模式切换事件
-    darkModeToggle.addEventListener('click', toggleDarkMode);
 
     // 时钟功能实现
     function updateClock() {
@@ -421,6 +404,41 @@
 
     // 自动轮播公告
     setInterval(nextAnnouncement, 5000);
+
+    // 黑夜模式功能
+    function initDarkMode() {
+      // 从本地存储读取黑夜模式状态
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      const html = document.documentElement;
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      
+      // 设置初始状态
+      if (isDarkMode) {
+        html.classList.add('dark');
+        darkModeToggle.checked = true;
+      } else {
+        html.classList.remove('dark');
+        darkModeToggle.checked = false;
+      }
+
+      // 绑定开关事件
+      darkModeToggle.addEventListener('change', toggleDarkMode);
+    }
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const isChecked = document.getElementById('darkModeToggle').checked;
+      
+      if (isChecked) {
+        html.classList.add('dark');
+        localStorage.setItem('darkMode', 'true');
+        showToast('已开启黑夜模式');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('darkMode', 'false');
+        showToast('已关闭黑夜模式');
+      }
+    }
   </script>
 </body>
 </html>
