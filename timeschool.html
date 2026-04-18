@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <link rel="icon" href="https://img.cdn1.vip/i/6946bb631cf1e_1766243171.png" type="image/x-icon">
 <html lang="zh-CN">
 <head>
@@ -22,7 +22,8 @@
               300: '#D4D4D4',
               800: '#1F2937',
               900: '#111827',
-            }
+            },
+            toastBorder: '#0F766E', // 提示框左侧深绿色竖条颜色
           },
           fontFamily: {
             inter: ['Inter', 'system-ui', 'sans-serif'],
@@ -111,11 +112,39 @@
       .announcement-btn.next {
         right: 1rem;
       }
+
+      /* 提示框样式 - 优化版 */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #FFFFFF; /* 白色底色 */
+        color: #1F2937; /* 深色文字 */
+        padding: 16px 24px; /* 放大内边距，增大提示框 */
+        border-radius: 8px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* 增强阴影 */
+        z-index: 9999;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        font-size: 18px; /* 放大字体 */
+        font-weight: 500;
+        max-width: 320px; /* 设置最大宽度 */
+        border-left: 4px solid #0F766E; /* 左侧深绿色竖条 */
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   </style>
 </head>
 
 <body class="bg-neutral-100 font-inter text-neutral-800 min-h-screen flex flex-col">
+  <!-- 提示框 -->
+  <div id="toast" class="toast"></div>
+
   <!-- 顶部导航 -->
   <header class="bg-white shadow-sm sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
@@ -196,6 +225,25 @@
   </footer>
 
   <script>
+    // 提示框功能
+    const toast = document.getElementById('toast');
+    
+    // 显示提示框
+    function showToast(message, duration = 3000) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      
+      // 自动隐藏
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // 页面加载完成显示欢迎提示
+    window.addEventListener('load', () => {
+      showToast('欢迎回来');
+    });
+
     // 时钟功能实现
     function updateClock() {
       const now = new Date();
@@ -236,6 +284,8 @@
           document.documentElement.msRequestFullscreen();
         }
         fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
+        // 显示进入全屏提示
+        showToast('已进入全屏模式');
       } else {
         // 退出全屏
         if (document.exitFullscreen) {
@@ -294,7 +344,6 @@
 
     // 自动轮播公告
     setInterval(nextAnnouncement, 5000);
-</script>
+  </script>
 </body>
-
 </html>
