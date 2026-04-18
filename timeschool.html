@@ -7,10 +7,10 @@
   <title>在线时钟校园版</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- 移除重复的html标签 -->
   <!-- Tailwind 配置 -->
   <script>
     tailwind.config = {
+      darkMode: 'class', // 显式开启class模式的darkMode
       theme: {
         extend: {
           colors: {
@@ -59,7 +59,7 @@
         transform: translateY(-5px);
       }
 
-      /* 公告栏样式 */
+      /* 公告栏样式 - 适配黑夜模式 */
       .announcement-board {
         width: 100%;
         max-width: 7xl;
@@ -70,6 +70,8 @@
         margin-bottom: 1rem;
         overflow: hidden;
         position: relative;
+        /* 黑夜模式适配 */
+        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
       }
 
       .announcement {
@@ -99,10 +101,8 @@
         border-radius: 50%;
         z-index: 10;
         transition: background-color 0.3s;
-      }
-
-      .announcement-btn:hover {
-        background-color: rgba(0, 0, 0, 0.7);
+        /* 黑夜模式适配 */
+        @apply dark:bg-neutral-700 dark:hover:bg-neutral-600;
       }
 
       .announcement-btn.prev {
@@ -113,7 +113,7 @@
         right: 1rem;
       }
 
-      /* 提示框样式 - 优化版 */
+      /* 提示框样式 - 优化版 + 黑夜模式适配 */
       .toast {
         position: fixed;
         top: 20px;
@@ -131,6 +131,8 @@
         font-weight: 500;
         max-width: 320px; /* 设置最大宽度 */
         border-left: 4px solid #0F766E; /* 左侧深绿色竖条 */
+        /* 黑夜模式适配 */
+        @apply dark:bg-neutral-800 dark:text-white dark:border-neutral-600 dark:shadow-lg dark:shadow-black/20;
       }
 
       .toast.show {
@@ -162,6 +164,8 @@
         background-color: #ccc;
         transition: .4s;
         border-radius: 34px;
+        /* 黑夜模式适配 */
+        @apply dark:bg-neutral-700;
       }
 
       .toggle-slider:before {
@@ -179,10 +183,6 @@
       input:checked + .toggle-slider {
         background-color: #12B7F5;
       }
-
-      input:checked + .toggle-slider:before {
-        transform: translateX(24px);
-      }
     }
   </style>
 </head>
@@ -192,7 +192,7 @@
   <div id="toast" class="toast"></div>
 
   <!-- 顶部导航 -->
-  <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-neutral-800 dark:border-neutral-700 transition-colors duration-300">
+  <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-neutral-800 dark:border-b dark:border-neutral-700 transition-colors duration-300">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <i class="fa fa-clock-o text-primary text-2xl"></i>
@@ -224,7 +224,7 @@
   <!-- 主内容区 -->
   <main class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
     <!-- 时钟卡片 -->
-    <div class="w-full max-w-7xl bg-white rounded-2xl clock-shadow p-6 md:p-8 card-hover dark:bg-neutral-800 transition-colors duration-300">
+    <div class="w-full max-w-7xl bg-white rounded-2xl clock-shadow p-6 md:p-8 card-hover dark:bg-neutral-800 dark:shadow-black/10 dark:border dark:border-neutral-700 transition-colors duration-300">
       <!-- 日期显示 -->
       <div class="text-center mb-0 md:mb-5">
         <p class="text-3xl md:text-5xl font-bold mb-2 text-red-600 dark:text-red-400">8B8晚自习三不准：</p>
@@ -247,7 +247,7 @@
         <br>
 
         <!-- 全屏按钮 -->
-        <button id="fullscreenBtn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full mb-4 transition-all duration-300 flex items-center btn-glow">
+        <button id="fullscreenBtn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full mb-4 transition-all duration-300 flex items-center btn-glow dark:shadow-primary/20">
           <i class="fa fa-expand mr-2"></i>
           <span>点击我进入全屏模式</span>
         </button>
@@ -255,7 +255,7 @@
     </div>
 
     <!-- 公告栏 -->
-    <div class="announcement-board mt-6 dark:bg-neutral-800 transition-colors duration-300">
+    <div class="announcement-board mt-6">
       <div class="announcement active">
         <p class="text-center font-bold text-xl md:text-3xl px-4 md:px-10 text-shadow dark:text-white">8B8晚自习三不准：</p>
         <p class="text-center font-bold text-xl md:text-2xl px-3 md:px-10 text-shadow dark:text-white">不准转头</p>
