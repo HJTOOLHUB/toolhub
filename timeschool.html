@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>在线时钟校园版</title>
+  <title>在线时钟校园版 | 杂杂时钟</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <script>
@@ -242,7 +243,7 @@
       /* 日历卡片 - 大幅度减小尺寸 (最大宽度sm，紧凑卡片) */
       .calendar-card {
         width: 80%;
-        max-width: sm;        /* 大幅度缩小卡片宽度，类似小尺寸面板 */
+        max-width: 28rem;        /* 大幅度缩小卡片宽度，类似小尺寸面板 */
         border-radius: 10px;
         box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
         padding: 0.75rem 0.75rem 1rem 0.75rem;
@@ -293,7 +294,7 @@
         border-radius: 12px;
         cursor: pointer;
         font-weight: 1000;      /* 粗体 */
-        font-size: 2rem;       /* 小卡片内保持可读 */
+        font-size: 1rem;       /* 小卡片内保持可读，修复过大溢出 */
         transition: all 0.15s;
         position: relative;
         background-color: transparent;
@@ -305,7 +306,7 @@
         @apply dark:bg-blue-900/20 dark:text-blue-300 font-extrabold;
       }
       .calendar-day.today {
-        border: 3px solid #1280f5;
+        border: 2px solid #12B7F5;
         font-weight: 900;
         background-color: rgba(18, 183, 245, 0.08);
       }
@@ -444,7 +445,7 @@
     <div class="container mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
       <div class="flex items-center space-x-2"><i class="fa fa-clock-o text-primary text-2xl"></i><h1 class="text-xl font-bold">杂杂时钟校园版</h1></div>
       <nav><ul class="flex space-x-4 md:space-x-6 items-center flex-wrap">
-        <li><a href="index.html" class="flex items-center font-bold text-neutral-600 hover:text-primary dark:text-neutral-200"><i class="fa fa-home mr-1"></i><span>返回首页</span></a></li>
+        <li><a href="#" id="homeLink" class="flex items-center font-bold text-neutral-600 hover:text-primary dark:text-neutral-200"><i class="fa fa-home mr-1"></i><span>返回首页</span></a></li>
         <li><button id="openBgSettings" class="flex items-center font-bold"><i class="fa fa-picture-o mr-1"></i><span>背景设置</span></button></li>
         <li><button id="openReminderSettings" class="flex items-center font-bold"><i class="fa fa-bell mr-1"></i><span>日历提醒设置</span></button></li>
         <li class="flex items-center space-x-2"><span class="font-bold">黑夜模式</span><label class="toggle-switch"><input type="checkbox" id="darkModeToggle"><span class="toggle-slider"></span></label></li>
@@ -474,11 +475,11 @@
     <div class="calendar-card mt-5 card-hover">
       <div class="calendar-header font-bold text-2xl md:text-4xl mt-2">
         <button id="prevMonth" class="calendar-nav-btn"><i class="fa fa-chevron-left mr-1"></i> 上月</button>
-        <h2 id="calendarMonth" class="text-blod font-extrabold dark:text-white md:text-3x1">2026年4月</h2>
+        <h2 id="calendarMonth" class="font-extrabold dark:text-white md:text-3xl">2026年4月</h2>
         <button id="nextMonth" class="calendar-nav-btn">下月 <i class="fa fa-chevron-right ml-1"></i></button>
       </div>
-      <div class="calendar-grid md:text-3xl mt-2">
-        <div class="calendar-day-header md:text-3xl mt-2">日</div><div class="calendar-day-header md:text-3xl mt-2">一</div><div class="calendar-day-header md:text-3xl mt-2">二</div><div class="calendar-day-header md:text-3xl mt-2">三</div><div class="calendar-day-header md:text-3xl mt-2">四</div><div class="calendar-day-header md:text-3xl mt-2">五</div><div class="calendar-day-header md:text-3xl mt-2">六</div>
+      <div class="calendar-grid mt-2">
+        <div class="calendar-day-header">日</div><div class="calendar-day-header">一</div><div class="calendar-day-header">二</div><div class="calendar-day-header">三</div><div class="calendar-day-header">四</div><div class="calendar-day-header">五</div><div class="calendar-day-header">六</div>
         <div id="calendarDays" style="display: contents;"></div>
       </div>
     </div>
@@ -487,8 +488,8 @@
     <div id="announcementBoard" class="announcement-board mt-6">
       <div class="announcement active"><p class="text-center font-bold text-2xl md:text-4xl text-red-600 dark:text-red-400">8B8晚自习三不准：</p><p class="text-center text-xl md:text-2xl">不准转头</p><p class="text-center text-xl md:text-2xl">不准讲话</p><p class="text-center text-xl md:text-2xl">不准下位</p></div>
       <div class="announcement"><p class="text-center font-bold text-2xl md:text-3xl">2026/04/18更新日志</p><p class="text-center text-base md:text-lg">1. 时钟卡片增大，日历大幅缩小</p><p class="text-center text-base md:text-lg">2. 卡片间距显著增加</p><p class="text-center text-base md:text-lg">3. 日历文字加粗，液态玻璃优化</p><p class="text-center text-base md:text-lg">4. 方形按钮 + 开关视觉增强</p><p class="text-center text-base md:text-lg">5. 支持本地上传背景并永久保存</p><p class="text-center text-base md:text-lg">6. 官方背景三张高清壁纸预览</p></div>
-      <button class="announcement-btn prev" onclick="prevAnnouncement()"><i class="fa fa-chevron-left"></i></button>
-      <button class="announcement-btn next" onclick="nextAnnouncement()"><i class="fa fa-chevron-right"></i></button>
+      <button class="announcement-btn prev" id="prevAnnounceBtn"><i class="fa fa-chevron-left"></i></button>
+      <button class="announcement-btn next" id="nextAnnounceBtn"><i class="fa fa-chevron-right"></i></button>
     </div>
   </main>
 
@@ -539,21 +540,23 @@
 
     function checkReminders(now) {
       const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      reminderList.forEach(r => { if(r.date === today && !r.shown) { showToast(`📅 今日提醒：${r.name} - ${r.desc}`, 5000, true); r.shown=true; localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); } });
+      let updated = false;
+      reminderList.forEach(r => { if(r.date === today && !r.shown) { showToast(`📅 今日提醒：${r.name} - ${r.desc || '无描述'}`, 5000, true); r.shown=true; updated=true; } });
+      if(updated) { localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); }
     }
 
     let fullscreenBtn = null;
     function toggleFullscreen() {
       try {
-        if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>'; showToast('已进入全屏模式'); }
-        else { document.exitFullscreen(); fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; showToast('已退出全屏模式'); }
+        if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); if(fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>'; showToast('已进入全屏模式'); }
+        else { document.exitFullscreen(); if(fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; showToast('已退出全屏模式'); }
       } catch(e) { showToast('全屏失败',2000,true); }
     }
     function updateFullscreenButton() { if(fullscreenBtn) fullscreenBtn.innerHTML = document.fullscreenElement ? '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>' : '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; }
 
     function showAnnouncement(index) { if(!announcements.length) return; index = (index+announcements.length)%announcements.length; currentAnnouncementIndex=index; announcements.forEach((a,i)=> i===index ? a.classList.add('active') : a.classList.remove('active')); }
-    window.nextAnnouncement = function() { showAnnouncement(currentAnnouncementIndex+1); };
-    window.prevAnnouncement = function() { showAnnouncement(currentAnnouncementIndex-1); };
+    function nextAnnouncement() { showAnnouncement(currentAnnouncementIndex+1); }
+    function prevAnnouncement() { showAnnouncement(currentAnnouncementIndex-1); }
     function startAnnouncementInterval() { if(announcementInterval) clearInterval(announcementInterval); announcementInterval = setInterval(()=> nextAnnouncement(), 5000); }
 
     // 黑夜模式
@@ -564,7 +567,7 @@
       toggle.addEventListener('change',()=>{
         if(toggle.checked){ document.documentElement.classList.add('dark'); localStorage.setItem('darkMode','true'); showToast('已开启黑夜模式'); }
         else { document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode','false'); showToast('已关闭黑夜模式'); }
-        updateGlassBackground(); renderCalendar();
+        renderCalendar();
       });
     }
     function initGlassMode() {
@@ -576,42 +579,26 @@
         else { localStorage.setItem('glassMode','false'); document.body.classList.remove('glass-mode'); showToast('已关闭液态玻璃UI'); }
       });
     }
-    function updateGlassBackground() { if(document.body.classList.contains('glass-mode')) document.body.classList.add('glass-mode'); }
 
-    // 统一的背景设置函数（支持url或本地dataURL）
     function setBackgroundImage(source, isLocalFile = false) {
-      if(isLocalFile) {
-        document.body.style.backgroundImage = `url(${source})`;
-        localStorage.setItem('backgroundImage', source);
-        localStorage.setItem('backgroundIsLocal', 'true');
-      } else {
-        document.body.style.backgroundImage = `url(${source})`;
-        localStorage.setItem('backgroundImage', source);
-        localStorage.setItem('backgroundIsLocal', 'false');
-      }
-      // 更新官方小图高亮状态：如果当前背景匹配某个官方图片，则高亮对应缩略图
+      document.body.style.backgroundImage = `url(${source})`;
+      localStorage.setItem('backgroundImage', source);
+      localStorage.setItem('backgroundIsLocal', isLocalFile ? 'true' : 'false');
       highlightActiveOfficialBg(source);
     }
     
     function highlightActiveOfficialBg(currentSrc) {
-      if(!currentSrc) return;
+      if(!currentSrc) { document.querySelectorAll('.bg-thumb-item').forEach(item => item.classList.remove('active-bg')); return; }
       const thumbItems = document.querySelectorAll('.bg-thumb-item');
       let matched = false;
-      thumbItems.forEach((item, idx) => {
+      thumbItems.forEach((item) => {
         const imgSrc = item.getAttribute('data-bg-url');
-        if(imgSrc === currentSrc) {
-          item.classList.add('active-bg');
-          matched = true;
-        } else {
-          item.classList.remove('active-bg');
-        }
+        if(imgSrc === currentSrc) { item.classList.add('active-bg'); matched = true; } 
+        else item.classList.remove('active-bg');
       });
-      if(!matched) {
-        thumbItems.forEach(item => item.classList.remove('active-bg'));
-      }
+      if(!matched) thumbItems.forEach(item => item.classList.remove('active-bg'));
     }
 
-    // 重置背景
     function resetBackground() {
       document.body.style.backgroundImage = '';
       localStorage.removeItem('backgroundImage');
@@ -620,34 +607,24 @@
       const previewImg = document.getElementById('localBgPreview');
       if(previewImg) { previewImg.style.display = 'none'; previewImg.src = ''; }
       highlightActiveOfficialBg('');
+      showToast('背景已重置');
     }
 
-    // 本地上传处理逻辑
     function initLocalUpload() {
       const fileInput = document.getElementById('localBgUpload');
       const uploadLabel = document.querySelector('.local-upload-label');
       const previewContainer = document.getElementById('localBgPreview');
-      
       if(uploadLabel && fileInput) {
-        uploadLabel.addEventListener('click', () => {
-          fileInput.click();
-        });
+        uploadLabel.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
           const file = e.target.files[0];
           if(!file) return;
-          if(!file.type.startsWith('image/')) {
-            showToast('请选择图片文件 (jpg/png/webp)', 2000, true);
-            return;
-          }
+          if(!file.type.startsWith('image/')) { showToast('请选择图片文件 (jpg/png/webp)', 2000, true); return; }
           const reader = new FileReader();
           reader.onload = function(evt) {
             const dataUrl = evt.target.result;
             setBackgroundImage(dataUrl, true);
-            if(previewContainer) {
-              previewContainer.src = dataUrl;
-              previewContainer.style.display = 'block';
-              previewContainer.style.maxHeight = '100px';
-            }
+            if(previewContainer) { previewContainer.src = dataUrl; previewContainer.style.display = 'block'; }
             document.getElementById('bgImageUrl').value = '';
             showToast('本地背景已应用并自动保存！下次打开仍会显示', 3000);
             document.getElementById('bgOverlay').classList.remove('show');
@@ -659,7 +636,6 @@
       }
     }
     
-    // 渲染官方背景小图区域
     function initOfficialBackgrounds() {
       const container = document.getElementById('officialBgThumbs');
       if(!container) return;
@@ -680,7 +656,6 @@
           if(previewImg) previewImg.style.display = 'none';
           document.getElementById('bgImageUrl').value = '';
           showToast(`已应用官方背景 ${idx+1}`);
-          // 自动关闭背景卡片 (体验优化)
           document.getElementById('bgOverlay').classList.remove('show');
           document.getElementById('bgSettingsCard').classList.remove('show');
         });
@@ -688,29 +663,18 @@
       });
     }
 
-    // 初始化背景: 优先读取本地保存的背景(可能为dataURL或网络URL)
     function initBackgroundFromStorage() {
       const savedBg = localStorage.getItem('backgroundImage');
-      const isLocal = localStorage.getItem('backgroundIsLocal') === 'true';
       if(savedBg && savedBg.trim() !== '') {
         document.body.style.backgroundImage = `url(${savedBg})`;
-        if(isLocal && savedBg.startsWith('data:image')) {
+        if(savedBg.startsWith('data:image')) {
           const previewImg = document.getElementById('localBgPreview');
-          if(previewImg) {
-            previewImg.src = savedBg;
-            previewImg.style.display = 'block';
-          }
-        }
-        if(!savedBg.startsWith('data:image')) {
-          document.getElementById('bgImageUrl').value = savedBg;
-        }
+          if(previewImg) { previewImg.src = savedBg; previewImg.style.display = 'block'; }
+        } else { document.getElementById('bgImageUrl').value = savedBg; }
         highlightActiveOfficialBg(savedBg);
-      } else {
-        document.body.style.backgroundImage = '';
-      }
+      } else { resetBackground(); }
     }
 
-    // 背景设置UI事件
     function initBackgroundSettings() {
       initBackgroundFromStorage();
       const openBtn = document.getElementById('openBgSettings'), closeBtn = document.getElementById('closeBgSettings'), overlay = document.getElementById('bgOverlay'), card = document.getElementById('bgSettingsCard'), applyBtn = document.getElementById('applyBgImage'), resetBtn = document.getElementById('resetBgImage'), urlInput = document.getElementById('bgImageUrl');
@@ -728,12 +692,7 @@
           card.classList.remove('show'); 
         } else showToast('请输入URL或使用本地上传/官方背景',2000,true); 
       };
-      resetBtn.onclick = ()=>{ 
-        resetBackground(); 
-        showToast('背景已重置'); 
-        overlay.classList.remove('show'); 
-        card.classList.remove('show');
-      };
+      resetBtn.onclick = ()=>{ resetBackground(); overlay.classList.remove('show'); card.classList.remove('show'); };
     }
 
     function renderRemindersList() {
@@ -741,21 +700,20 @@
       if(!container) return;
       if(reminderList.length===0){ container.innerHTML='<div class="text-center text-neutral-500">暂无提醒</div>'; return; }
       container.innerHTML = '';
-      reminderList.forEach(r=>{ const div = document.createElement('div'); div.className='p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center'; div.innerHTML=`<div><div class="font-bold">${escapeHtml(r.name)}</div><div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div><button class="text-red-500" onclick="deleteReminder(${r.id})"><i class="fa fa-times"></i></button>`; container.appendChild(div); });
+      reminderList.forEach(r=>{ const div = document.createElement('div'); div.className='p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center'; div.innerHTML=`<div><div class="font-bold">${escapeHtml(r.name)}</div><div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div><button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>`; container.appendChild(div); });
+      document.querySelectorAll('.delete-reminder-btn').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.getAttribute('data-id')); reminderList = reminderList.filter(r=>r.id!==id); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); showToast('提醒已删除'); }); });
     }
-    window.deleteReminder = function(id){ reminderList = reminderList.filter(r=>r.id!==id); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); showToast('提醒已删除'); };
     function initReminderSettings(){
       renderRemindersList();
       const openBtn = document.getElementById('openReminderSettings'), closeBtn = document.getElementById('closeReminderSettings'), overlay = document.getElementById('reminderOverlay'), card = document.getElementById('reminderSettingsCard'), addBtn = document.getElementById('addReminder'), clearBtn = document.getElementById('clearReminders'), nameInp = document.getElementById('reminderName'), dateInp = document.getElementById('reminderDate'), descInp = document.getElementById('reminderDesc');
       openBtn.onclick = ()=>{ overlay.classList.add('show'); card.classList.add('show'); };
       closeBtn.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
       overlay.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
-      addBtn.onclick = ()=>{ let name = nameInp.value.trim(), date = dateInp.value, desc = descInp.value.trim(); if(!name||!date){ showToast('请填写名称和日期',2000,true); return; } reminderList.push({id:Date.now(), name, date, desc, shown:false}); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); nameInp.value=''; dateInp.value=''; descInp.value=''; showToast('提醒已添加'); };
-      clearBtn.onclick = ()=>{ if(confirm('清空所有提醒？')){ reminderList=[]; localStorage.setItem('reminders','[]'); renderRemindersList(); showToast('已清空'); } };
+      addBtn.onclick = ()=>{ let name = nameInp.value.trim(), date = dateInp.value, desc = descInp.value.trim(); if(!name||!date){ showToast('请填写名称和日期',2000,true); return; } reminderList.push({id:Date.now(), name, date, desc, shown:false}); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); nameInp.value=''; dateInp.value=''; descInp.value=''; showToast('提醒已添加'); };
+      clearBtn.onclick = ()=>{ if(confirm('清空所有提醒？')){ reminderList=[]; localStorage.setItem('reminders','[]'); renderRemindersList(); renderCalendar(); showToast('已清空'); } };
     }
     function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-    // 日历渲染
     function renderCalendar() {
       const year = calendarCurrentDate.getFullYear();
       const month = calendarCurrentDate.getMonth();
@@ -776,18 +734,24 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      announcements = document.querySelectorAll('.announcement');
+      announcements = Array.from(document.querySelectorAll('.announcement'));
       fullscreenBtn = document.getElementById('fullscreenBtn');
-      initDarkMode(); initGlassMode(); initBackgroundSettings(); initReminderSettings(); initLocalUpload(); initOfficialBackgrounds();   // 初始化官方背景区域
+      initDarkMode(); initGlassMode(); initBackgroundSettings(); initReminderSettings(); initLocalUpload(); initOfficialBackgrounds();
+      
       const prevMonthBtn = document.getElementById('prevMonth'), nextMonthBtn = document.getElementById('nextMonth');
       calendarCurrentDate = new Date();
       renderCalendar();
       prevMonthBtn.addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()-1); renderCalendar(); });
       nextMonthBtn.addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()+1); renderCalendar(); });
+      
       setInterval(updateClock, 1000); updateClock();
       startAnnouncementInterval(); showAnnouncement(0);
       fullscreenBtn.addEventListener('click', toggleFullscreen);
       document.addEventListener('fullscreenchange', updateFullscreenButton);
+      document.getElementById('prevAnnounceBtn')?.addEventListener('click', prevAnnouncement);
+      document.getElementById('nextAnnounceBtn')?.addEventListener('click', nextAnnouncement);
+      document.getElementById('homeLink')?.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      
       const updateCard = document.getElementById('updateCard');
       const confirmUpdateBtn = document.getElementById('confirmUpdate');
       if(!localStorage.getItem('update3.0')) updateCard.classList.add('show');
