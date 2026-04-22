@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
 <html lang="zh-CN">
 <head>
@@ -44,6 +44,34 @@
     </style>
 </head>
 <body class="font-inter bg-gray-50 text-gray-800">
+
+<!-- ===================== 新增：进入网站自动弹出红色提示弹窗 ===================== -->
+<div id="noticeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="relative w-full max-w-lg mx-4 bg-red-600 text-white rounded-2xl shadow-2xl p-8 border border-red-700/30">
+        <div class="flex items-center mb-4">
+            <i class="fa fa-exclamation-triangle text-3xl mr-3"></i>
+            <h3 class="text-2xl font-bold">提示</h3>
+            1. 维护时间：2026年4月22日22:00 - 2026年4月26日02:00<br>
+            2. 受影响工具：除<杂杂时钟>与<网站主页面>外的所有工具将停用<br>
+            3. 原因说明：其他工具因其他开发者未进行维护所严重BUG影响将停用<br>
+            4. 用户影响：在维护期间，受影响工具将无法使用，请提前做好数据备份<br>
+            5. 新版预告：我们正在积极开发新版工具，预计将在2026年5月上线，敬请期待！<br>
+        </div>
+    
+        <button onclick="closeNotice()" class="w-full py-3 bg-white text-red-600 font-bold rounded-xl hover:bg-gray-100 transition-all">
+            我已知晓
+        </button>
+    </div>
+</div>
+
+<script>
+    // 关闭弹窗
+    function closeNotice() {
+        document.getElementById('noticeModal').style.display = 'none';
+    }
+</script>
+<!-- ===================== 弹窗结束，其他代码完全不变 ===================== -->
+
     <!-- 导航栏 -->
     <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,9 +93,7 @@
                     <a href="#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
                     <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
                 </nav>
-                
-               
-                
+                                
                 <!-- 移动端菜单按钮 -->
                 <div class="md:hidden">
                     <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
@@ -94,7 +120,7 @@
 
     <main>
         <!-- 开头区域 -->
-        <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white">
+        <section id="home" class="pt-16 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row items-center">
                     <div class="md:w-1/2 md:pr-12 mb-10 md:mb-0">
@@ -127,10 +153,6 @@
                                 <div class="flex items-center">
                                     <div class="flex text-yellow-400">
                                         <i class="fa fa-star"></i>
-                                        
-                                        
-                                        
-                                    
                                     </div>
                                     <span class="ml-2 text-gray-600 font-medium">1,0</span>
                                 </div>
@@ -229,7 +251,6 @@
                         <p class="text-gray-600 max-w-2xl">用户最常使用的实用工具😁</p>
                     </div>
                     <a href="#" class="mt-4 md:mt-0 text-primary font-medium hover:text-primary/80 transition-colors">
-                        
                     </a>
                 </div>
                 
@@ -424,7 +445,7 @@
                         <div class="flex items-center">
                             <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="font-semibold">翻斗花园强哥
+                                <h4 class="font-semibold">翻斗花园强哥</h4>
                                 <p class="text-sm text-gray-500">软件开发工程师</p>
                             </div>
                         </div>
@@ -432,8 +453,6 @@
                 </div>
             </div>
         </section>
-
-        
 
 <!-- 页脚 -->
     <footer class="bg-dark text-white pt-16 pb-8">
@@ -617,7 +636,3 @@
     </script>
 </body>
 </html>
-
-<title>网页中添加QQ图标</title>
-  <!-- 引入Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

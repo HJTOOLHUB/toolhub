@@ -154,7 +154,7 @@
       }
       .toggle-switch input:checked + .toggle-slider,
       .glass-toggle-switch input:checked + .glass-toggle-slider {
-        background-color: #34C759 !important;
+        background-color: #30b551 !important;
       }
       .toggle-switch input:checked + .toggle-slider:before,
       .glass-toggle-switch input:checked + .glass-toggle-slider:before {
@@ -170,7 +170,7 @@
         transform: translate(-50%, -50%);
         width: 90%;
         max-width: 500px;
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.902);
         border-radius: 12px;
         padding: 2rem;
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -196,7 +196,7 @@
       /* 官方背景预览区域（新增三张小图预览） */
       .official-bg-section {
         margin: 1rem 0;
-        border-top: 1px solid #e5e7eb;
+        border-top: 1px solid #e5e7eb8f;
         padding-top: 1rem;
       }
       .official-bg-title {
@@ -226,7 +226,7 @@
       }
       .bg-thumb-item:hover {
         transform: scale(1.02);
-        border-color: #12B7F5;
+        border-color: #83f512;
         box-shadow: 0 4px 12px rgba(18,183,245,0.3);
       }
       .bg-thumb-item.active-bg {
@@ -262,7 +262,7 @@
         gap: 6px;
       }
       .calendar-nav-btn {
-        background-color: #F3F4F6;
+        background-color: #f3f4f6;
         border: none;
         border-radius: 8px;
         padding: 0.35rem 0.9rem;
@@ -280,7 +280,7 @@
         text-align: center;
         font-weight: 800;
         padding: 0.3rem 0;
-        color: #6B7280;
+        color: #191919;
         font-size: 0.75rem;
         @apply dark:text-neutral-300;
       }
@@ -306,20 +306,20 @@
         @apply dark:bg-blue-900/20 dark:text-blue-300 font-extrabold;
       }
       .calendar-day.today {
-        border: 2px solid #12B7F5;
+        border: 2px solid #12f54b;
         font-weight: 900;
-        background-color: rgba(18, 183, 245, 0.08);
+        background-color: rgba(17, 55, 69, 0.08);
       }
       .calendar-day.reminder::after {
         content: '●';
         position: absolute;
-        bottom: 2px;
-        font-size: 8px;
+        bottom: 5px;
+        font-size: 12px;
         color: #F59E0B;
       }
       .calendar-day.other-month {
-        color: #C0C5CE;
-        font-weight: 600;
+        color: #5e5e5e;
+        font-weight: 470;
         @apply dark:text-neutral-500;
       }
       /* 重大更新卡片 */
@@ -339,7 +339,7 @@
         @apply dark:bg-neutral-800 dark:border dark:border-neutral-700;
       }
       .update-card.show { display: block; animation: fadeIn 0.3s ease; }
-      .update-title { color: #12B7F5; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-align: center; }
+      .update-title { color: #12f53c; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-align: center; }
       .update-content { margin-bottom: 2rem; line-height: 1.6; @apply dark:text-neutral-200; }
       .update-confirm-btn { width: 100%; background-color: #12B7F5; color: white; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 600; cursor: pointer; @apply hover:bg-primary/90; }
       @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -45%); } to { opacity: 1; transform: translate(-50%, -50%); } }
@@ -356,7 +356,7 @@
       .local-upload-area {
         margin: 1rem 0;
         border-top: 1px solid #e5e7eb;
-        padding-top: 1rem;
+        padding-top: 1rem;  
       }
       .local-upload-label {
         background-color: #f3f4f6;
@@ -371,7 +371,7 @@
         @apply dark:bg-neutral-700 dark:text-white;
       }
       .local-upload-label:hover {
-        background-color: #e5e7eb;
+        background-color: #e5e7eb8a;
         @apply dark:bg-neutral-600;
       }
       .bg-preview-img {
@@ -382,6 +382,113 @@
         border: 1px solid #ddd;
         display: none;
       }
+
+      /* 重要提示卡片  */
+      .important-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 520px;
+        background-color: #ff000054;   /* 提示框颜色 */
+        border-radius: 20px;
+        padding: 1.8rem 2rem 2rem 2rem;
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2);
+        z-index: 10002;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(2px);
+        border: 1px solid rgba(255,215,0,0.5);
+      }
+      .important-card.show {
+        display: flex;
+        animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .important-card .important-icon {
+        font-size: 3.5rem;
+        color: #FFE484;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      .important-card .important-title {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 0.75rem;
+      }
+      .important-card .important-content {
+        background-color: rgba(255,255,255,0.15);
+        backdrop-filter: blur(4px);
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        width: 100%;
+        margin: 0.8rem 0 1.2rem;
+        color: #fff8e7;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        font-weight: 500;
+        border: 1px solid rgba(255,245,180,0.4);
+        text-align: left;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      /* 重要提示按钮：关闭按钮同时致敬扁平+圆润 */
+      .important-close-btn {
+        background-color: white;
+        color: #B91C1C;
+        border: none;
+        border-radius: 60px;
+        padding: 0.7rem 1.6rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        margin-top: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .important-close-btn:hover {
+        background-color: #FFF3BF;
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      }
+      .important-close-btn:active {
+        transform: scale(0.98);
+      }
+      /* 覆盖层加重一点保证红色卡片可读 */
+      .important-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 10001;
+        display: none;
+        backdrop-filter: blur(5px);
+      }
+      .important-overlay.show {
+        display: block;
+        animation: fadeBg 0.25s ease;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -40%);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+      }
     }
   </style>
 </head>
@@ -389,6 +496,21 @@
   <div id="toast" class="toast"></div>
   <div id="bgOverlay" class="bg-overlay"></div>
   <div id="reminderOverlay" class="reminder-overlay"></div>
+
+  <!-- 新增重要提示卡片（红色背景 + 内容区域留白供用户填写） -->
+  <div id="importantOverlay" class="important-overlay"></div>
+  <div id="importantCard" class="important-card">
+    <div class="important-icon"><i class="fa fa-exclamation-triangle"></i></div>
+    <div class="important-title">⚠️工具库维护停用提示⚠️</div>
+    <div class="important-content" id="importantMessageContent">
+    1. 维护时间：2026年4月22日22:00 - 2026年4月26日02:00不停机维护<br>
+    2. 受影响组件：除<杂杂时钟>与<网站主页面、网站协议>外的所有工具将停用<br>
+    3. 维护原因：其他工具因对应开发者未进行维护所导致严重BUG将停用<br>
+    4. 用户影响：在维护期间，受影响工具将无法使用，请提前做好数据备份<br>
+    5. 维护预告：我们正在加急开发新版工具，预计将在2026年5月上线，敬请期待！————S.L Studio<br>
+    </div>
+    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我已了解</button>
+  </div>
 
   <!-- 背景设置卡片 (新增官方背景三张小图预览 + 本地上传区域) -->
   <div id="bgSettingsCard" class="bg-settings-card">
@@ -607,7 +729,7 @@
       const previewImg = document.getElementById('localBgPreview');
       if(previewImg) { previewImg.style.display = 'none'; previewImg.src = ''; }
       highlightActiveOfficialBg('');
-      showToast('背景已重置');
+      showToast(' 背景已重置');
     }
 
     function initLocalUpload() {
@@ -655,7 +777,7 @@
           const previewImg = document.getElementById('localBgPreview');
           if(previewImg) previewImg.style.display = 'none';
           document.getElementById('bgImageUrl').value = '';
-          showToast(`已应用官方背景 ${idx+1}`);
+          showToast(`已应用合金精选背景 ${idx+1}`);
           document.getElementById('bgOverlay').classList.remove('show');
           document.getElementById('bgSettingsCard').classList.remove('show');
         });
@@ -690,7 +812,7 @@
           showToast('背景已应用 (网络图片)'); 
           overlay.classList.remove('show'); 
           card.classList.remove('show'); 
-        } else showToast('请输入URL或使用本地上传/官方背景',2000,true); 
+        } else showToast('请输入URL或使用本地上传/合金背景哦',2000,true); 
       };
       resetBtn.onclick = ()=>{ resetBackground(); overlay.classList.remove('show'); card.classList.remove('show'); };
     }
@@ -733,6 +855,30 @@
       for(let i=1;i<=nextDays;i++){ let cell = document.createElement('div'); cell.className='calendar-day other-month'; cell.textContent = i; container.appendChild(cell); }
     }
 
+    // 重要提示卡片逻辑：显示红色卡片，内容区域已留空（直接可让用户填写），确保只弹一次
+function initImportantPrompt() {
+  const importantCard = document.getElementById('importantCard');
+  const importantOverlay = document.getElementById('importantOverlay');
+  const closeBtn = document.getElementById('closeImportantBtn');
+  // 检查是否已经确认过重要提示（基于存储key，但确保每次打开如果未确认就显示，如果想每次都显示可改为不判断，但一般重要提示显示一次）
+  const hasConfirmedImportant = localStorage.getItem('importantPromptConfirmed');
+  if (!hasConfirmedImportant) {
+    setTimeout(() => {
+      importantOverlay.classList.add('show');
+      importantCard.classList.add('show');
+    }, 200);
+  }
+  closeBtn.addEventListener('click', () => {
+    importantOverlay.classList.remove('show');
+    importantCard.classList.remove('show');
+    localStorage.setItem('importantPromptConfirmed', 'true');
+  });
+  importantOverlay.addEventListener('click', () => {
+    importantOverlay.classList.remove('show');
+    importantCard.classList.remove('show');
+    localStorage.setItem('importantPromptConfirmed', 'true');
+  });
+}
     document.addEventListener('DOMContentLoaded', () => {
       announcements = Array.from(document.querySelectorAll('.announcement'));
       fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -756,6 +902,9 @@
       const confirmUpdateBtn = document.getElementById('confirmUpdate');
       if(!localStorage.getItem('update3.0')) updateCard.classList.add('show');
       confirmUpdateBtn.addEventListener('click',()=>{ updateCard.classList.remove('show'); localStorage.setItem('update3.0','shown'); });
+      
+      // 调用重要提示初始化 (红色卡片)
+      initImportantPrompt();
     });
   </script>
 </body>
