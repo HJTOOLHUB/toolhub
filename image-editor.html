@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>图片美化工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 引入 Cropper.js 用于可选裁剪辅助 (仅基础)，但主要滤镜采用 CSS + Canvas -->
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
+    <script>
+        tailwind.config={
+            theme:{
+                extend:{
+                    colors:{primary:'#3B82F6',secondary:'#10B981',accent:'#8B5CF6',dark:'#1F2937'},
+                    fontFamily:{inter:['Inter','system-ui','sans-serif']}
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        .filter-btn.active {
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        .drop-zone {
+            transition: all 0.2s;
+        }
+        .drop-zone.drag-over {
+            background-color: #eff6ff;
+            border-color: #3B82F6;
+        }
+        .img-preview-container {
+            max-height: 480px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 16px;
+        }
+        .img-preview-container img {
+            max-width: 100%;
+            max-height: 460px;
+            object-fit: contain;
+            transition: all 0.2s;
+        }
+        .slider-label {
+            font-size: 12px;
+        }
+        .reset-val {
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .history-item {
+            transition: background 0.1s;
+        }
+        .history-item:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片美化工具</h1>
+                    <p class="text-gray-600 max-w-2xl">滤镜特效 | 亮度/对比度/饱和度调节 | 裁剪旋转 | 一键美化你的图片</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：工具栏 -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- 上传区 -->
+                    <div id="uploadZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-primary transition bg-gray-50">
+                        <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600 text-sm">点击或拖拽上传图片</p>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                        <p class="text-xs text-gray-400 mt-1">支持 JPG, PNG, WebP, BMP</p>
+                    </div>
+                    
+                    <!-- 基础调整 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-sliders text-primary mr-2"></i> 基础调整</h3>
+                        <div class="space-y-3">
+                            <div><div class="flex justify-between text-xs"><span>亮度</span><span id="brightnessVal" class="text-primary">0</span><span class="reset-val text-gray-400" data-reset="brightness">重置</span></div><input type="range" id="brightness" min="-100" max="100" value="0" class="w-full h-1.5 rounded-lg"></div>
+                            <div><div class="flex justify-between text-xs"><span>对比度</span><span id="contrastVal" class="text-primary">0</span><span class="reset-val text-gray-400" data-reset="contrast">重置</span></div><input type="range" id="contrast" min="-100" max="100" value="0" class="w-full h-1.5 rounded-lg"></div>
+                            <div><div class="flex justify-between text-xs"><span>饱和度</span><span id="saturationVal" class="text-primary">0</span><span class="reset-val text-gray-400" data-reset="saturation">重置</span></div><input type="range" id="saturation" min="-100" max="100" value="0" class="w-full h-1.5 rounded-lg"></div>
+                            <div><div class="flex justify-between text-xs"><span>模糊</span><span id="blurVal" class="text-primary">0</span><span class="reset-val text-gray-400" data-reset="blur">重置</span></div><input type="range" id="blur" min="0" max="10" step="0.1" value="0" class="w-full h-1.5 rounded-lg"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 滤镜特效 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-magic text-primary mr-2"></i> 滤镜特效</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button data-filter="none" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100 active">原图</button>
+                            <button data-filter="grayscale" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">黑白</button>
+                            <button data-filter="sepia" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">复古</button>
+                            <button data-filter="invert" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">反相</button>
+                            <button data-filter="warm" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">暖色</button>
+                            <button data-filter="cool" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">冷色</button>
+                            <button data-filter="vintage" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">怀旧</button>
+                            <button data-filter="sharp" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">锐化</button>
+                            <button data-filter="soft" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">柔光</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 几何变换 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-arrows-alt text-primary mr-2"></i> 几何变换</h3>
+                        <div class="flex gap-2 mb-2">
+                            <button id="rotateLeftBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-rotate-left"></i> 左转90°</button>
+                            <button id="rotateRightBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-rotate-right"></i> 右转90°</button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="flipHorizontalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-arrows-h"></i> 水平翻转</button>
+                            <button id="flipVerticalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-arrows-v"></i> 垂直翻转</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <div class="flex gap-3">
+                        <button id="applyBtn" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary/90 font-medium"><i class="fa fa-check"></i> 应用美化</button>
+                        <button id="resetAllBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"><i class="fa fa-refresh"></i> 重置</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="downloadBtn" class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 font-medium"><i class="fa fa-download"></i> 导出图片</button>
+                    </div>
+                    
+                    <!-- 历史记录简单 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-2"><h3 class="font-semibold text-sm"><i class="fa fa-history"></i> 快照记录</h3><button id="clearHistoryBtn" class="text-xs text-gray-400 hover:text-red-500">清空</button></div>
+                        <div id="historyList" class="max-h-32 overflow-y-auto text-xs space-y-1"></div>
+                    </div>
+                </div>
+
+                <!-- 右侧：图片展示区 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="bg-gray-800 px-4 py-2 text-white text-sm flex justify-between items-center">
+                            <span><i class="fa fa-paint-brush mr-2"></i> 美化效果实时预览</span>
+                            <span id="imgInfo" class="text-xs text-gray-300">未载入图片</span>
+                        </div>
+                        <div class="img-preview-container p-4">
+                            <img id="mainImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='18'%3E上传图片以开始美化%3C/text%3E%3C/svg%3E" alt="美化图片">
+                        </div>
+                    </div>
+                    <div class="mt-3 text-xs text-gray-400 text-center">调整参数后点击“应用美化”生效，支持快照回溯</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">ToolHub</span>
+                </div>
+                <p class="text-gray-400 text-sm">创意美化，简单易用。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
+            <p>©2026 Copyright S.L Studio</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 全局变量
+    let originalImageData = null;      // 存储原始图片的 base64 / blobURL 原始未处理
+    let currentWorkingImage = null;    // 当前显示的图片对象(src)
+    let canvas = document.createElement('canvas');
+    let ctx = canvas.getContext('2d');
+    let imgElement = new Image();
+    let currentFilters = {
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        blur: 0,
+        filterType: 'none'
+    };
+    let historyStack = []; // 存储快照(base64)
+    
+    // DOM 元素
+    const mainImage = document.getElementById('mainImage');
+    const brightnessSlider = document.getElementById('brightness');
+    const contrastSlider = document.getElementById('contrast');
+    const saturationSlider = document.getElementById('saturation');
+    const blurSlider = document.getElementById('blur');
+    const brightnessVal = document.getElementById('brightnessVal');
+    const contrastVal = document.getElementById('contrastVal');
+    const saturationVal = document.getElementById('saturationVal');
+    const blurVal = document.getElementById('blurVal');
+    const applyBtn = document.getElementById('applyBtn');
+    const resetAllBtn = document.getElementById('resetAllBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const uploadZone = document.getElementById('uploadZone');
+    const imageUpload = document.getElementById('imageUpload');
+    const rotateLeftBtn = document.getElementById('rotateLeftBtn');
+    const rotateRightBtn = document.getElementById('rotateRightBtn');
+    const flipHorizontalBtn = document.getElementById('flipHorizontalBtn');
+    const flipVerticalBtn = document.getElementById('flipVerticalBtn');
+    const historyListDiv = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const imgInfoSpan = document.getElementById('imgInfo');
+    
+    // 辅助: 更新滑块数值显示
+    function updateSlidersDisplay() {
+        brightnessVal.innerText = currentFilters.brightness;
+        contrastVal.innerText = currentFilters.contrast;
+        saturationVal.innerText = currentFilters.saturation;
+        blurVal.innerText = currentFilters.blur;
+        brightnessSlider.value = currentFilters.brightness;
+        contrastSlider.value = currentFilters.contrast;
+        saturationSlider.value = currentFilters.saturation;
+        blurSlider.value = currentFilters.blur;
+    }
+    
+    // 重置所有调整参数
+    function resetFilters() {
+        currentFilters = { brightness: 0, contrast: 0, saturation: 0, blur: 0, filterType: 'none' };
+        updateSlidersDisplay();
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
+        const noneBtn = document.querySelector('.filter-btn[data-filter="none"]');
+        if(noneBtn) noneBtn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+        currentFilters.filterType = 'none';
+        if (originalImageData) {
+            applyFiltersAndRender();
+        }
+    }
+    
+    // 保存快照到历史
+    function pushHistory() {
+        if (!originalImageData) return;
+        const currentSrc = mainImage.src;
+        if (currentSrc && !currentSrc.includes('svg')) {
+            historyStack.unshift(currentSrc);
+            if (historyStack.length > 8) historyStack.pop();
+            renderHistory();
+        }
+    }
+    
+    function renderHistory() {
+        if (historyStack.length === 0) {
+            historyListDiv.innerHTML = '<div class="text-gray-400 text-center py-2">暂无快照</div>';
+            return;
+        }
+        historyListDiv.innerHTML = historyStack.map((src, idx) => `<div class="history-item p-1 rounded cursor-pointer truncate" data-snapshot="${idx}"><i class="fa fa-camera"></i> 快照 ${idx+1}</div>`).join('');
+        document.querySelectorAll('.history-item').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const idx = parseInt(el.getAttribute('data-snapshot'));
+                if (!isNaN(idx) && historyStack[idx]) {
+                    mainImage.src = historyStack[idx];
+                    // 同时更新originalImageData? 不允许改变原始基数据，放便后续重置; 但是单独恢复快照会把当前工作图片改变
+                    // 保持一致性：用户点击快照直接显示，但调整参数基于当前图？为了体验: 点击快照后重置调整数值但使用该图作为新工作图
+                    originalImageData = historyStack[idx];
+                    imgElement.src = originalImageData;
+                    resetFilters();
+                }
+            });
+        });
+    }
+    
+    // 核心函数：将当前参数应用到图片
+    function applyFiltersAndRender() {
+        if (!originalImageData) return;
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.filter = buildFilterString();
+            ctx.drawImage(img, 0, 0);
+            // 额外处理饱和度高级滤镜通过CSS? canvas滤镜不支持饱和度，需手动实现，我们使用CSS滤镜或者更复杂算法，为了准确使用内置？
+            // canvas上下文filter支持saturate, 但是blur, brightness, contrast支持; 重新组合
+            // 重构filter字符串
+            ctx.filter = buildAdvancedFilter();
+            ctx.drawImage(img, 0, 0);
+            const resultUrl = canvas.toDataURL('image/png');
+            mainImage.src = resultUrl;
+            // 更新尺寸信息
+            imgInfoSpan.innerText = `${img.width} x ${img.height}`;
+        };
+        img.src = originalImageData;
+    }
+    
+    function buildAdvancedFilter() {
+        let filters = [];
+        if (currentFilters.brightness !== 0) filters.push(`brightness(${100 + currentFilters.brightness}%)`);
+        if (currentFilters.contrast !== 0) filters.push(`contrast(${100 + currentFilters.contrast}%)`);
+        if (currentFilters.saturation !== 0) filters.push(`saturate(${100 + currentFilters.saturation}%)`);
+        if (currentFilters.blur !== 0) filters.push(`blur(${currentFilters.blur}px)`);
+        if (currentFilters.filterType !== 'none') {
+            if (currentFilters.filterType === 'grayscale') filters.push('grayscale(100%)');
+            else if (currentFilters.filterType === 'sepia') filters.push('sepia(100%)');
+            else if (currentFilters.filterType === 'invert') filters.push('invert(100%)');
+            else if (currentFilters.filterType === 'warm') filters.push('sepia(40%) saturate(150%) brightness(105%)');
+            else if (currentFilters.filterType === 'cool') filters.push('hue-rotate(30deg) saturate(120%)');
+            else if (currentFilters.filterType === 'vintage') filters.push('sepia(50%) contrast(120%) brightness(95%)');
+            else if (currentFilters.filterType === 'sharp') filters.push('contrast(130%) brightness(102%)');
+            else if (currentFilters.filterType === 'soft') filters.push('blur(0.5px) brightness(103%)');
+        }
+        return filters.join(' ');
+    }
+    
+    function buildFilterString() { return buildAdvancedFilter(); }
+    
+    // 上传图片处理
+    function loadImageFromFile(file) {
+        if (!file || !file.type.startsWith('image')) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            originalImageData = e.target.result;
+            imgElement.src = originalImageData;
+            resetFilters();
+            pushHistory();
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    uploadZone.addEventListener('click', () => imageUpload.click());
+    imageUpload.addEventListener('change', (e) => { if(e.target.files.length) loadImageFromFile(e.target.files[0]); });
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault(); uploadZone.classList.remove('drag-over');
+        if(e.dataTransfer.files.length) loadImageFromFile(e.dataTransfer.files[0]);
+    });
+    
+    // 实时监听滑块调整并非实时应用到图像(节省性能)，点击应用才触发
+    brightnessSlider.addEventListener('input', (e) => { currentFilters.brightness = parseInt(e.target.value); updateSlidersDisplay(); });
+    contrastSlider.addEventListener('input', (e) => { currentFilters.contrast = parseInt(e.target.value); updateSlidersDisplay(); });
+    saturationSlider.addEventListener('input', (e) => { currentFilters.saturation = parseInt(e.target.value); updateSlidersDisplay(); });
+    blurSlider.addEventListener('input', (e) => { currentFilters.blur = parseFloat(e.target.value); updateSlidersDisplay(); });
+    
+    document.querySelectorAll('.reset-val').forEach(el => {
+        el.addEventListener('click', (e) => {
+            const target = el.getAttribute('data-reset');
+            if (target === 'brightness') currentFilters.brightness = 0;
+            if (target === 'contrast') currentFilters.contrast = 0;
+            if (target === 'saturation') currentFilters.saturation = 0;
+            if (target === 'blur') currentFilters.blur = 0;
+            updateSlidersDisplay();
+            applyFiltersAndRender();
+        });
+    });
+    
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-primary', 'text-white'));
+            btn.classList.add('active', 'bg-primary', 'text-white');
+            currentFilters.filterType = btn.getAttribute('data-filter');
+            applyFiltersAndRender();
+        });
+    });
+    
+    applyBtn.addEventListener('click', () => {
+        if (!originalImageData) return;
+        applyFiltersAndRender();
+        pushHistory();
+    });
+    
+    resetAllBtn.addEventListener('click', () => { resetFilters(); applyFiltersAndRender(); });
+    
+    downloadBtn.addEventListener('click', () => {
+        if (!originalImageData) return;
+        const link = document.createElement('a');
+        link.download = 'beautified_image.png';
+        link.href = mainImage.src;
+        link.click();
+    });
+    
+    // 旋转翻转功能
+    function rotateImage(degrees) {
+        if (!originalImageData) return;
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.height;
+            canvas.height = img.width;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.save();
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(degrees * Math.PI/180);
+            ctx.drawImage(img, -img.width/2, -img.height/2);
+            ctx.restore();
+            const rotatedUrl = canvas.toDataURL('image/png');
+            originalImageData = rotatedUrl;
+            resetFilters();
+            applyFiltersAndRender();
+            pushHistory();
+        };
+        img.src = originalImageData;
+    }
+    
+    function flipImage(direction) {
+        if (!originalImageData) return;
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.save();
+            if(direction === 'horizontal') ctx.scale(-1, 1);
+            if(direction === 'vertical') ctx.scale(1, -1);
+            ctx.drawImage(img, direction === 'horizontal' ? -img.width : 0, direction === 'vertical' ? -img.height : 0);
+            ctx.restore();
+            const flippedUrl = canvas.toDataURL('image/png');
+            originalImageData = flippedUrl;
+            resetFilters();
+            applyFiltersAndRender();
+            pushHistory();
+        };
+        img.src = originalImageData;
+    }
+    
+    rotateLeftBtn.addEventListener('click', () => rotateImage(-90));
+    rotateRightBtn.addEventListener('click', () => rotateImage(90));
+    flipHorizontalBtn.addEventListener('click', () => flipImage('horizontal'));
+    flipVerticalBtn.addEventListener('click', () => flipImage('vertical'));
+    
+    clearHistoryBtn.addEventListener('click', () => { historyStack = []; renderHistory(); });
+    
+    // 初始化
+    updateSlidersDisplay();
+    document.querySelector('.filter-btn[data-filter="none"]').classList.add('active', 'bg-primary', 'text-white');
+    
+    // 移动菜单
+    document.getElementById('menu-toggle').onclick = function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+</script>
+</body>
+</html>

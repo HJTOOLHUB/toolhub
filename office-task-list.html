@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>任务清单工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config={
+            theme:{
+                extend:{
+                    colors:{primary:'#3B82F6',secondary:'#10B981',accent:'#8B5CF6',dark:'#1F2937'},
+                    fontFamily:{inter:['Inter','system-ui','sans-serif']}
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 保证页脚固定底部 */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        .task-item {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .task-item:hover {
+            background-color: #f9fafb;
+        }
+        .priority-high {
+            border-left-color: #ef4444;
+        }
+        .priority-medium {
+            border-left-color: #f59e0b;
+        }
+        .priority-low {
+            border-left-color: #10b981;
+        }
+        .completed-task .task-title {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        .reminder-badge {
+            font-size: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        .btn-active {
+            background-color: #3B82F6 !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">任务待办工具</h1>
+                    <p class="text-gray-600 max-w-2xl">创建和管理任务清单 | 优先级分类 | 截止日期提醒 | 提升工作效率与时间管理</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：新建任务面板 -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 sticky top-24">
+                        <h3 class="font-bold text-lg flex items-center mb-4"><i class="fa fa-plus-circle text-primary mr-2"></i> 新增任务</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">任务标题 <span class="text-red-500">*</span></label>
+                                <input type="text" id="taskTitle" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary" placeholder="例如：完成项目报告">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">详细描述（可选）</label>
+                                <textarea id="taskDesc" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50" placeholder="备注或子任务..."></textarea>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">优先级</label>
+                                    <select id="taskPriority" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                        <option value="high">🔴 高优先级</option>
+                                        <option value="medium" selected>🟠 中优先级</option>
+                                        <option value="low">🟢 低优先级</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">截止日期</label>
+                                    <input type="date" id="taskDueDate" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">提醒时间（可选）</label>
+                                <input type="datetime-local" id="taskReminder" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                                <p class="text-xs text-gray-400 mt-1">设置提醒后，会在指定时间弹出通知（需浏览器许可）</p>
+                            </div>
+                            <button id="addTaskBtn" class="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2 font-medium"><i class="fa fa-save"></i> 创建任务</button>
+                        </div>
+                        
+                        <!-- 过滤器 -->
+                        <div class="mt-8 pt-4 border-t border-gray-200">
+                            <h4 class="font-semibold text-sm mb-2 flex items-center"><i class="fa fa-filter text-primary mr-1"></i> 筛选任务</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full text-xs bg-gray-100 hover:bg-gray-200 transition">全部</button>
+                                <button data-filter="active" class="filter-btn px-3 py-1.5 rounded-full text-xs bg-gray-100 hover:bg-gray-200 transition">未完成</button>
+                                <button data-filter="completed" class="filter-btn px-3 py-1.5 rounded-full text-xs bg-gray-100 hover:bg-gray-200 transition">已完成</button>
+                                <button data-filter="high" class="filter-btn px-3 py-1.5 rounded-full text-xs bg-gray-100 hover:bg-gray-200 transition">高优先级</button>
+                                <button data-filter="overdue" class="filter-btn px-3 py-1.5 rounded-full text-xs bg-red-100 hover:bg-red-200 transition">逾期任务</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 统计卡片 -->
+                        <div class="mt-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-3">
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                                <div><span class="block text-lg font-bold" id="totalCount">0</span><span>总任务</span></div>
+                                <div><span class="block text-lg font-bold text-green-600" id="completedCount">0</span><span>已完成</span></div>
+                                <div><span class="block text-lg font-bold text-orange-500" id="pendingCount">0</span><span>未完成</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：任务列表展示 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <i class="fa fa-tasks text-primary text-lg"></i>
+                                <span class="font-semibold">我的任务清单</span>
+                                <span id="filterLabel" class="text-xs bg-gray-200 px-2 py-0.5 rounded-full ml-2">全部</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="deleteAllCompletedBtn" class="text-red-500 text-xs hover:bg-red-50 px-2 py-1 rounded transition">清除已完成</button>
+                                <button id="exportTasksBtn" class="text-primary text-xs hover:bg-blue-50 px-2 py-1 rounded transition"><i class="fa fa-download"></i> 导出JSON</button>
+                            </div>
+                        </div>
+                        <div id="taskListContainer" class="divide-y divide-gray-100 max-h-[600px] overflow-y-auto scrollbar-thin">
+                            <!-- 动态任务列表 -->
+                            <div id="noTasksMsg" class="text-center text-gray-400 py-12">✨ 暂无任务，点击上方创建任务开始高效管理吧！</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 提醒说明 -->
+                    <div class="mt-4 text-xs text-gray-400 text-center flex justify-center gap-4">
+                        <span><i class="fa fa-bell-o"></i> 提醒依赖浏览器通知权限</span>
+                        <span><i class="fa fa-flag-checkered"></i> 高优先级红色边框 / 中优先级橙色 / 低优先级绿色</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">ToolHub</span>
+                </div>
+                <p class="text-gray-400 text-sm">任务管理，井井有条。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
+            <p>©2026 Copyright S.L Studio</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 任务结构
+    class Task {
+        constructor(id, title, description, priority, dueDate, reminder, completed = false, createdAt = new Date().toISOString()) {
+            this.id = id;
+            this.title = title;
+            this.description = description || '';
+            this.priority = priority;   // 'high', 'medium', 'low'
+            this.dueDate = dueDate || null;    // YYYY-MM-DD
+            this.reminder = reminder || null;   // datetime-local string
+            this.completed = completed;
+            this.createdAt = createdAt;
+        }
+    }
+    
+    let tasks = [];          // 任务数组
+    let currentFilter = 'all';   // all, active, completed, high, overdue
+    let reminderInterval = null;
+    
+    // DOM 元素
+    const taskListContainer = document.getElementById('taskListContainer');
+    const noTasksMsg = document.getElementById('noTasksMsg');
+    const totalCountSpan = document.getElementById('totalCount');
+    const completedCountSpan = document.getElementById('completedCount');
+    const pendingCountSpan = document.getElementById('pendingCount');
+    const filterLabelSpan = document.getElementById('filterLabel');
+    
+    // 表单
+    const taskTitleInput = document.getElementById('taskTitle');
+    const taskDescInput = document.getElementById('taskDesc');
+    const taskPrioritySelect = document.getElementById('taskPriority');
+    const taskDueDateInput = document.getElementById('taskDueDate');
+    const taskReminderInput = document.getElementById('taskReminder');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    
+    // 辅助函数：保存到localStorage
+    function saveTasks() {
+        localStorage.setItem('task_manager_data', JSON.stringify(tasks));
+    }
+    
+    // 加载本地数据
+    function loadTasks() {
+        const stored = localStorage.getItem('task_manager_data');
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                tasks = parsed.map(t => Object.assign(new Task(t.id, t.title, t.description, t.priority, t.dueDate, t.reminder, t.completed, t.createdAt), t));
+            } catch(e) { tasks = []; }
+        }
+        if (tasks.length === 0) {
+            // 添加示例任务
+            tasks.push(new Task(Date.now() + 1, '欢迎使用任务清单', '点击复选框完成任务，支持优先级筛选和提醒', 'medium', new Date().toISOString().slice(0,10), null, false));
+            tasks.push(new Task(Date.now() + 2, '高优先级任务示例', '这是一个紧急任务，带有红色边框', 'high', new Date().toISOString().slice(0,10), null, false));
+            tasks.push(new Task(Date.now() + 3, '已完成示例', '该任务展示完成样式', 'low', null, null, true));
+            saveTasks();
+        }
+        renderTasks();
+        updateStats();
+        scheduleReminders();
+    }
+    
+    // 渲染任务列表 (依据filter条件)
+    function renderTasks() {
+        let filteredTasks = [...tasks];
+        // 应用筛选
+        if (currentFilter === 'active') {
+            filteredTasks = filteredTasks.filter(t => !t.completed);
+        } else if (currentFilter === 'completed') {
+            filteredTasks = filteredTasks.filter(t => t.completed);
+        } else if (currentFilter === 'high') {
+            filteredTasks = filteredTasks.filter(t => t.priority === 'high' && !t.completed);
+        } else if (currentFilter === 'overdue') {
+            const today = new Date().toISOString().slice(0,10);
+            filteredTasks = filteredTasks.filter(t => !t.completed && t.dueDate && t.dueDate < today);
+        } else {
+            filteredTasks = [...tasks];
+        }
+        
+        if (filteredTasks.length === 0) {
+            taskListContainer.innerHTML = `<div id="noTasksMsg" class="text-center text-gray-400 py-12">📭 没有符合条件的任务，添加一条吧！</div>`;
+            return;
+        }
+        
+        let html = '';
+        filteredTasks.forEach(task => {
+            const priorityClass = task.priority === 'high' ? 'priority-high' : (task.priority === 'medium' ? 'priority-medium' : 'priority-low');
+            const completedClass = task.completed ? 'completed-task' : '';
+            const dueDateStr = task.dueDate ? `<span class="text-xs text-gray-400 ml-1"><i class="fa fa-calendar"></i> ${task.dueDate}</span>` : '';
+            const overdueFlag = (!task.completed && task.dueDate && task.dueDate < new Date().toISOString().slice(0,10)) ? `<span class="text-red-500 text-xs ml-1"><i class="fa fa-exclamation-triangle"></i> 逾期</span>` : '';
+            const reminderFlag = task.reminder ? `<span class="text-purple-500 text-xs ml-1"><i class="fa fa-bell"></i> 提醒</span>` : '';
+            const priorityIcon = task.priority === 'high' ? '🔴' : (task.priority === 'medium' ? '🟠' : '🟢');
+            
+            html += `
+                <div class="task-item ${priorityClass} p-4 hover:bg-gray-50 transition flex items-start justify-between group" data-id="${task.id}">
+                    <div class="flex items-start gap-3 flex-1">
+                        <input type="checkbox" class="mt-1 w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary" ${task.completed ? 'checked' : ''} data-complete="${task.id}">
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-medium text-gray-800 ${task.completed ? 'line-through text-gray-400' : ''}">${escapeHtml(task.title)}</span>
+                                ${dueDateStr}
+                                ${overdueFlag}
+                                ${reminderFlag}
+                                <span class="text-xs px-1.5 py-0.5 rounded-full bg-gray-100">${priorityIcon} ${task.priority === 'high' ? '高' : (task.priority === 'medium' ? '中' : '低')}</span>
+                            </div>
+                            ${task.description ? `<div class="text-xs text-gray-500 mt-1">${escapeHtml(task.description)}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                        <button class="edit-task text-gray-400 hover:text-primary" data-edit="${task.id}"><i class="fa fa-pencil-square-o"></i></button>
+                        <button class="delete-task text-gray-400 hover:text-red-500" data-delete="${task.id}"><i class="fa fa-trash-o"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        taskListContainer.innerHTML = html;
+        
+        // 绑定checkbox事件
+        document.querySelectorAll('[data-complete]').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const taskId = parseInt(cb.getAttribute('data-complete'));
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    task.completed = cb.checked;
+                    saveTasks();
+                    renderTasks();
+                    updateStats();
+                    scheduleReminders();
+                }
+            });
+        });
+        // 删除
+        document.querySelectorAll('[data-delete]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const taskId = parseInt(btn.getAttribute('data-delete'));
+                tasks = tasks.filter(t => t.id !== taskId);
+                saveTasks();
+                renderTasks();
+                updateStats();
+                scheduleReminders();
+            });
+        });
+        // 编辑(简易弹窗)
+        document.querySelectorAll('[data-edit]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const taskId = parseInt(btn.getAttribute('data-edit'));
+                const task = tasks.find(t => t.id === taskId);
+                if (task) {
+                    const newTitle = prompt('编辑任务标题', task.title);
+                    if (newTitle && newTitle.trim()) task.title = newTitle.trim();
+                    const newDesc = prompt('编辑任务描述', task.description || '');
+                    if (newDesc !== null) task.description = newDesc;
+                    saveTasks();
+                    renderTasks();
+                    updateStats();
+                    scheduleReminders();
+                }
+            });
+        });
+    }
+    
+    // 更新统计
+    function updateStats() {
+        const total = tasks.length;
+        const completed = tasks.filter(t => t.completed).length;
+        const pending = total - completed;
+        totalCountSpan.innerText = total;
+        completedCountSpan.innerText = completed;
+        pendingCountSpan.innerText = pending;
+    }
+    
+    // 添加新任务
+    function addTask() {
+        const title = taskTitleInput.value.trim();
+        if (!title) {
+            alert('请填写任务标题');
+            return;
+        }
+        const description = taskDescInput.value.trim();
+        const priority = taskPrioritySelect.value;
+        const dueDate = taskDueDateInput.value;
+        const reminder = taskReminderInput.value;
+        const newId = Date.now();
+        const newTask = new Task(newId, title, description, priority, dueDate || null, reminder || null, false);
+        tasks.push(newTask);
+        saveTasks();
+        // 清空表单
+        taskTitleInput.value = '';
+        taskDescInput.value = '';
+        taskPrioritySelect.value = 'medium';
+        taskDueDateInput.value = '';
+        taskReminderInput.value = '';
+        renderTasks();
+        updateStats();
+        scheduleReminders();
+        // 弹出权限请求（提醒相关）
+        if (reminder) {
+            requestNotificationPermission();
+        }
+    }
+    
+    addTaskBtn.addEventListener('click', addTask);
+    
+    // 清除已完成任务
+    document.getElementById('deleteAllCompletedBtn')?.addEventListener('click', () => {
+        if (confirm('确定删除所有已完成的任务吗？')) {
+            tasks = tasks.filter(t => !t.completed);
+            saveTasks();
+            renderTasks();
+            updateStats();
+            scheduleReminders();
+        }
+    });
+    
+    // 导出JSON
+    document.getElementById('exportTasksBtn')?.addEventListener('click', () => {
+        const dataStr = JSON.stringify(tasks, null, 2);
+        const blob = new Blob([dataStr], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tasks_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+    
+    // 筛选按钮
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filterVal = btn.getAttribute('data-filter');
+            currentFilter = filterVal;
+            // 更新标签样式
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('btn-active', 'bg-primary', 'text-white'));
+            btn.classList.add('btn-active', 'bg-primary', 'text-white');
+            if (filterVal === 'all') filterLabelSpan.innerText = '全部';
+            else if (filterVal === 'active') filterLabelSpan.innerText = '未完成';
+            else if (filterVal === 'completed') filterLabelSpan.innerText = '已完成';
+            else if (filterVal === 'high') filterLabelSpan.innerText = '高优先级';
+            else if (filterVal === 'overdue') filterLabelSpan.innerText = '逾期任务';
+            renderTasks();
+        });
+    });
+    // 默认高亮全部按钮
+    document.querySelector('.filter-btn[data-filter="all"]')?.classList.add('btn-active', 'bg-primary', 'text-white');
+    
+    // 通知权限与提醒轮询
+    function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+    }
+    
+    // 定时检查提醒
+    let reminderChecker = null;
+    function scheduleReminders() {
+        if (reminderChecker) clearInterval(reminderChecker);
+        reminderChecker = setInterval(() => {
+            const now = new Date();
+            const nowStr = now.toISOString().slice(0, 16).replace('T', 'T'); // datetime-local 格式 YYYY-MM-DDTHH:MM
+            tasks.forEach(task => {
+                if (!task.completed && task.reminder) {
+                    const reminderTime = task.reminder;
+                    // 比较提醒时间是否小于当前时间且未触发过提醒（使用标记 remindTriggered 临时避免重复提醒）
+                    if (reminderTime <= nowStr && !task._reminded) {
+                        task._reminded = true;
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('任务提醒', { body: `任务“${task.title}” 提醒时间已到！`, icon: 'https://img.cdn1.vip/i/69e48398936a9_1776583576.png' });
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission();
+                        }
+                        // 弹窗alert备用
+                        if (Notification.permission !== 'granted') {
+                            alert(`🔔 提醒：任务“${task.title}” 的提醒时间到了！`);
+                        }
+                        saveTasks(); // 存储提醒标记
+                    }
+                }
+            });
+        }, 30000); // 每30秒检查一次
+    }
+    
+    // 辅助转义
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // 初始化
+    loadTasks();
+    if ('Notification' in window && Notification.permission !== 'denied') {
+        setTimeout(() => { if(Notification.permission === 'default') Notification.requestPermission(); }, 2000);
+    }
+    
+    // 移动菜单
+    document.getElementById('menu-toggle').onclick = function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+</script>
+</body>
+</html>

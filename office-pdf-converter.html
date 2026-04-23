@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF转换工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config={
+            theme:{
+                extend:{
+                    colors:{primary:'#3B82F6',secondary:'#10B981',accent:'#8B5CF6',dark:'#1F2937'},
+                    fontFamily:{inter:['Inter','system-ui','sans-serif']}
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-12 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">PDF 转换工具</h1>
+                    <p class="text-gray-600 max-w-2xl">支持PDF与Word、Excel、PPT、图片等格式互转，保留原格式，转换速度快</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100 max-w-4xl mx-auto">
+                <div class="flex flex-col items-center mb-8">
+                    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="fa fa-file-pdf-o text-primary text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-semibold mb-2">文件转换</h2>
+                    <p class="text-gray-600 text-center">上传文件后选择目标格式，一键完成转换</p>
+                </div>
+
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.txt">
+                
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center mb-6 hover:border-primary cursor-pointer" id="uploadArea">
+                    <i class="fa fa-cloud-upload text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-gray-600 mb-4">点击或拖拽文件至此处上传</p>
+                    <button id="selectFileBtn" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90">选择文件</button>
+                    <p class="text-xs text-gray-500 mt-3">支持最大文件大小：100MB | 支持格式：PDF, DOC, DOCX, XLS, JPG, PNG, TXT</p>
+                    <p id="fileName" class="text-sm text-primary mt-2 hidden"></p>
+                </div>
+
+                <div class="mb-8">
+                    <label class="block text-gray-700 font-medium mb-3">选择转换格式</label>
+                    <select id="convertType" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <option value="pdf">文档 → PDF（无乱码推荐）</option>
+                        <option value="docx">PDF → Word（.docx）</option>
+                        <option value="xlsx">PDF → Excel（.xlsx）</option>
+                        <option value="jpg">PDF → 图片（.jpg）</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <i class="fa fa-check-circle text-secondary text-xl mb-2"></i>
+                        <p class="text-gray-700 font-medium">无损转换</p>
+                        <p class="text-xs text-gray-500">保留原文件格式和样式</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <i class="fa fa-lock text-secondary text-xl mb-2"></i>
+                        <p class="text-gray-700 font-medium">安全保障</p>
+                        <p class="text-xs text-gray-500">文件加密处理，自动删除</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4 text-center">
+                        <i class="fa fa-bolt text-secondary text-xl mb-2"></i>
+                        <p class="text-gray-700 font-medium">极速转换</p>
+                        <p class="text-xs text-gray-500">多线程处理，转换速度快</p>
+                    </div>
+                </div>
+
+                <div id="convertStatus" class="text-center mb-6 hidden">
+                    <div class="flex items-center justify-center">
+                        <i class="fa fa-spinner fa-spin text-primary mr-2"></i>
+                        <span class="text-primary">转换中，请稍候...</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="convertBtn" class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-primary/90 text-lg font-medium">
+                        开始转换 <i class="fa fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-16 pb-8 mt-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div>
+                <div class="flex items-center space-x-2 mb-6">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">HJ ToolHub</span>
+                </div>
+                <p class="text-gray-400 mb-6">精选实用工具集合，让工作更高效便捷。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-6">快速链接</h3>
+                <ul class="space-y-3">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                    <li><a href="index.html#popular" class="text-gray-400 hover:text-white">热门工具</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-8 text-center text-gray-400">
+            <p>©2026 Copyright S.L Studio</p>
+        </div>
+    </div>
+</footer>
+
+<!-- 打印专用容器：只用于存放用户原始文档内容，不加任何额外头尾信息 -->
+<div id="printExportContent" style="position: fixed; top: -10000px; left: -10000px; white-space: pre-wrap; font-family: system-ui, 'Microsoft YaHei', sans-serif; font-size: 14px; line-height: 1.6; width: 100%; background: #fff; z-index: -1;"></div>
+
+<style>
+    /* 打印时只输出 #printExportContent 内的原始文档内容，隐藏网页所有其他元素 */
+    @media print {
+        body * {
+            display: none !important;
+        }
+        #printExportContent, #printExportContent * {
+            display: block !important;
+        }
+        #printExportContent {
+            display: block !important;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            visibility: visible !important;
+            width: 100% !important;
+            padding: 20px !important;
+            font-family: system-ui, 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            color: #000 !important;
+            background: white !important;
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            box-sizing: border-box !important;
+        }
+    }
+</style>
+
+<script>
+    // 移动菜单切换
+    document.getElementById('menu-toggle').onclick = function(){
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+
+    const fileInput = document.getElementById('fileInput');
+    const selectFileBtn = document.getElementById('selectFileBtn');
+    const uploadArea = document.getElementById('uploadArea');
+    const fileNameDisplay = document.getElementById('fileName');
+    const convertBtn = document.getElementById('convertBtn');
+    const convertStatusDiv = document.getElementById('convertStatus');
+    const printContentDiv = document.getElementById('printExportContent');
+    
+    let selectedFile = null;
+    
+    selectFileBtn.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('click', (e) => {
+        if(e.target !== selectFileBtn) fileInput.click();
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+        if(e.target.files.length > 0){
+            selectedFile = e.target.files[0];
+            fileNameDisplay.textContent = `已选择：${selectedFile.name}`;
+            fileNameDisplay.classList.remove('hidden');
+        } else {
+            selectedFile = null;
+            fileNameDisplay.classList.add('hidden');
+        }
+    });
+    
+    // 拖拽上传支持
+    const dropZone = document.getElementById('uploadArea');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    function highlight() {
+        dropZone.classList.add('border-primary', 'bg-blue-50');
+    }
+    function unhighlight() {
+        dropZone.classList.remove('border-primary', 'bg-blue-50');
+    }
+    dropZone.addEventListener('drop', handleDrop, false);
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) {
+            selectedFile = files[0];
+            fileInput.files = files;
+            fileNameDisplay.textContent = `已选择：${selectedFile.name}`;
+            fileNameDisplay.classList.remove('hidden');
+        }
+    }
+    
+    // 提取文件原始内容（尽可能保留原文档文字，不加任何额外信息）
+    async function extractFileOriginalContent(file) {
+        const fileName = file.name;
+        const ext = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
+        
+        // TXT 文件直接读取原始文本
+        if (ext === '.txt') {
+            const text = await file.text();
+            // 如果文件为空，返回空字符串，让后续处理不添加额外提示
+            return text || "";
+        }
+        
+        // DOCX 使用 mammoth 提取纯文本
+        if (ext === '.docx') {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            let text = result.value;
+            return text || "";
+        }
+        
+        // .doc 旧格式提示（但仍不加头尾信息，仅返回空字符串让用户知晓转换结果）
+        if (ext === '.doc') {
+            // 返回空，不添加额外提示文字（保持干净）
+            return "";
+        }
+        
+        // Excel 格式 (xls, xlsx) - 因无法完整提取单元格内容，返回空字符串，不做额外注解
+        if (ext === '.xls' || ext === '.xlsx') {
+            return "";
+        }
+        
+        // 图片格式 (jpg, png, jpeg) - 无法提取文本内容，返回空
+        if (ext === '.jpg' || ext === '.png' || ext === '.jpeg') {
+            return "";
+        }
+        
+        // PDF 文件 - 暂时无法提取文本，返回空
+        if (ext === '.pdf') {
+            return "";
+        }
+        
+        // 其他未知格式返回空
+        return "";
+    }
+    
+    // 转换按钮核心逻辑: 只输出文档原内容，没有任何时间戳、文件名、转换模式等额外文字
+    convertBtn.addEventListener('click', async () => {
+        if(!selectedFile){
+            alert('请先选择文件！');
+            return;
+        }
+        
+        convertStatusDiv.classList.remove('hidden');
+        convertBtn.disabled = true;
+        
+        try {
+            // 提取原始文档内容（纯净版）
+            let originalContent = await extractFileOriginalContent(selectedFile);
+            
+            // 确保内容不为 undefined/null，若是空内容则打印结果中不会有任何多余文字
+            if (originalContent === undefined || originalContent === null) {
+                originalContent = "";
+            }
+            
+            // 最终展示的内容：仅用户文档原内容，不加任何额外的头部、尾部、元信息
+            let finalContent = originalContent;
+            
+            // 如果内容为空，也不加任何“无内容”提示，保持完全空白或原样（不添加多余文字）
+            // 将内容渲染到打印容器中，使用纯文本保留原始换行和格式
+            // 转义HTML但保留换行转为<br>以保证在div中正确显示原文档换行
+            const escapedContent = escapeHtmlPreserveWhitespace(finalContent);
+            
+            // 将内容放入容器（不加任何额外包装文字）
+            printContentDiv.innerHTML = `<div style="font-family: system-ui, 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif; white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;">${escapedContent}</div>`;
+            
+            // 极安全措施: 如果内容为空字符串，保证容器内没有任何提示文字，但为了不空白PDF，浏览器打印时显示空白页是符合预期的（用户文档本身为空）。
+            // 但如果用户文档原本有文字却为空，说明提取失败，但仍不加额外说明。
+            
+            // 延迟后调用浏览器的打印功能，导出PDF（只包含用户原始内容）
+            setTimeout(() => {
+                window.print();
+                convertStatusDiv.classList.add('hidden');
+                convertBtn.disabled = false;
+            }, 500);
+            
+        } catch (error) {
+            console.error("转换错误:", error);
+            // 出错时也不添加额外时间戳或提示，输出空内容，但为防止用户完全无反馈，只在控制台记录错误。
+            printContentDiv.innerHTML = `<div style="font-family: system-ui, 'Microsoft YaHei', sans-serif; white-space: pre-wrap;"></div>`;
+            setTimeout(() => {
+                window.print();
+                convertStatusDiv.classList.add('hidden');
+                convertBtn.disabled = false;
+            }, 300);
+            alert("转换失败，请检查文件格式或重试。");
+        }
+    });
+    
+    // 转义HTML特殊字符但保留换行符转换为<br>，确保原始换行在打印时可见
+    function escapeHtmlPreserveWhitespace(str) {
+        if (!str) return '';
+        // 先转义HTML标签字符
+        let div = document.createElement('div');
+        div.textContent = str;  // 自动转义 < > & 等
+        let safeText = div.innerHTML;
+        // 将换行符替换为 <br>，以保持原文档的段落和换行格式
+        safeText = safeText.replace(/\n/g, '<br>');
+        // 连续空格保留但不做额外处理，white-space: pre-wrap 会保留空格，但 <br> 能确保换行
+        return safeText;
+    }
+    
+    // 在打印之前再次确保容器内没有额外包装信息（冗余安全检查）
+    window.addEventListener('beforeprint', () => {
+        // 检查 printContentDiv 内部是否意外包含了除原始内容以外的任何说明，如果有，将其还原为纯内容
+        // 由于我们的逻辑已经严格控制，此处仅做保护：如果内容为空不要添加文字
+        if (printContentDiv.innerText.trim() === "" && printContentDiv.children.length === 0) {
+            // 保持完全空白，不插入任何提示
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>图片拼接工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#3B82F6', secondary: '#10B981', accent: '#8B5CF6', dark: '#1F2937' },
+                    fontFamily: { inter: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { display: flex; flex-direction: column; min-height: 100vh; background: #f8fafc; }
+        main { flex: 1 0 auto; }
+        footer { flex-shrink: 0; }
+        .drop-zone { transition: all 0.2s; background: #f9fafb; }
+        .drop-zone.drag-over { background-color: #eff6ff; border-color: #3B82F6; }
+        .image-item { transition: all 0.2s; cursor: move; }
+        .image-item:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .preview-canvas-container { background: #1e293b; border-radius: 20px; display: flex; justify-content: center; align-items: center; min-height: 400px; overflow: auto; }
+        .preview-canvas-container canvas { max-width: 100%; max-height: 550px; object-fit: contain; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); border-radius: 12px; }
+        .layout-btn.active { background-color: #3B82F6; color: white; border-color: #3B82F6; }
+        .spacing-slider { accent-color: #3B82F6; }
+        .sortable-ghost { opacity: 0.4; background: #e2e8f0; }
+    </style>
+    <!-- 引入 SortableJS 实现拖拽排序 -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+<body class="font-inter text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片拼接工具</h1>
+                    <p class="text-gray-600 max-w-2xl">多图合并 | 网格/垂直/横向布局 | 自定义间距、边距 | 拖拽排序 | 高清导出</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧控制面板 -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- 上传区域 -->
+                    <div id="uploadZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-primary transition bg-gray-50">
+                        <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600 text-sm">点击或拖拽上传图片</p>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" multiple class="hidden">
+                        <p class="text-xs text-gray-400 mt-1">支持批量上传 (JPG, PNG, WebP)</p>
+                    </div>
+
+                    <!-- 图片列表管理区 (可拖拽排序) -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-md flex items-center"><i class="fa fa-images text-primary mr-2"></i> 图片列表 <span id="imageCount" class="ml-1 text-xs bg-gray-200 px-1.5 rounded-full">0</span></h3>
+                            <button id="clearAllBtn" class="text-xs text-red-500 hover:text-red-700"><i class="fa fa-trash-o"></i> 清空全部</button>
+                        </div>
+                        <div id="imageListContainer" class="max-h-72 overflow-y-auto space-y-2 pr-1">
+                            <div id="emptyPlaceholder" class="text-center text-gray-400 text-sm py-4">暂无图片，请上传</div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2"><i class="fa fa-arrows"></i> 拖拽图片可调整顺序</p>
+                    </div>
+
+                    <!-- 布局设置 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-th-large text-primary mr-2"></i> 布局设置</h3>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <button data-layout="grid" class="layout-btn text-sm py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition flex flex-col items-center"><i class="fa fa-th"></i> <span class="text-xs">网格</span></button>
+                            <button data-layout="vertical" class="layout-btn text-sm py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition flex flex-col items-center"><i class="fa fa-align-center"></i> <span class="text-xs">垂直</span></button>
+                            <button data-layout="horizontal" class="layout-btn text-sm py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition flex flex-col items-center"><i class="fa fa-arrows-h"></i> <span class="text-xs">水平</span></button>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>图片间距 (px)</span><span id="gapVal" class="text-primary">10</span></div>
+                                <input type="range" id="gapSlider" min="0" max="50" value="10" class="w-full h-1.5 rounded-lg spacing-slider">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>圆角大小 (px)</span><span id="radiusVal" class="text-primary">8</span></div>
+                                <input type="range" id="radiusSlider" min="0" max="40" value="8" class="w-full h-1.5 rounded-lg">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1"><span>背景颜色</span></div>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="bgColorPicker" value="#ffffff" class="w-10 h-8 border rounded cursor-pointer">
+                                    <span id="bgColorText" class="text-xs text-gray-500">#ffffff</span>
+                                    <button id="resetBgBtn" class="text-xs text-gray-400 hover:text-primary">重置白色</button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 pt-2">
+                                <div>
+                                    <label class="text-xs text-gray-600">固定宽度(px)</label>
+                                    <input type="number" id="fixedWidth" placeholder="自动" min="100" max="3000" class="w-full border rounded-lg p-1.5 text-sm">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600">固定高度(px)</label>
+                                    <input type="number" id="fixedHeight" placeholder="自动" min="100" max="3000" class="w-full border rounded-lg p-1.5 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="flex gap-3">
+                        <button id="generateBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium shadow-sm"><i class="fa fa-magic"></i> 立即拼接</button>
+                        <button id="downloadResultBtn" class="flex-1 bg-green-600 text-white py-2.5 rounded-lg hover:bg-green-700 font-medium"><i class="fa fa-download"></i> 导出拼接图</button>
+                    </div>
+                    <div class="text-center text-xs text-gray-400 bg-gray-50 p-2 rounded-lg">
+                        <i class="fa fa-info-circle"></i> 支持拖拽排序、调整顺序，网格模式自动根据图片数量排列
+                    </div>
+                </div>
+
+                <!-- 右侧预览区 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="bg-gray-800 px-4 py-2 text-white text-sm flex justify-between items-center">
+                            <span><i class="fa fa-eye mr-2"></i> 拼接预览</span>
+                            <span id="previewInfo" class="text-xs text-gray-300">等待拼接</span>
+                        </div>
+                        <div class="preview-canvas-container p-6 bg-gray-900">
+                            <canvas id="previewCanvas" style="max-width:100%; max-height:550px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.3);"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-xs text-gray-400 text-center flex justify-center gap-4">
+                        <span><i class="fa fa-arrows"></i> 拖拽列表图片可改变拼接顺序</span>
+                        <span><i class="fa fa-crop"></i> 支持自定义背景和圆角</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">ToolHub</span>
+                </div>
+                <p class="text-gray-400 text-sm">创意工具集合，让设计更简单。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
+            <p>©2026 Copyright S.L Studio | 图片拼接工具 · 自由组合</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ----- 全局变量 -----
+    let imageItems = [];          // 存储 { id, file, dataUrl, width, height }
+    let sortableInstance = null;
+    let currentLayout = 'grid';   // 'grid', 'vertical', 'horizontal'
+    let gap = 10;
+    let cornerRadius = 8;
+    let bgColor = '#ffffff';
+    let fixedWidth = null;
+    let fixedHeight = null;
+
+    // DOM 元素
+    const uploadZone = document.getElementById('uploadZone');
+    const imageUpload = document.getElementById('imageUpload');
+    const imageListContainer = document.getElementById('imageListContainer');
+    const emptyPlaceholder = document.getElementById('emptyPlaceholder');
+    const imageCountSpan = document.getElementById('imageCount');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadResultBtn = document.getElementById('downloadResultBtn');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const previewInfo = document.getElementById('previewInfo');
+    const gapSlider = document.getElementById('gapSlider');
+    const gapVal = document.getElementById('gapVal');
+    const radiusSlider = document.getElementById('radiusSlider');
+    const radiusVal = document.getElementById('radiusVal');
+    const bgColorPicker = document.getElementById('bgColorPicker');
+    const bgColorText = document.getElementById('bgColorText');
+    const resetBgBtn = document.getElementById('resetBgBtn');
+    const fixedWidthInput = document.getElementById('fixedWidth');
+    const fixedHeightInput = document.getElementById('fixedHeight');
+    const layoutBtns = document.querySelectorAll('.layout-btn');
+
+    // ---------- 辅助函数 ----------
+    function updateImageCountUI() {
+        const count = imageItems.length;
+        imageCountSpan.innerText = count;
+        if (count === 0) {
+            if (emptyPlaceholder) emptyPlaceholder.style.display = 'block';
+        } else {
+            if (emptyPlaceholder) emptyPlaceholder.style.display = 'none';
+        }
+    }
+
+    // 渲染图片列表 (HTML + 拖拽)
+    function renderImageList() {
+        if (!imageListContainer) return;
+        if (imageItems.length === 0) {
+            imageListContainer.innerHTML = `<div id="emptyPlaceholder" class="text-center text-gray-400 text-sm py-4">暂无图片，请上传</div>`;
+            updateImageCountUI();
+            if (sortableInstance) sortableInstance.destroy();
+            return;
+        }
+        let html = '';
+        imageItems.forEach((item, idx) => {
+            html += `
+                <div class="image-item bg-gray-50 rounded-lg p-2 flex items-center gap-3 border border-gray-200" data-id="${item.id}">
+                    <div class="w-12 h-12 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
+                        <img src="${item.dataUrl}" class="w-full h-full object-cover" alt="preview">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">${item.file.name}</p>
+                        <p class="text-xs text-gray-400">${item.width} x ${item.height}</p>
+                    </div>
+                    <button class="remove-img-btn text-red-400 hover:text-red-600 p-1" data-id="${item.id}">
+                        <i class="fa fa-times-circle"></i>
+                    </button>
+                </div>
+            `;
+        });
+        imageListContainer.innerHTML = html;
+        updateImageCountUI();
+
+        // 删除按钮事件
+        document.querySelectorAll('.remove-img-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                removeImageById(id);
+            });
+        });
+
+        // 初始化拖拽排序 (SortableJS)
+        if (sortableInstance) sortableInstance.destroy();
+        sortableInstance = new Sortable(imageListContainer, {
+            animation: 200,
+            handle: '.image-item',
+            ghostClass: 'sortable-ghost',
+            onEnd: function() {
+                // 更新 imageItems 顺序
+                const newOrder = [];
+                const items = document.querySelectorAll('#imageListContainer .image-item');
+                items.forEach(el => {
+                    const id = parseInt(el.getAttribute('data-id'));
+                    const found = imageItems.find(img => img.id === id);
+                    if (found) newOrder.push(found);
+                });
+                if (newOrder.length === imageItems.length) {
+                    imageItems = newOrder;
+                    autoPreviewOnChange(); // 顺序变了自动刷新预览
+                }
+            }
+        });
+    }
+
+    function removeImageById(id) {
+        imageItems = imageItems.filter(item => item.id !== id);
+        renderImageList();
+        autoPreviewOnChange();
+        if (imageItems.length === 0) {
+            clearCanvas();
+        }
+    }
+
+    function clearCanvas() {
+        const ctx = previewCanvas.getContext('2d');
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        previewCanvas.width = 0;
+        previewCanvas.height = 0;
+        previewInfo.innerText = '无图片';
+    }
+
+    // 自动预览（参数改变时自动调用拼接渲染）
+    let previewTimer = null;
+    function autoPreviewOnChange() {
+        if (previewTimer) clearTimeout(previewTimer);
+        previewTimer = setTimeout(() => {
+            if (imageItems.length > 0) {
+                performStitch();
+            } else {
+                clearCanvas();
+            }
+        }, 80);
+    }
+
+    // 核心拼接逻辑
+    async function performStitch() {
+        if (imageItems.length === 0) {
+            clearCanvas();
+            previewInfo.innerText = '请上传图片';
+            return;
+        }
+
+        // 加载所有图片真实尺寸 (已经存储宽高，但需要img元素绘制)
+        const loadedImages = await loadAllImages();
+        if (loadedImages.length === 0) return;
+
+        const layout = currentLayout;
+        const gapPx = gap;
+        const radius = cornerRadius;
+        const bg = bgColor;
+        const customWidth = fixedWidth ? parseInt(fixedWidth) : null;
+        const customHeight = fixedHeight ? parseInt(fixedHeight) : null;
+
+        let canvasWidth = 0, canvasHeight = 0;
+        const imgWidths = loadedImages.map(img => img.width);
+        const imgHeights = loadedImages.map(img => img.height);
+
+        if (layout === 'vertical') {
+            // 垂直布局: 宽度取最大宽度，高度为各图高度之和 + 间距
+            const maxWidth = customWidth || Math.max(...imgWidths);
+            canvasWidth = maxWidth;
+            canvasHeight = imgHeights.reduce((sum, h, idx) => sum + h + (idx > 0 ? gapPx : 0), 0);
+            if (customHeight && customHeight > canvasHeight) canvasHeight = customHeight;
+        } 
+        else if (layout === 'horizontal') {
+            // 水平布局: 高度取最大高度，宽度为各图宽度之和 + 间距
+            const maxHeight = customHeight || Math.max(...imgHeights);
+            canvasHeight = maxHeight;
+            canvasWidth = imgWidths.reduce((sum, w, idx) => sum + w + (idx > 0 ? gapPx : 0), 0);
+            if (customWidth && customWidth > canvasWidth) canvasWidth = customWidth;
+        } 
+        else { // grid 网格布局
+            const count = loadedImages.length;
+            let cols = 1;
+            if (count === 2) cols = 2;
+            else if (count === 3 || count === 4) cols = 2;
+            else if (count >= 5) cols = 3;
+            else cols = 1;
+            if (count === 1) cols = 1;
+            const rows = Math.ceil(count / cols);
+            
+            // 网格每个单元格尺寸: 如果固定宽高优先，否则自适应统一单元格最大宽高
+            let cellWidth = 0, cellHeight = 0;
+            if (customWidth && customHeight) {
+                cellWidth = customWidth;
+                cellHeight = customHeight;
+            } else {
+                // 找到所有图片平均宽或最大宽高决定单元格宽高（使每个单元格等大）
+                const maxCellW = Math.max(...imgWidths);
+                const maxCellH = Math.max(...imgHeights);
+                cellWidth = customWidth || maxCellW;
+                cellHeight = customHeight || maxCellH;
+            }
+            canvasWidth = cols * cellWidth + (cols - 1) * gapPx;
+            canvasHeight = rows * cellHeight + (rows - 1) * gapPx;
+        }
+
+        // 限制最大尺寸避免浏览器崩溃
+        const MAX_SIZE = 4000;
+        if (canvasWidth > MAX_SIZE) canvasWidth = MAX_SIZE;
+        if (canvasHeight > MAX_SIZE) canvasHeight = MAX_SIZE;
+
+        // 设置canvas
+        previewCanvas.width = canvasWidth;
+        previewCanvas.height = canvasHeight;
+        const ctx = previewCanvas.getContext('2d');
+        
+        // 绘制背景
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        
+        // 开启圆角裁剪 (每个图片单独圆角)
+        let currentX = 0, currentY = 0;
+        
+        if (layout === 'vertical') {
+            const maxW = canvasWidth;
+            for (let i = 0; i < loadedImages.length; i++) {
+                const img = loadedImages[i];
+                const drawWidth = customWidth ? customWidth : img.width;
+                const drawHeight = (img.height / img.width) * drawWidth;
+                const yOffset = currentY;
+                drawRoundedImage(ctx, img, currentX, yOffset, drawWidth, drawHeight, radius);
+                currentY += drawHeight + gapPx;
+            }
+        } 
+        else if (layout === 'horizontal') {
+            const maxH = canvasHeight;
+            for (let i = 0; i < loadedImages.length; i++) {
+                const img = loadedImages[i];
+                const drawHeight = customHeight ? customHeight : img.height;
+                const drawWidth = (img.width / img.height) * drawHeight;
+                drawRoundedImage(ctx, img, currentX, 0, drawWidth, drawHeight, radius);
+                currentX += drawWidth + gapPx;
+            }
+        } 
+        else { // grid
+            const count = loadedImages.length;
+            let cols = 1;
+            if (count === 2) cols = 2;
+            else if (count === 3 || count === 4) cols = 2;
+            else if (count >= 5) cols = 3;
+            if (count === 1) cols = 1;
+            const rows = Math.ceil(count / cols);
+            let cellW = 0, cellH = 0;
+            if (customWidth && customHeight) {
+                cellW = customWidth;
+                cellH = customHeight;
+            } else {
+                // 平均分配网格大小（使用最大宽高比统一单元格）
+                let maxAspectW = 0, maxAspectH = 0;
+                for (let img of loadedImages) {
+                    maxAspectW = Math.max(maxAspectW, img.width);
+                    maxAspectH = Math.max(maxAspectH, img.height);
+                }
+                cellW = customWidth || maxAspectW;
+                cellH = customHeight || maxAspectH;
+            }
+            const totalGridW = cols * cellW + (cols-1) * gapPx;
+            const xOffset = (canvasWidth - totalGridW) / 2; // 居中显示
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const idx = row * cols + col;
+                    if (idx >= loadedImages.length) break;
+                    const img = loadedImages[idx];
+                    const drawX = xOffset + col * (cellW + gapPx);
+                    const drawY = row * (cellH + gapPx);
+                    // 在单元格内保持比例绘制（填充方式 contain 并居中）
+                    const scale = Math.min(cellW / img.width, cellH / img.height);
+                    const drawWidth = img.width * scale;
+                    const drawHeight = img.height * scale;
+                    const offsetX = drawX + (cellW - drawWidth) / 2;
+                    const offsetY = drawY + (cellH - drawHeight) / 2;
+                    drawRoundedImage(ctx, img, offsetX, offsetY, drawWidth, drawHeight, radius);
+                }
+            }
+        }
+        
+        previewInfo.innerText = `${loadedImages.length}张图片 | ${canvasWidth}×${canvasHeight}`;
+    }
+
+    // 绘制圆角图片
+    function drawRoundedImage(ctx, img, x, y, w, h, radius) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + w - radius, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+        ctx.lineTo(x + w, y + h - radius);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+        ctx.lineTo(x + radius, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, x, y, w, h);
+        ctx.restore();
+    }
+
+    // 加载所有图片为 HTMLImageElement
+    function loadAllImages() {
+        return new Promise(async (resolve) => {
+            const promises = imageItems.map(item => {
+                return new Promise((res) => {
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous";
+                    img.onload = () => {
+                        res({ img, width: img.width, height: img.height, id: item.id });
+                    };
+                    img.onerror = () => {
+                        // 如果加载失败，创建一个空白占位
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 200; canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ddd';
+                        ctx.fillRect(0,0,200,200);
+                        const errImg = new Image();
+                        errImg.src = canvas.toDataURL();
+                        errImg.onload = () => res({ img: errImg, width: 200, height: 200, id: item.id });
+                    };
+                    img.src = item.dataUrl;
+                });
+            });
+            const results = await Promise.all(promises);
+            resolve(results.map(r => r.img));
+        });
+    }
+
+    // 添加图片文件
+    async function addImageFiles(files) {
+        for (let file of files) {
+            if (!file.type.startsWith('image')) continue;
+            const dataUrl = await readFileAsDataURL(file);
+            const img = new Image();
+            const dimensions = await new Promise((resolve) => {
+                img.onload = () => resolve({ width: img.width, height: img.height });
+                img.src = dataUrl;
+            });
+            const newId = Date.now() + Math.random() * 10000 + imageItems.length;
+            imageItems.push({
+                id: newId,
+                file: file,
+                dataUrl: dataUrl,
+                width: dimensions.width,
+                height: dimensions.height
+            });
+        }
+        renderImageList();
+        autoPreviewOnChange();
+    }
+
+    function readFileAsDataURL(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ----- 事件绑定 -----
+    uploadZone.addEventListener('click', () => imageUpload.click());
+    imageUpload.addEventListener('change', (e) => {
+        if (e.target.files.length) addImageFiles(Array.from(e.target.files));
+        imageUpload.value = '';
+    });
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault(); uploadZone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) addImageFiles(Array.from(e.dataTransfer.files));
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+        imageItems = [];
+        renderImageList();
+        clearCanvas();
+        autoPreviewOnChange();
+    });
+
+    // 参数监听
+    gapSlider.addEventListener('input', (e) => { gap = parseInt(e.target.value); gapVal.innerText = gap; autoPreviewOnChange(); });
+    radiusSlider.addEventListener('input', (e) => { cornerRadius = parseInt(e.target.value); radiusVal.innerText = cornerRadius; autoPreviewOnChange(); });
+    bgColorPicker.addEventListener('input', (e) => { bgColor = e.target.value; bgColorText.innerText = bgColor; autoPreviewOnChange(); });
+    resetBgBtn.addEventListener('click', () => { bgColor = '#ffffff'; bgColorPicker.value = '#ffffff'; bgColorText.innerText = '#ffffff'; autoPreviewOnChange(); });
+    fixedWidthInput.addEventListener('input', () => { fixedWidth = fixedWidthInput.value ? parseInt(fixedWidthInput.value) : null; autoPreviewOnChange(); });
+    fixedHeightInput.addEventListener('input', () => { fixedHeight = fixedHeightInput.value ? parseInt(fixedHeightInput.value) : null; autoPreviewOnChange(); });
+    
+    layoutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            layoutBtns.forEach(b => b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
+            btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+            currentLayout = btn.getAttribute('data-layout');
+            autoPreviewOnChange();
+        });
+    });
+    
+    generateBtn.addEventListener('click', () => { if(imageItems.length) performStitch(); });
+    downloadResultBtn.addEventListener('click', () => {
+        if (imageItems.length === 0) { alert('请先上传图片并生成拼接图'); return; }
+        const link = document.createElement('a');
+        link.download = 'stitched_image.png';
+        link.href = previewCanvas.toDataURL('image/png');
+        link.click();
+    });
+    
+    // 初始化默认激活grid布局
+    document.querySelector('.layout-btn[data-layout="grid"]').classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+    
+    // 移动菜单
+    document.getElementById('menu-toggle').onclick = function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+    
+    renderImageList();
+</script>
+</body>
+</html>

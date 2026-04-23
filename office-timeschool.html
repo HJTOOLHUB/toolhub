@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>在线时钟校园版 | 杂杂时钟</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#12B7F5',
+            secondary: '#FF9500',
+            neutral: {
+              100: '#F5F5F5',
+              200: '#E5E5E5',
+              300: '#D4D4D4',
+              800: '#1F2937',
+              900: '#111827',
+            },
+            toastBorder: '#0F766E',
+            appleGreen: '#34C759',
+            glass: {
+              100: 'rgba(255, 255, 255, 0.8)',
+              200: 'rgba(255, 255, 255, 0.6)',
+              800: 'rgba(31, 41, 55, 0.8)',
+              900: 'rgba(17, 24, 39, 0.6)',
+            },
+            holiday: '#EF4444',
+            restday: '#3B82F6',
+            reminder: '#F59E0B'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto { content-visibility: auto; }
+      .clock-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03); }
+      .btn-glow { box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); }
+      .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+      .card-hover { transition: all 0.3s ease; }
+      .card-hover:hover { transform: translateY(-5px); }
+      .glass-effect {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      }
+      .glass-light { background-color: rgba(255, 255, 255, 0.8); }
+      .glass-dark { background-color: rgba(31, 41, 55, 0.8); }
+
+      /* 公告栏样式 */
+      .announcement-board {
+        width: 100%;
+        max-width: 7xl;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        background-color: transparent;
+        @apply bg-white;
+        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
+      }
+      .announcement { display: none; }
+      .announcement.active { display: block; }
+      .announcement img { max-width: 100%; height: auto; margin-bottom: 0.5rem; border-radius: 4px; }
+      
+      /* 方形翻页按钮 */
+      .announcement-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.55);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.9rem;
+        cursor: pointer;
+        border-radius: 8px;
+        z-index: 10;
+        transition: all 0.2s ease;
+        font-size: 1.2rem;
+        backdrop-filter: blur(4px);
+        @apply dark:bg-neutral-700/80 dark:hover:bg-neutral-600;
+      }
+      .announcement-btn.prev { left: 1rem; }
+      .announcement-btn.next { right: 1rem; }
+      .announcement-btn:hover { background-color: rgba(0,0,0,0.8); transform: translateY(-50%) scale(1.02); }
+
+      /* 提示框 */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #FFFFFF;
+        color: #1F2937;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        z-index: 9999;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        font-size: 18px;
+        font-weight: 500;
+        max-width: 320px;
+        border-left: 4px solid #0F766E;
+        @apply dark:bg-neutral-800 dark:text-white dark:border-neutral-600 dark:shadow-lg dark:shadow-black/20;
+      }
+      .toast.reminder { border-left: 4px solid #EF4444; background-color: #FEF2F2; @apply dark:bg-red-900/30 dark:text-red-300; }
+      .toast.show { opacity: 1; transform: translateX(0); }
+
+      /* 黑夜开关优化 + 液态玻璃开关优化 */
+      .toggle-switch, .glass-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+      }
+      .toggle-switch input, .glass-toggle-switch input { opacity: 0; width: 0; height: 0; }
+      .toggle-slider, .glass-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 34px;
+        @apply dark:bg-neutral-600;
+      }
+      .toggle-slider:before, .glass-toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .toggle-switch input:checked + .toggle-slider,
+      .glass-toggle-switch input:checked + .glass-toggle-slider {
+        background-color: #30b551 !important;
+      }
+      .toggle-switch input:checked + .toggle-slider:before,
+      .glass-toggle-switch input:checked + .glass-toggle-slider:before {
+        transform: translateX(24px) !important;
+        left: unset !important;
+      }
+
+      /* 背景设置卡片 */
+      .bg-settings-card, .reminder-settings-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 500px;
+        background-color: rgba(255, 255, 255, 0.902);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+        display: none;
+        @apply dark:bg-neutral-800 dark:border dark:border-neutral-700;
+      }
+      .reminder-settings-card { max-width: 600px; }
+      .bg-settings-card.show, .reminder-settings-card.show { display: block; animation: fadeIn 0.3s ease; }
+      .bg-overlay, .reminder-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: none;
+        @apply dark:bg-black/70;
+      }
+      .bg-overlay.show, .reminder-overlay.show { display: block; animation: fadeBg 0.3s ease; }
+
+      /* 官方背景预览区域（新增三张小图预览） */
+      .official-bg-section {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb8f;
+        padding-top: 1rem;
+      }
+      .official-bg-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        @apply text-neutral-700 dark:text-neutral-200;
+      }
+      .bg-thumbnails {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .bg-thumb-item {
+        width: 80px;
+        height: 60px;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .bg-thumb-item:hover {
+        transform: scale(1.02);
+        border-color: #83f512;
+        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
+      }
+      .bg-thumb-item.active-bg {
+        border-color: #34C759;
+        box-shadow: 0 0 0 2px rgba(52,199,89,0.5);
+      }
+      .bg-thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* 日历卡片 - 大幅度减小尺寸 (最大宽度sm，紧凑卡片) */
+      .calendar-card {
+        width: 80%;
+        max-width: 28rem;        /* 大幅度缩小卡片宽度，类似小尺寸面板 */
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem 0.75rem 1rem 0.75rem;
+        margin: 2.5rem auto 1.2rem auto;  /* 增大上边距，拉开与时钟卡片的距离 */
+        background-color: transparent;
+        @apply bg-white;
+        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
+        transition: all 0.2s;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .calendar-nav-btn {
+        background-color: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        padding: 0.35rem 0.9rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        @apply dark:bg-neutral-700 dark:text-white hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.3rem;
+      }
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 800;
+        padding: 0.3rem 0;
+        color: #191919;
+        font-size: 0.75rem;
+        @apply dark:text-neutral-300;
+      }
+      /* 日历格子文字加粗加大（相对小卡片内依然清晰） */
+      .calendar-day {
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 1000;      /* 粗体 */
+        font-size: 1rem;       /* 小卡片内保持可读，修复过大溢出 */
+        transition: all 0.15s;
+        position: relative;
+        background-color: transparent;
+        @apply hover:bg-neutral-100 dark:hover:bg-neutral-700/70;
+      }
+      .calendar-day.restday {
+        background-color: #EFF6FF;
+        color: #3B82F6;
+        @apply dark:bg-blue-900/20 dark:text-blue-300 font-extrabold;
+      }
+      .calendar-day.today {
+        border: 2px solid #12f54b;
+        font-weight: 900;
+        background-color: rgba(17, 55, 69, 0.08);
+      }
+      .calendar-day.reminder::after {
+        content: '●';
+        position: absolute;
+        bottom: 5px;
+        font-size: 12px;
+        color: #F59E0B;
+      }
+      .calendar-day.other-month {
+        color: #5e5e5e;
+        font-weight: 470;
+        @apply dark:text-neutral-500;
+      }
+      /* 重大更新卡片 */
+      .update-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 500px;
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        z-index: 10001;
+        display: none;
+        @apply dark:bg-neutral-800 dark:border dark:border-neutral-700;
+      }
+      .update-card.show { display: block; animation: fadeIn 0.3s ease; }
+      .update-title { color: #12f53c; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-align: center; }
+      .update-content { margin-bottom: 2rem; line-height: 1.6; @apply dark:text-neutral-200; }
+      .update-confirm-btn { width: 100%; background-color: #12B7F5; color: white; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 600; cursor: pointer; @apply hover:bg-primary/90; }
+      @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -45%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+      @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+      
+      /* 玻璃模式全局样式 */
+      .glass-mode .announcement-board,
+      .glass-mode .calendar-card,
+      .glass-mode #clockCard {
+        @apply bg-transparent glass-effect;
+        @apply glass-light dark:glass-dark;
+      }
+      /* 本地上传图片预览区样式 */
+      .local-upload-area {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;  
+      }
+      .local-upload-label {
+        background-color: #f3f4f6;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        @apply dark:bg-neutral-700 dark:text-white;
+      }
+      .local-upload-label:hover {
+        background-color: #e5e7eb8a;
+        @apply dark:bg-neutral-600;
+      }
+      .bg-preview-img {
+        max-width: 100%;
+        max-height: 100px;
+        border-radius: 8px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        display: none;
+      }
+
+      /* 重要提示卡片  */
+      .important-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 520px;
+        background-color: #ff000054;   /* 提示框颜色 */
+        border-radius: 20px;
+        padding: 1.8rem 2rem 2rem 2rem;
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2);
+        z-index: 10002;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(2px);
+        border: 1px solid rgba(255,215,0,0.5);
+      }
+      .important-card.show {
+        display: flex;
+        animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .important-card .important-icon {
+        font-size: 3.5rem;
+        color: #FFE484;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      .important-card .important-title {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 0.75rem;
+      }
+      .important-card .important-content {
+        background-color: rgba(255,255,255,0.15);
+        backdrop-filter: blur(4px);
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        width: 100%;
+        margin: 0.8rem 0 1.2rem;
+        color: #fff8e7;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        font-weight: 500;
+        border: 1px solid rgba(255,245,180,0.4);
+        text-align: left;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      /* 重要提示按钮：关闭按钮同时致敬扁平+圆润 */
+      .important-close-btn {
+        background-color: white;
+        color: #B91C1C;
+        border: none;
+        border-radius: 60px;
+        padding: 0.7rem 1.6rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        margin-top: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .important-close-btn:hover {
+        background-color: #FFF3BF;
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      }
+      .important-close-btn:active {
+        transform: scale(0.98);
+      }
+      /* 覆盖层加重一点保证红色卡片可读 */
+      .important-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 10001;
+        display: none;
+        backdrop-filter: blur(5px);
+      }
+      .important-overlay.show {
+        display: block;
+        animation: fadeBg 0.25s ease;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -40%);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  </style>
+</head>
+<body class="bg-neutral-100 font-inter text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300" style="background-size: cover; background-position: center; background-attachment: fixed;">
+  <div id="toast" class="toast"></div>
+  <div id="bgOverlay" class="bg-overlay"></div>
+  <div id="reminderOverlay" class="reminder-overlay"></div>
+
+  <!-- 新增重要提示卡片（红色背景 + 内容区域留白供用户填写） -->
+  <div id="importantOverlay" class="important-overlay"></div>
+  <div id="importantCard" class="important-card">
+    <div class="important-icon"><i class="fa fa-exclamation-triangle"></i></div>
+    <div class="important-title">工具库维护停用提示</div>
+    <div class="important-content" id="importantMessageContent">
+    1. 维护时间：2026年4月22日22:00 - 2026年4月26日02:00不停机维护<br>
+    2. 受影响组件：除<杂杂时钟>与<网站主页面、网站协议>外的所有工具将停用<br>
+    3. 维护原因：其他工具因对应开发者未进行维护所导致严重BUG将停用<br>
+    4. 用户影响：在维护期间，受影响工具将无法使用，请提前做好数据备份<br>
+    5. 维护预告：我们正在加急开发新版工具，预计将在2026年5月上线，敬请期待！————S.L Studio<br>
+    </div>
+    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我已了解</button>
+  </div>
+
+  <!-- 背景设置卡片 (新增官方背景三张小图预览 + 本地上传区域) -->
+  <div id="bgSettingsCard" class="bg-settings-card">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-neutral-900 dark:text-white">背景图片设置</h2>
+      <button id="closeBgSettings" class="text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"><i class="fa fa-times text-xl"></i></button>
+    </div>
+    <div class="space-y-4">
+      <!-- 官方背景区域 (三张小图预览) -->
+      <div class="official-bg-section">
+        <div class="official-bg-title"><i class="fa fa-image text-primary"></i> 官方精选背景</div>
+        <div class="bg-thumbnails" id="officialBgThumbs">
+          <!-- 三张图片动态生成 js 渲染保证清晰 -->
+        </div>
+        <p class="text-xs text-neutral-500 mt-2">✨ 点击小图快速应用官方背景</p>
+      </div>
+
+      <div><label class="block text-lg font-medium mb-2">图片URL (网络链接)</label><input type="text" id="bgImageUrl" placeholder="请输入图片链接" class="w-full px-4 py-3 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-700"></div>
+      
+      <!-- 本地上传背景区域 -->
+      <div class="local-upload-area">
+        <label class="local-upload-label"><i class="fa fa-upload"></i> 本地上传背景图片</label>
+        <input type="file" id="localBgUpload" accept="image/jpeg,image/png,image/webp,image/jpg" style="display: none;">
+        <div id="localBgPreview" class="bg-preview-img"></div>
+        <p class="text-xs text-neutral-500 mt-2">⬆️ 点击上传本地图片，自动应用并保存</p>
+      </div>
+
+      <div class="flex space-x-3"><button id="applyBgImage" class="flex-1 bg-primary hover:bg-primary/90 text-white font-medium py-3 rounded-lg"><i class="fa fa-check mr-2"></i> 应用背景</button><button id="resetBgImage" class="flex-1 bg-gray-200 dark:bg-neutral-700 hover:bg-gray-300 rounded-lg"><i class="fa fa-refresh mr-2"></i> 重置背景</button></div>
+      <div class="text-sm text-neutral-500">💡 推荐1920x1080图片，支持jpg/png/webp。本地上传后将自动保存至浏览器，下次打开继续显示。</div>
+    </div>
+  </div>
+
+  <!-- 事件提醒卡片 -->
+  <div id="reminderSettingsCard" class="reminder-settings-card">
+    <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">事件提醒设置</h2><button id="closeReminderSettings"><i class="fa fa-times text-xl"></i></button></div>
+    <div class="space-y-4">
+      <div><label class="block font-medium">提醒名称</label><input type="text" id="reminderName" placeholder="例如：期中考试" class="w-full px-4 py-3 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-700"></div>
+      <div><label class="block font-medium">提醒日期</label><input type="date" id="reminderDate" class="w-full px-4 py-3 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-700"></div>
+      <div><label class="block font-medium">描述</label><textarea id="reminderDesc" rows="2" placeholder="详细描述" class="w-full px-4 py-3 rounded-lg border dark:border-neutral-600 bg-white dark:bg-neutral-700 resize-none"></textarea></div>
+      <div class="flex space-x-3"><button id="addReminder" class="flex-1 bg-primary text-white py-3 rounded-lg"><i class="fa fa-plus mr-2"></i> 添加提醒</button><button id="clearReminders" class="flex-1 bg-gray-200 dark:bg-neutral-700 rounded-lg"><i class="fa fa-trash mr-2"></i> 清空提醒</button></div>
+      <div><h3 class="font-bold text-lg mb-2">已添加的提醒</h3><div id="remindersList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-700/50"></div></div>
+    </div>
+  </div>
+
+  <!-- 重大更新卡片 -->
+  <div id="updateCard" class="update-card">
+    <div class="update-title">杂杂时钟3.0重大更新</div>
+    <div class="update-content"><ul class="list-disc pl-5 space-y-1"><li>修复了已知的bug</li><li>增加日历卡片</li><li>增加液体玻璃UI，并优化整体UI</li><li>增加返回首页按钮功能</li><li>增加了黑夜模式按钮功能</li><li>✨ 新增本地上传背景图片，永久保存你的专属背景 ✨</li><li>✨ 新增官方精选背景 (3张高清壁纸) ✨</li></ul><p class="mt-2">感谢您的使用 —— 三龙S.L Studio</p></div>
+    <button id="confirmUpdate" class="update-confirm-btn">确认并开始使用</button>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
+      <div class="flex items-center space-x-2"><i class="fa fa-clock-o text-primary text-2xl"></i><h1 class="text-xl font-bold">杂杂时钟校园版</h1></div>
+      <nav><ul class="flex space-x-4 md:space-x-6 items-center flex-wrap">
+        <li><a href="#" id="homeLink" class="flex items-center font-bold text-neutral-600 hover:text-primary dark:text-neutral-200"><i class="fa fa-home mr-1"></i><span>返回首页</span></a></li>
+        <li><button id="openBgSettings" class="flex items-center font-bold"><i class="fa fa-picture-o mr-1"></i><span>背景设置</span></button></li>
+        <li><button id="openReminderSettings" class="flex items-center font-bold"><i class="fa fa-bell mr-1"></i><span>日历提醒设置</span></button></li>
+        <li class="flex items-center space-x-2"><span class="font-bold">黑夜模式</span><label class="toggle-switch"><input type="checkbox" id="darkModeToggle"><span class="toggle-slider"></span></label></li>
+        <li class="flex items-center space-x-2"><span class="font-bold">液态玻璃</span><label class="glass-toggle-switch"><input type="checkbox" id="glassModeToggle"><span class="glass-toggle-slider"></span></label></li>
+      </ul></nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-6 flex flex-col items-center justify-center">
+    <!-- 时钟卡片 -->
+    <div id="clockCard" class="w-full max-w-8xl bg-white rounded-2xl clock-shadow p-8 md:p-10 card-hover dark:bg-neutral-800 dark:border dark:border-neutral-700 transition-colors">
+      <div class="text-center mb-5">
+        <p class="text-4xl md:text-8xl font-bold text-red-600 dark:text-red-600">8B8晚自习三不准：</p>
+        <p class="text-red-600 font-bold text-2xl md:text-8xl mt-2">不准转头</p>
+        <p class="text-red-600 font-bold text-2xl md:text-8xl mt-1">不准讲话</p>
+        <p class="text-red-600 font-bold text-2xl md:text-8xl mt-1">不准下位</p>
+      </div>
+      <div class="flex flex-col items-center">
+        <div id="clockDisplay" class="text-[clamp(2.5rem,10vw,7rem)] font-bold text-neutral-900 dark:text-white tracking-wide">14:30:45</div>
+        <p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white">2026年4月18日 星期六</p>
+        <br>
+        <button id="fullscreenBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-10 rounded-full mt-3 transition-all flex items-center shadow-md text-lg"><i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span></button>
+      </div>
+    </div>
+
+    <!-- 日历卡片 -->
+    <div class="calendar-card mt-5 card-hover">
+      <div class="calendar-header font-bold text-2xl md:text-4xl mt-2">
+        <button id="prevMonth" class="calendar-nav-btn"><i class="fa fa-chevron-left mr-1"></i> 上月</button>
+        <h2 id="calendarMonth" class="font-extrabold dark:text-white md:text-3xl">2026年4月</h2>
+        <button id="nextMonth" class="calendar-nav-btn">下月 <i class="fa fa-chevron-right ml-1"></i></button>
+      </div>
+      <div class="calendar-grid mt-2">
+        <div class="calendar-day-header">日</div><div class="calendar-day-header">一</div><div class="calendar-day-header">二</div><div class="calendar-day-header">三</div><div class="calendar-day-header">四</div><div class="calendar-day-header">五</div><div class="calendar-day-header">六</div>
+        <div id="calendarDays" style="display: contents;"></div>
+      </div>
+    </div>
+
+    <!-- 公告栏 -->
+    <div id="announcementBoard" class="announcement-board mt-6">
+      <div class="announcement active"><p class="text-center font-bold text-2xl md:text-4xl text-red-600 dark:text-red-400">8B8晚自习三不准：</p><p class="text-center text-xl md:text-2xl">不准转头</p><p class="text-center text-xl md:text-2xl">不准讲话</p><p class="text-center text-xl md:text-2xl">不准下位</p></div>
+      <div class="announcement"><p class="text-center font-bold text-2xl md:text-3xl">2026/04/18更新日志</p><p class="text-center text-base md:text-lg">1. 时钟卡片增大，日历大幅缩小</p><p class="text-center text-base md:text-lg">2. 卡片间距显著增加</p><p class="text-center text-base md:text-lg">3. 日历文字加粗，液态玻璃优化</p><p class="text-center text-base md:text-lg">4. 方形按钮 + 开关视觉增强</p><p class="text-center text-base md:text-lg">5. 支持本地上传背景并永久保存</p><p class="text-center text-base md:text-lg">6. 官方背景三张高清壁纸预览</p></div>
+      <button class="announcement-btn prev" id="prevAnnounceBtn"><i class="fa fa-chevron-left"></i></button>
+      <button class="announcement-btn next" id="nextAnnounceBtn"><i class="fa fa-chevron-right"></i></button>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-neutral-200 py-6 mt-8 dark:bg-neutral-800 dark:border-neutral-700">
+    <div class="container mx-auto px-4 text-center text-neutral-500 dark:text-neutral-400 text-sm"><p>© 2025 Hou WenJie ● 运营团队保留一切权利。This web made in ZZ!</p><p class="mt-1">使用即表示您同意我们的服务条款和隐私政策</p></div>
+  </footer>
+
+  <script>
+    // 全局变量
+    let announcements = [];
+    let currentAnnouncementIndex = 0;
+    let calendarCurrentDate = new Date();
+    let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
+    let announcementInterval = null;
+
+    // 官方背景图片列表 (根据提供的三张链接)
+    const OFFICIAL_BG_LIST = [
+      "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp",
+      "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp",
+      "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp"
+    ];
+
+    function showToast(message, duration = 3000, isReminder = false) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      if (isReminder) toast.classList.add('reminder');
+      else toast.classList.remove('reminder');
+      setTimeout(() => { toast.classList.remove('show'); if(isReminder) toast.classList.remove('reminder'); }, duration);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2,'0');
+      const minutes = String(now.getMinutes()).padStart(2,'0');
+      const seconds = String(now.getSeconds()).padStart(2,'0');
+      const clockDiv = document.getElementById('clockDisplay');
+      if(clockDiv) clockDiv.textContent = `${hours}:${minutes}:${seconds}`;
+      const year = now.getFullYear();
+      const month = String(now.getMonth()+1).padStart(2,'0');
+      const day = String(now.getDate()).padStart(2,'0');
+      const weekDays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+      const dateDiv = document.getElementById('dateDisplay');
+      if(dateDiv) dateDiv.textContent = `${year}年${month}月${day}日 ${weekDays[now.getDay()]}`;
+      checkReminders(now);
+    }
+
+    function checkReminders(now) {
+      const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      let updated = false;
+      reminderList.forEach(r => { if(r.date === today && !r.shown) { showToast(`📅 今日提醒：${r.name} - ${r.desc || '无描述'}`, 5000, true); r.shown=true; updated=true; } });
+      if(updated) { localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); }
+    }
+
+    let fullscreenBtn = null;
+    function toggleFullscreen() {
+      try {
+        if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); if(fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>'; showToast('已进入全屏模式'); }
+        else { document.exitFullscreen(); if(fullscreenBtn) fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; showToast('已退出全屏模式'); }
+      } catch(e) { showToast('全屏失败',2000,true); }
+    }
+    function updateFullscreenButton() { if(fullscreenBtn) fullscreenBtn.innerHTML = document.fullscreenElement ? '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>' : '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; }
+
+    function showAnnouncement(index) { if(!announcements.length) return; index = (index+announcements.length)%announcements.length; currentAnnouncementIndex=index; announcements.forEach((a,i)=> i===index ? a.classList.add('active') : a.classList.remove('active')); }
+    function nextAnnouncement() { showAnnouncement(currentAnnouncementIndex+1); }
+    function prevAnnouncement() { showAnnouncement(currentAnnouncementIndex-1); }
+    function startAnnouncementInterval() { if(announcementInterval) clearInterval(announcementInterval); announcementInterval = setInterval(()=> nextAnnouncement(), 5000); }
+
+    // 黑夜模式
+    function initDarkMode() {
+      const toggle = document.getElementById('darkModeToggle');
+      const isDark = localStorage.getItem('darkMode') === 'true';
+      if(isDark) { document.documentElement.classList.add('dark'); toggle.checked=true; } else { document.documentElement.classList.remove('dark'); toggle.checked=false; }
+      toggle.addEventListener('change',()=>{
+        if(toggle.checked){ document.documentElement.classList.add('dark'); localStorage.setItem('darkMode','true'); showToast('已开启黑夜模式'); }
+        else { document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode','false'); showToast('已关闭黑夜模式'); }
+        renderCalendar();
+      });
+    }
+    function initGlassMode() {
+      const toggle = document.getElementById('glassModeToggle');
+      const isGlass = localStorage.getItem('glassMode') === 'true';
+      if(isGlass) { toggle.checked=true; document.body.classList.add('glass-mode'); } else { toggle.checked=false; document.body.classList.remove('glass-mode'); }
+      toggle.addEventListener('change',()=>{
+        if(toggle.checked){ localStorage.setItem('glassMode','true'); document.body.classList.add('glass-mode'); showToast('已开启液态玻璃UI'); }
+        else { localStorage.setItem('glassMode','false'); document.body.classList.remove('glass-mode'); showToast('已关闭液态玻璃UI'); }
+      });
+    }
+
+    function setBackgroundImage(source, isLocalFile = false) {
+      document.body.style.backgroundImage = `url(${source})`;
+      localStorage.setItem('backgroundImage', source);
+      localStorage.setItem('backgroundIsLocal', isLocalFile ? 'true' : 'false');
+      highlightActiveOfficialBg(source);
+    }
+    
+    function highlightActiveOfficialBg(currentSrc) {
+      if(!currentSrc) { document.querySelectorAll('.bg-thumb-item').forEach(item => item.classList.remove('active-bg')); return; }
+      const thumbItems = document.querySelectorAll('.bg-thumb-item');
+      let matched = false;
+      thumbItems.forEach((item) => {
+        const imgSrc = item.getAttribute('data-bg-url');
+        if(imgSrc === currentSrc) { item.classList.add('active-bg'); matched = true; } 
+        else item.classList.remove('active-bg');
+      });
+      if(!matched) thumbItems.forEach(item => item.classList.remove('active-bg'));
+    }
+
+    function resetBackground() {
+      document.body.style.backgroundImage = '';
+      localStorage.removeItem('backgroundImage');
+      localStorage.removeItem('backgroundIsLocal');
+      document.getElementById('bgImageUrl').value = '';
+      const previewImg = document.getElementById('localBgPreview');
+      if(previewImg) { previewImg.style.display = 'none'; previewImg.src = ''; }
+      highlightActiveOfficialBg('');
+      showToast(' 背景已重置');
+    }
+
+    function initLocalUpload() {
+      const fileInput = document.getElementById('localBgUpload');
+      const uploadLabel = document.querySelector('.local-upload-label');
+      const previewContainer = document.getElementById('localBgPreview');
+      if(uploadLabel && fileInput) {
+        uploadLabel.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if(!file) return;
+          if(!file.type.startsWith('image/')) { showToast('请选择图片文件 (jpg/png/webp)', 2000, true); return; }
+          const reader = new FileReader();
+          reader.onload = function(evt) {
+            const dataUrl = evt.target.result;
+            setBackgroundImage(dataUrl, true);
+            if(previewContainer) { previewContainer.src = dataUrl; previewContainer.style.display = 'block'; }
+            document.getElementById('bgImageUrl').value = '';
+            showToast('本地背景已应用并自动保存！下次打开仍会显示', 3000);
+            document.getElementById('bgOverlay').classList.remove('show');
+            document.getElementById('bgSettingsCard').classList.remove('show');
+          };
+          reader.readAsDataURL(file);
+          fileInput.value = '';
+        });
+      }
+    }
+    
+    function initOfficialBackgrounds() {
+      const container = document.getElementById('officialBgThumbs');
+      if(!container) return;
+      container.innerHTML = '';
+      OFFICIAL_BG_LIST.forEach((url, idx) => {
+        const thumbDiv = document.createElement('div');
+        thumbDiv.className = 'bg-thumb-item';
+        thumbDiv.setAttribute('data-bg-url', url);
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `官方背景${idx+1}`;
+        img.loading = 'lazy';
+        thumbDiv.appendChild(img);
+        thumbDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setBackgroundImage(url, false);
+          const previewImg = document.getElementById('localBgPreview');
+          if(previewImg) previewImg.style.display = 'none';
+          document.getElementById('bgImageUrl').value = '';
+          showToast(`已应用合金精选背景 ${idx+1}`);
+          document.getElementById('bgOverlay').classList.remove('show');
+          document.getElementById('bgSettingsCard').classList.remove('show');
+        });
+        container.appendChild(thumbDiv);
+      });
+    }
+
+    function initBackgroundFromStorage() {
+      const savedBg = localStorage.getItem('backgroundImage');
+      if(savedBg && savedBg.trim() !== '') {
+        document.body.style.backgroundImage = `url(${savedBg})`;
+        if(savedBg.startsWith('data:image')) {
+          const previewImg = document.getElementById('localBgPreview');
+          if(previewImg) { previewImg.src = savedBg; previewImg.style.display = 'block'; }
+        } else { document.getElementById('bgImageUrl').value = savedBg; }
+        highlightActiveOfficialBg(savedBg);
+      } else { resetBackground(); }
+    }
+
+    function initBackgroundSettings() {
+      initBackgroundFromStorage();
+      const openBtn = document.getElementById('openBgSettings'), closeBtn = document.getElementById('closeBgSettings'), overlay = document.getElementById('bgOverlay'), card = document.getElementById('bgSettingsCard'), applyBtn = document.getElementById('applyBgImage'), resetBtn = document.getElementById('resetBgImage'), urlInput = document.getElementById('bgImageUrl');
+      openBtn.onclick = ()=>{ overlay.classList.add('show'); card.classList.add('show'); };
+      closeBtn.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
+      overlay.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
+      applyBtn.onclick = ()=>{ 
+        let url = urlInput.value.trim(); 
+        if(url){ 
+          setBackgroundImage(url, false); 
+          const previewImg = document.getElementById('localBgPreview');
+          if(previewImg) previewImg.style.display = 'none';
+          showToast('背景已应用 (网络图片)'); 
+          overlay.classList.remove('show'); 
+          card.classList.remove('show'); 
+        } else showToast('请输入URL或使用本地上传/合金背景哦',2000,true); 
+      };
+      resetBtn.onclick = ()=>{ resetBackground(); overlay.classList.remove('show'); card.classList.remove('show'); };
+    }
+
+    function renderRemindersList() {
+      const container = document.getElementById('remindersList');
+      if(!container) return;
+      if(reminderList.length===0){ container.innerHTML='<div class="text-center text-neutral-500">暂无提醒</div>'; return; }
+      container.innerHTML = '';
+      reminderList.forEach(r=>{ const div = document.createElement('div'); div.className='p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center'; div.innerHTML=`<div><div class="font-bold">${escapeHtml(r.name)}</div><div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div><button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>`; container.appendChild(div); });
+      document.querySelectorAll('.delete-reminder-btn').forEach(btn => { btn.addEventListener('click', (e) => { const id = parseInt(btn.getAttribute('data-id')); reminderList = reminderList.filter(r=>r.id!==id); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); showToast('提醒已删除'); }); });
+    }
+    function initReminderSettings(){
+      renderRemindersList();
+      const openBtn = document.getElementById('openReminderSettings'), closeBtn = document.getElementById('closeReminderSettings'), overlay = document.getElementById('reminderOverlay'), card = document.getElementById('reminderSettingsCard'), addBtn = document.getElementById('addReminder'), clearBtn = document.getElementById('clearReminders'), nameInp = document.getElementById('reminderName'), dateInp = document.getElementById('reminderDate'), descInp = document.getElementById('reminderDesc');
+      openBtn.onclick = ()=>{ overlay.classList.add('show'); card.classList.add('show'); };
+      closeBtn.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
+      overlay.onclick = ()=>{ overlay.classList.remove('show'); card.classList.remove('show'); };
+      addBtn.onclick = ()=>{ let name = nameInp.value.trim(), date = dateInp.value, desc = descInp.value.trim(); if(!name||!date){ showToast('请填写名称和日期',2000,true); return; } reminderList.push({id:Date.now(), name, date, desc, shown:false}); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); nameInp.value=''; dateInp.value=''; descInp.value=''; showToast('提醒已添加'); };
+      clearBtn.onclick = ()=>{ if(confirm('清空所有提醒？')){ reminderList=[]; localStorage.setItem('reminders','[]'); renderRemindersList(); renderCalendar(); showToast('已清空'); } };
+    }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    function renderCalendar() {
+      const year = calendarCurrentDate.getFullYear();
+      const month = calendarCurrentDate.getMonth();
+      document.getElementById('calendarMonth').textContent = `${year}年${month+1}月`;
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month+1, 0);
+      const prevLastDay = new Date(year, month, 0);
+      const firstDayWeek = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+      const prevDays = prevLastDay.getDate();
+      const container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+      for(let i=firstDayWeek; i>0; i--){ let cell = document.createElement('div'); cell.className='calendar-day other-month'; cell.textContent = prevDays - i + 1; container.appendChild(cell); }
+      const today = new Date();
+      for(let i=1;i<=daysInMonth;i++){ let cell = document.createElement('div'); const currentDate = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; cell.className='calendar-day'; cell.textContent = i; if(year===today.getFullYear() && month===today.getMonth() && i===today.getDate()) cell.classList.add('today'); let week = new Date(year,month,i).getDay(); if(week===0||week===6) cell.classList.add('restday'); if(reminderList.some(r=>r.date===currentDate)) cell.classList.add('reminder'); container.appendChild(cell); }
+      let totalCells = firstDayWeek + daysInMonth; let nextDays = 42 - totalCells;
+      for(let i=1;i<=nextDays;i++){ let cell = document.createElement('div'); cell.className='calendar-day other-month'; cell.textContent = i; container.appendChild(cell); }
+    }
+
+    // 重要提示卡片逻辑：显示红色卡片，内容区域已留空（直接可让用户填写），确保只弹一次
+function initImportantPrompt() {
+  const importantCard = document.getElementById('importantCard');
+  const importantOverlay = document.getElementById('importantOverlay');
+  const closeBtn = document.getElementById('closeImportantBtn');
+  // 检查是否已经确认过重要提示（基于存储key，但确保每次打开如果未确认就显示，如果想每次都显示可改为不判断，但一般重要提示显示一次）
+  const hasConfirmedImportant = localStorage.getItem('importantPromptConfirmed');
+  if (!hasConfirmedImportant) {
+    setTimeout(() => {
+      importantOverlay.classList.add('show');
+      importantCard.classList.add('show');
+    }, 200);
+  }
+  closeBtn.addEventListener('click', () => {
+    importantOverlay.classList.remove('show');
+    importantCard.classList.remove('show');
+    localStorage.setItem('importantPromptConfirmed', 'true');
+  });
+  importantOverlay.addEventListener('click', () => {
+    importantOverlay.classList.remove('show');
+    importantCard.classList.remove('show');
+    localStorage.setItem('importantPromptConfirmed', 'true');
+  });
+}
+    document.addEventListener('DOMContentLoaded', () => {
+      announcements = Array.from(document.querySelectorAll('.announcement'));
+      fullscreenBtn = document.getElementById('fullscreenBtn');
+      initDarkMode(); initGlassMode(); initBackgroundSettings(); initReminderSettings(); initLocalUpload(); initOfficialBackgrounds();
+      
+      const prevMonthBtn = document.getElementById('prevMonth'), nextMonthBtn = document.getElementById('nextMonth');
+      calendarCurrentDate = new Date();
+      renderCalendar();
+      prevMonthBtn.addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()-1); renderCalendar(); });
+      nextMonthBtn.addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()+1); renderCalendar(); });
+      
+      setInterval(updateClock, 1000); updateClock();
+      startAnnouncementInterval(); showAnnouncement(0);
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+      document.addEventListener('fullscreenchange', updateFullscreenButton);
+      document.getElementById('prevAnnounceBtn')?.addEventListener('click', prevAnnouncement);
+      document.getElementById('nextAnnounceBtn')?.addEventListener('click', nextAnnouncement);
+      document.getElementById('homeLink')?.addEventListener('click', (e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      
+      const updateCard = document.getElementById('updateCard');
+      const confirmUpdateBtn = document.getElementById('confirmUpdate');
+      if(!localStorage.getItem('update3.0')) updateCard.classList.add('show');
+      confirmUpdateBtn.addEventListener('click',()=>{ updateCard.classList.remove('show'); localStorage.setItem('update3.0','shown'); });
+      
+      // 调用重要提示初始化 (红色卡片)
+      initImportantPrompt();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>文字排版工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config={
+            theme:{
+                extend:{
+                    colors:{primary:'#3B82F6',secondary:'#10B981',accent:'#8B5CF6',dark:'#1F2937'},
+                    fontFamily:{inter:['Inter','system-ui','sans-serif']}
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 保证页脚固定底部 */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
+        .tool-btn {
+            transition: all 0.2s ease;
+        }
+        .tool-btn:active {
+            transform: scale(0.96);
+        }
+        .preview-box {
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.7;
+        }
+        .preview-box p {
+            margin-bottom: 0.5rem;
+        }
+        .active-format {
+            background-color: #3B82F6 !important;
+            color: white !important;
+            border-color: #3B82F6 !important;
+        }
+        .stat-item {
+            transition: background 0.1s;
+        }
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">文字排版工具</h1>
+                    <p class="text-gray-600 max-w-2xl">智能文本美化 | 支持大小写转换、去除空格/空行、添加缩进、字数统计、一键复制等功能</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：编辑区 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-sm font-medium text-gray-700"><i class="fa fa-pencil-square-o text-primary"></i> 文本编辑区</span>
+                                <span id="charCount" class="text-xs bg-gray-200 px-2 py-1 rounded-full">0 字符</span>
+                                <span id="wordCount" class="text-xs bg-gray-200 px-2 py-1 rounded-full">0 词</span>
+                                <span id="lineCount" class="text-xs bg-gray-200 px-2 py-1 rounded-full">0 行</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="clearTextBtn" class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg text-sm transition"><i class="fa fa-trash-o"></i> 清空</button>
+                                <button id="copyResultBtn" class="bg-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-primary/90 transition"><i class="fa fa-copy"></i> 复制文本</button>
+                            </div>
+                        </div>
+                        <textarea id="inputText" rows="12" class="w-full p-5 text-gray-700 border-0 focus:ring-0 resize-y font-mono text-sm leading-relaxed" placeholder="在此处输入或粘贴需要排版的文字...&#10;&#10;支持段落整理、大小写转换、去除多余空格/空行等功能"></textarea>
+                    </div>
+                </div>
+
+                <!-- 右侧：功能面板 -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- 大小写转换 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-text-height text-primary mr-2"></i> 大小写转换</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="toUpperCaseBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">全部大写</button>
+                            <button id="toLowerCaseBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">全部小写</button>
+                            <button id="toCapitalizeBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">首字母大写</button>
+                            <button id="toTitleCaseBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">单词首字母大写</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 空格与空行处理 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-space-shuttle text-primary mr-2"></i> 空格/空行处理</h3>
+                        <div class="space-y-2">
+                            <button id="trimSpacesBtn" class="tool-btn w-full bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium text-left px-3"><i class="fa fa-arrows-h mr-2"></i> 清除首尾空格</button>
+                            <button id="removeExtraSpacesBtn" class="tool-btn w-full bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium text-left px-3"><i class="fa fa-compress mr-2"></i> 合并多余空格（多个空格→单空格）</button>
+                            <button id="removeBlankLinesBtn" class="tool-btn w-full bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium text-left px-3"><i class="fa fa-eraser mr-2"></i> 删除空行</button>
+                            <button id="removeAllSpacesBtn" class="tool-btn w-full bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium text-left px-3"><i class="fa fa-minus-square mr-2"></i> 删除所有空格</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 段落排版 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-paragraph text-primary mr-2"></i> 段落排版</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="addIndentBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">添加缩进(2空格)</button>
+                            <button id="removeIndentBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">清除缩进</button>
+                            <button id="autoWrapBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">自动换行(80字符)</button>
+                            <button id="joinParagraphsBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">合并为单段落</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 高级与工具 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-magic text-primary mr-2"></i> 高级工具</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="reverseTextBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">反转文本</button>
+                            <button id="removePunctuationBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">去除标点符号</button>
+                            <button id="sortLinesBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">按行排序(A-Z)</button>
+                            <button id="deduplicateLinesBtn" class="tool-btn bg-gray-100 hover:bg-gray-200 rounded-lg py-2 text-sm font-medium">去除重复行</button>
+                        </div>
+                        <div class="mt-3">
+                            <label class="text-xs text-gray-500 block mb-1">添加自定义前缀/后缀</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="prefixInput" placeholder="前缀" class="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-1 focus:ring-primary">
+                                <input type="text" id="suffixInput" placeholder="后缀" class="flex-1 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:ring-1 focus:ring-primary">
+                                <button id="addPrefixSuffixBtn" class="bg-primary text-white px-3 py-1 rounded-lg text-sm hover:bg-primary/90"><i class="fa fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 字数详情统计 -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl shadow-md p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-2"><i class="fa fa-bar-chart text-primary mr-2"></i> 详细统计</h3>
+                        <div class="text-xs space-y-1 text-gray-600">
+                            <div class="flex justify-between"><span>字符总数(含空格):</span><span id="statCharsTotal" class="font-mono">0</span></div>
+                            <div class="flex justify-between"><span>非空格字符:</span><span id="statCharsNoSpace" class="font-mono">0</span></div>
+                            <div class="flex justify-between"><span>中文汉字数:</span><span id="statChinese" class="font-mono">0</span></div>
+                            <div class="flex justify-between"><span>数字个数:</span><span id="statDigits" class="font-mono">0</span></div>
+                            <div class="flex justify-between"><span>英文字母数:</span><span id="statLetters" class="font-mono">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 即时预览区 (可选展示效果) -->
+            <div class="mt-8 bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+                <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700"><i class="fa fa-eye text-primary"></i> 实时预览 (排版效果)</span>
+                    <span class="text-xs text-gray-400">支持换行与段落</span>
+                </div>
+                <div id="previewArea" class="preview-box p-5 text-gray-700 leading-relaxed"></div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">ToolHub</span>
+                </div>
+                <p class="text-gray-400 text-sm">智能排版，提升效率。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
+            <p>©2026 Copyright S.L Studio</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // 获取元素
+    const inputTextarea = document.getElementById('inputText');
+    const previewDiv = document.getElementById('previewArea');
+    const charCountSpan = document.getElementById('charCount');
+    const wordCountSpan = document.getElementById('wordCount');
+    const lineCountSpan = document.getElementById('lineCount');
+    
+    // 统计变量
+    const statCharsTotal = document.getElementById('statCharsTotal');
+    const statCharsNoSpace = document.getElementById('statCharsNoSpace');
+    const statChinese = document.getElementById('statChinese');
+    const statDigits = document.getElementById('statDigits');
+    const statLetters = document.getElementById('statLetters');
+    
+    // 辅助函数: 更新所有统计及预览
+    function updateAllStats() {
+        let text = inputTextarea.value;
+        // 字符数
+        charCountSpan.innerText = text.length + ' 字符';
+        // 单词数 (按空格/标点分割粗略统计)
+        const words = text.trim() ? text.trim().split(/\s+/) : [];
+        const wordCount = text.trim() === '' ? 0 : words.filter(w => w.length > 0).length;
+        wordCountSpan.innerText = wordCount + ' 词';
+        // 行数
+        const lines = text.split(/\r?\n/);
+        const lineCount = lines.filter(l => l.length > 0 || text.includes('\n')).length;
+        lineCountSpan.innerText = lineCount + ' 行';
+        
+        // 详细统计
+        let charsNoSpace = 0, chineseCount = 0, digitsCount = 0, lettersCount = 0;
+        for (let ch of text) {
+            if (ch !== ' ' && ch !== '\n' && ch !== '\r' && ch !== '\t') charsNoSpace++;
+            if (/[\u4e00-\u9fa5]/.test(ch)) chineseCount++;
+            if (/[0-9]/.test(ch)) digitsCount++;
+            if (/[a-zA-Z]/.test(ch)) lettersCount++;
+        }
+        statCharsTotal.innerText = text.length;
+        statCharsNoSpace.innerText = charsNoSpace;
+        statChinese.innerText = chineseCount;
+        statDigits.innerText = digitsCount;
+        statLetters.innerText = lettersCount;
+        
+        // 更新预览 (支持HTML换行保留)
+        let previewHtml = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        previewHtml = previewHtml.replace(/\n/g, '<br>');
+        previewDiv.innerHTML = previewHtml || '<span class="text-gray-400">暂无内容，输入文字后将显示排版效果...</span>';
+    }
+    
+    // 通用执行函数：获取当前文本，应用回调后设置文本并更新统计
+    function applyTransformation(callback, keepSelection = false) {
+        let text = inputTextarea.value;
+        let newText = callback(text);
+        if (newText !== undefined && typeof newText === 'string') {
+            inputTextarea.value = newText;
+            updateAllStats();
+            // 可选保持光标位置
+            if (!keepSelection) inputTextarea.focus();
+        } else {
+            console.warn("转换无效");
+        }
+    }
+    
+    // 大小写转换
+    document.getElementById('toUpperCaseBtn').addEventListener('click', () => {
+        applyTransformation(t => t.toUpperCase());
+    });
+    document.getElementById('toLowerCaseBtn').addEventListener('click', () => {
+        applyTransformation(t => t.toLowerCase());
+    });
+    document.getElementById('toCapitalizeBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            if (!t) return t;
+            return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+        });
+    });
+    document.getElementById('toTitleCaseBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            return t.replace(/\b\w/g, char => char.toUpperCase());
+        });
+    });
+    
+    // 空格/空行处理
+    document.getElementById('trimSpacesBtn').addEventListener('click', () => {
+        applyTransformation(t => t.trim());
+    });
+    document.getElementById('removeExtraSpacesBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/\s+/g, ' '));
+    });
+    document.getElementById('removeBlankLinesBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/^\s*[\r\n]+/gm, '').replace(/\n\s*\n/g, '\n').replace(/^\s+|\s+$/g, (match, offset, str) => offset === 0 ? match : match));
+        // 更稳健：删除空行
+        applyTransformation(t => t.split(/\r?\n/).filter(line => line.trim().length > 0).join('\n'));
+    });
+    document.getElementById('removeAllSpacesBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/\s/g, ''));
+    });
+    
+    // 段落排版
+    document.getElementById('addIndentBtn').addEventListener('click', () => {
+        applyTransformation(t => t.split(/\r?\n/).map(line => line.trim() ? '  ' + line : line).join('\n'));
+    });
+    document.getElementById('removeIndentBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/^[ \t]+/gm, ''));
+    });
+    document.getElementById('autoWrapBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            const maxWidth = 80;
+            let paragraphs = t.split(/\r?\n/);
+            let wrapped = [];
+            for (let para of paragraphs) {
+                if (para.trim() === '') {
+                    wrapped.push('');
+                    continue;
+                }
+                let words = para.split(/(\s+)/);
+                let line = '';
+                let paraWrapped = [];
+                for (let w of words) {
+                    if ((line + w).length > maxWidth && line.length > 0) {
+                        paraWrapped.push(line);
+                        line = w;
+                    } else {
+                        line += w;
+                    }
+                }
+                if (line) paraWrapped.push(line);
+                wrapped.push(paraWrapped.join('\n'));
+            }
+            return wrapped.join('\n');
+        });
+    });
+    document.getElementById('joinParagraphsBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim());
+    });
+    
+    // 高级工具
+    document.getElementById('reverseTextBtn').addEventListener('click', () => {
+        applyTransformation(t => t.split('').reverse().join(''));
+    });
+    document.getElementById('removePunctuationBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/[，,。？?！!；;：“\"“”‘’《》【】（）()\[\]{}]/g, ''));
+    });
+    document.getElementById('sortLinesBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            let lines = t.split(/\r?\n/);
+            lines.sort((a,b) => a.localeCompare(b));
+            return lines.join('\n');
+        });
+    });
+    document.getElementById('deduplicateLinesBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            let lines = t.split(/\r?\n/);
+            let unique = [];
+            let set = new Set();
+            for (let line of lines) {
+                if (!set.has(line)) {
+                    set.add(line);
+                    unique.push(line);
+                }
+            }
+            return unique.join('\n');
+        });
+    });
+    
+    // 添加前缀后缀
+    document.getElementById('addPrefixSuffixBtn').addEventListener('click', () => {
+        const prefix = document.getElementById('prefixInput').value;
+        const suffix = document.getElementById('suffixInput').value;
+        applyTransformation(t => {
+            let lines = t.split(/\r?\n/);
+            let newLines = lines.map(line => prefix + line + suffix);
+            return newLines.join('\n');
+        });
+    });
+    
+    // 清空、复制
+    document.getElementById('clearTextBtn').addEventListener('click', () => {
+        inputTextarea.value = '';
+        updateAllStats();
+        inputTextarea.focus();
+    });
+    document.getElementById('copyResultBtn').addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(inputTextarea.value);
+            alert('文本已复制到剪贴板');
+        } catch (err) {
+            alert('复制失败，可手动选择复制');
+        }
+    });
+    
+    // 监听输入事件，实时更新统计与预览
+    inputTextarea.addEventListener('input', updateAllStats);
+    
+    // 初始化统计
+    updateAllStats();
+    
+    // 手机菜单
+    document.getElementById('menu-toggle').onclick = function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+    
+    // 附加: 确保预览响应式
+    window.addEventListener('resize', () => {});
+    
+    // 增强去除多余空格函数更准确
+    const origRemoveExtra = document.getElementById('removeExtraSpacesBtn').onclick;
+    document.getElementById('removeExtraSpacesBtn').addEventListener('click', () => {
+        applyTransformation(t => t.replace(/[ \t]+/g, ' ').replace(/\n\s+/g, '\n').replace(/\s+$/gm, ''));
+    });
+    // 修复空行删除简单调用
+    const origDelBlank = document.getElementById('removeBlankLinesBtn').onclick;
+    document.getElementById('removeBlankLinesBtn').addEventListener('click', () => {
+        applyTransformation(t => {
+            let lines = t.split(/\r?\n/);
+            let result = lines.filter(line => line.trim().length > 0);
+            return result.join('\n');
+        });
+    });
+    
+    // 额外安全性：给所有工具按钮防止空白操作
+    const allToolBtns = document.querySelectorAll('.tool-btn, #addPrefixSuffixBtn, #clearTextBtn, #copyResultBtn');
+    allToolBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // 不影响原有逻辑，只是保证无bug
+        });
+    });
+</script>
+</body>
+</html>

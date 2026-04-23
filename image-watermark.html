@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>图片加水印工具 - HJ_TOOL HUB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#3B82F6', secondary: '#10B981', accent: '#8B5CF6', dark: '#1F2937' },
+                    fontFamily: { inter: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main { flex: 1 0 auto; }
+        footer { flex-shrink: 0; }
+        .drop-zone {
+            transition: all 0.2s;
+        }
+        .drop-zone.drag-over {
+            background-color: #eff6ff;
+            border-color: #3B82F6;
+        }
+        .img-preview-container {
+            max-height: 500px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1e293b;
+            border-radius: 16px;
+        }
+        .img-preview-container canvas, 
+        .img-preview-container img {
+            max-width: 100%;
+            max-height: 460px;
+            object-fit: contain;
+        }
+        .watermark-pos-btn.active {
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        .opacity-slider::-webkit-slider-thumb {
+            background: #3B82F6;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+<header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                </a>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </nav>
+            <div class="hidden md:flex items-center relative">
+                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
+                <i class="fa fa-search absolute left-3 text-gray-400"></i>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <div class="container mx-auto px-4 py-3 space-y-3">
+            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
+            <div class="relative pt-2">
+                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div>
+                    <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片加水印工具</h1>
+                    <p class="text-gray-600 max-w-2xl">自定义文字水印 | 调整大小、透明度、位置 | 一键添加并保存图片</p>
+                </div>
+                <div class="mt-6 md:mt-0">
+                    <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                        <i class="fa fa-home mr-2"></i> 返回首页
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-8 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：水印配置区 -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- 上传区 -->
+                    <div id="uploadZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-primary transition bg-gray-50">
+                        <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600 text-sm">点击或拖拽上传图片</p>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                        <p class="text-xs text-gray-400 mt-1">支持 JPG, PNG, WebP, BMP</p>
+                    </div>
+                    
+                    <!-- 水印文字设置 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-font text-primary mr-2"></i> 水印文字</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="watermarkText" value="我的水印" placeholder="输入水印文字" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                            <div class="flex gap-2">
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500">字体大小 (px)</label>
+                                    <input type="number" id="fontSize" value="36" min="12" max="120" step="2" class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                                </div>
+                                <div class="flex-1">
+                                    <label class="text-xs text-gray-500">透明度 (%)</label>
+                                    <input type="range" id="opacity" min="10" max="100" value="70" class="w-full opacity-slider">
+                                    <span id="opacityVal" class="text-xs text-primary block text-right">70%</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">字体颜色</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="color" id="textColor" value="#ffffff" class="w-10 h-8 rounded border cursor-pointer">
+                                    <span class="text-xs text-gray-500">背景描边</span>
+                                    <input type="color" id="strokeColor" value="#000000" class="w-10 h-8 rounded border cursor-pointer">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500">旋转角度</label>
+                                <input type="range" id="rotateAngle" min="-45" max="45" value="0" step="1" class="w-full">
+                                <span id="rotateVal" class="text-xs text-primary block text-right">0°</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 水印位置 -->
+                    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-map-marker text-primary mr-2"></i> 水印位置</h3>
+                        <div class="grid grid-cols-3 gap-2 mb-3">
+                            <button data-pos="top-left" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">左上</button>
+                            <button data-pos="top-center" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">中上</button>
+                            <button data-pos="top-right" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">右上</button>
+                            <button data-pos="center-left" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">左中</button>
+                            <button data-pos="center" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100 active bg-primary text-white border-primary">居中</button>
+                            <button data-pos="center-right" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">右中</button>
+                            <button data-pos="bottom-left" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">左下</button>
+                            <button data-pos="bottom-center" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">中下</button>
+                            <button data-pos="bottom-right" class="pos-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">右下</button>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500">横向偏移 (px)</label>
+                            <input type="number" id="offsetX" value="0" class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                            <label class="text-xs text-gray-500 mt-2 block">纵向偏移 (px)</label>
+                            <input type="number" id="offsetY" value="0" class="w-full border border-gray-300 rounded-lg px-2 py-1 text-sm">
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="flex gap-3">
+                        <button id="applyWatermarkBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium shadow-sm"><i class="fa fa-plus-circle mr-1"></i> 添加水印</button>
+                        <button id="resetWatermarkBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"><i class="fa fa-undo"></i> 重置</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="downloadWatermarkedBtn" class="flex-1 bg-green-600 text-white py-2.5 rounded-lg hover:bg-green-700 font-medium shadow-sm"><i class="fa fa-save"></i> 保存添加水印的图片</button>
+                    </div>
+                    
+                    <div class="bg-amber-50 rounded-xl border border-amber-200 p-3 text-xs text-amber-700">
+                        <i class="fa fa-info-circle mr-1"></i> 提示：先上传图片，调整水印样式后点击“添加水印”预览效果，确认后点击保存。
+                    </div>
+                </div>
+
+                <!-- 右侧：图片展示区 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="bg-gray-800 px-4 py-2 text-white text-sm flex justify-between items-center">
+                            <span><i class="fa fa-picture-o mr-2"></i> 带水印预览</span>
+                            <span id="imgInfo" class="text-xs text-gray-300">未载入图片</span>
+                        </div>
+                        <div class="img-preview-container p-4 flex justify-center items-center" style="min-height: 400px;">
+                            <canvas id="previewCanvas" style="max-width:100%; max-height:460px; display: block; margin: auto; background: #2d3748; border-radius: 8px;"></canvas>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-xs text-gray-400 text-center">预览区显示水印效果，点击“添加水印”即应用当前配置</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                        <i class="fa fa-wrench text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold">ToolHub</span>
+                </div>
+                <p class="text-gray-400 text-sm">保护版权，轻松加水印。</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
+                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
+            <p>©2026 Copyright S.L Studio | 图片加水印工具</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ---------- DOM 元素绑定 ----------
+    const uploadZone = document.getElementById('uploadZone');
+    const imageUpload = document.getElementById('imageUpload');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const ctx = previewCanvas.getContext('2d');
+    
+    // 水印配置 DOM
+    const watermarkTextInput = document.getElementById('watermarkText');
+    const fontSizeInput = document.getElementById('fontSize');
+    const opacitySlider = document.getElementById('opacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const textColorPicker = document.getElementById('textColor');
+    const strokeColorPicker = document.getElementById('strokeColor');
+    const rotateAngleInput = document.getElementById('rotateAngle');
+    const rotateVal = document.getElementById('rotateVal');
+    const offsetXInput = document.getElementById('offsetX');
+    const offsetYInput = document.getElementById('offsetY');
+    const applyWatermarkBtn = document.getElementById('applyWatermarkBtn');
+    const resetWatermarkBtn = document.getElementById('resetWatermarkBtn');
+    const downloadWatermarkedBtn = document.getElementById('downloadWatermarkedBtn');
+    const imgInfoSpan = document.getElementById('imgInfo');
+    
+    // 全局状态
+    let originalImage = null;        // 存储原始Image对象
+    let originalImageDataURL = null; // 原始图片base64，用于重置
+    let currentWatermarkedImageURL = null; // 当前带水印的图片canvas dataURL（用于保存）
+    let currentPosition = 'center';   // 默认位置居中
+    
+    // 更新透明度显示
+    opacitySlider.addEventListener('input', () => {
+        opacityVal.innerText = opacitySlider.value + '%';
+    });
+    rotateAngleInput.addEventListener('input', () => {
+        rotateVal.innerText = rotateAngleInput.value + '°';
+    });
+    
+    // 位置按钮事件
+    const posBtns = document.querySelectorAll('.pos-btn');
+    posBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            posBtns.forEach(b => b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
+            btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+            currentPosition = btn.getAttribute('data-pos');
+        });
+    });
+    
+    // 重置水印配置 (不清除图片)
+    function resetWatermarkSettings() {
+        watermarkTextInput.value = '我的水印';
+        fontSizeInput.value = '36';
+        opacitySlider.value = '70';
+        opacityVal.innerText = '70%';
+        textColorPicker.value = '#ffffff';
+        strokeColorPicker.value = '#000000';
+        rotateAngleInput.value = '0';
+        rotateVal.innerText = '0°';
+        offsetXInput.value = '0';
+        offsetYInput.value = '0';
+        // 位置重置到居中
+        currentPosition = 'center';
+        posBtns.forEach(b => {
+            b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary');
+            if(b.getAttribute('data-pos') === 'center') {
+                b.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+            }
+        });
+        // 如果已有图片，重新绘制当前水印
+        if(originalImage) {
+            drawWatermarkOnCanvas();
+        }
+    }
+    
+    // 计算水印绘制坐标 (基于canvas尺寸, 水印块宽高)
+    function calculateWatermarkPosition(canvasW, canvasH, watermarkWidth, watermarkHeight, pos, offsetXVal, offsetYVal) {
+        let x = 0, y = 0;
+        const margin = 20; // 边缘留白
+        
+        switch(pos) {
+            case 'top-left':
+                x = margin + offsetXVal;
+                y = margin + offsetYVal;
+                break;
+            case 'top-center':
+                x = (canvasW - watermarkWidth) / 2 + offsetXVal;
+                y = margin + offsetYVal;
+                break;
+            case 'top-right':
+                x = canvasW - watermarkWidth - margin + offsetXVal;
+                y = margin + offsetYVal;
+                break;
+            case 'center-left':
+                x = margin + offsetXVal;
+                y = (canvasH - watermarkHeight) / 2 + offsetYVal;
+                break;
+            case 'center':
+                x = (canvasW - watermarkWidth) / 2 + offsetXVal;
+                y = (canvasH - watermarkHeight) / 2 + offsetYVal;
+                break;
+            case 'center-right':
+                x = canvasW - watermarkWidth - margin + offsetXVal;
+                y = (canvasH - watermarkHeight) / 2 + offsetYVal;
+                break;
+            case 'bottom-left':
+                x = margin + offsetXVal;
+                y = canvasH - watermarkHeight - margin + offsetYVal;
+                break;
+            case 'bottom-center':
+                x = (canvasW - watermarkWidth) / 2 + offsetXVal;
+                y = canvasH - watermarkHeight - margin + offsetYVal;
+                break;
+            case 'bottom-right':
+                x = canvasW - watermarkWidth - margin + offsetXVal;
+                y = canvasH - watermarkHeight - margin + offsetYVal;
+                break;
+            default:
+                x = (canvasW - watermarkWidth) / 2;
+                y = (canvasH - watermarkHeight) / 2;
+        }
+        // 边界限制防止超出画布
+        x = Math.min(Math.max(x, 2), canvasW - watermarkWidth - 2);
+        y = Math.min(Math.max(y, 2), canvasH - watermarkHeight - 2);
+        return { x, y };
+    }
+    
+    // 核心加水印渲染函数 (在canvas上绘制原图+水印)
+    function drawWatermarkOnCanvas() {
+        if (!originalImage) {
+            // 如果没有图片，清空canvas并显示占位
+            ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '16px system-ui';
+            ctx.textAlign = 'center';
+            ctx.fillText('请先上传图片', previewCanvas.width/2, previewCanvas.height/2);
+            return;
+        }
+        
+        // 确保canvas尺寸与原始图片一致，保证水印精确
+        previewCanvas.width = originalImage.width;
+        previewCanvas.height = originalImage.height;
+        
+        // 1. 绘制原始图片
+        ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+        ctx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+        
+        // 2. 获取水印参数
+        let watermarkText = watermarkTextInput.value.trim();
+        if (watermarkText === "") watermarkText = "水印";
+        const fontSize = parseInt(fontSizeInput.value);
+        const opacityPercent = parseInt(opacitySlider.value) / 100;
+        const textColor = textColorPicker.value;
+        const strokeColor = strokeColorPicker.value;
+        const angleDeg = parseInt(rotateAngleInput.value);
+        const offsetXVal = parseInt(offsetXInput.value) || 0;
+        const offsetYVal = parseInt(offsetYInput.value) || 0;
+        
+        // 设置字体样式 先测量尺寸，以便计算位置
+        ctx.save();
+        // 暂不旋转，先测量宽高
+        ctx.font = `${fontSize}px "PingFang SC", "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif`;
+        const textMetrics = ctx.measureText(watermarkText);
+        let textWidth = textMetrics.width;
+        let textHeight = fontSize; // 近似高度
+        
+        // 考虑旋转后的实际包围盒，为了位置准确，先创建一个离屏测量? 简单起见，因为旋转中心位于文字中心，包围盒会在旋转后扩大，但位置计算用原始矩形微调更合理。
+        // 为了美观，不复杂化包围盒碰撞，直接按照未旋转矩形计算位置，旋转后若略微超出边界也无伤大雅，通过偏移调节。更优雅：计算旋转矩形四个顶点并限制，为了简洁大多数情况正常。
+        let watermarkWidth = textWidth + 12;  // 增加内边距
+        let watermarkHeight = textHeight + 12;
+        
+        // 计算位置矩形(未旋转)
+        let { x, y } = calculateWatermarkPosition(previewCanvas.width, previewCanvas.height, watermarkWidth, watermarkHeight, currentPosition, offsetXVal, offsetYVal);
+        // 修正为绘制中心坐标 (因为旋转时以文字中心为原点旋转，需要计算中心点坐标)
+        const centerX = x + watermarkWidth / 2;
+        const centerY = y + watermarkHeight / 2;
+        
+        // 开始绘制水印 (半透明混合)
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        if (angleDeg !== 0) {
+            ctx.rotate(angleDeg * Math.PI / 180);
+        }
+        
+        // 设置全局透明度
+        ctx.globalAlpha = opacityPercent;
+        
+        // 绘制带描边的文字 (从偏移原点绘制)
+        ctx.font = `${fontSize}px "PingFang SC", "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        
+        // 描边宽度
+        ctx.lineWidth = Math.max(2, fontSize / 12);
+        ctx.strokeStyle = strokeColor;
+        ctx.fillStyle = textColor;
+        
+        // 先描边再填充
+        ctx.strokeText(watermarkText, 0, 0);
+        ctx.fillText(watermarkText, 0, 0);
+        
+        ctx.restore(); // 恢复旋转与平移
+        
+        // 额外可选优化: 添加一个微弱的背景半透明框？不需要，保持干净
+        ctx.restore(); // 恢复全局alpha等整体设置
+        
+        // 保存当前带水印的图片数据URL
+        try {
+            currentWatermarkedImageURL = previewCanvas.toDataURL('image/png');
+        } catch(e) { console.warn(e); }
+        
+        // 更新图片尺寸信息
+        imgInfoSpan.innerText = `${originalImage.width} x ${originalImage.height}`;
+    }
+    
+    // 上传图片处理
+    function loadImageFromFile(file) {
+        if (!file || !file.type.startsWith('image')) {
+            alert('请选择有效的图片文件');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                originalImage = img;
+                originalImageDataURL = e.target.result;
+                // 调整canvas大小并绘制原图与水印
+                drawWatermarkOnCanvas();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    // 拖拽上传
+    uploadZone.addEventListener('click', () => imageUpload.click());
+    imageUpload.addEventListener('change', (e) => { if(e.target.files.length) loadImageFromFile(e.target.files[0]); });
+    
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('drag-over');
+        if(e.dataTransfer.files.length) loadImageFromFile(e.dataTransfer.files[0]);
+    });
+    
+    // 添加水印按钮：基于当前图片和当前配置重新绘制
+    applyWatermarkBtn.addEventListener('click', () => {
+        if (!originalImage) {
+            alert('请先上传图片');
+            return;
+        }
+        drawWatermarkOnCanvas();
+    });
+    
+    // 重置按钮：重置水印配置并重新绘制（不清除图片）
+    resetWatermarkBtn.addEventListener('click', () => {
+        if (!originalImage) {
+            resetWatermarkSettings();
+            // 如果没有图片，仅重置UI，不清画布但要显示提示
+            if(!originalImage){
+                ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                ctx.fillStyle = '#2d3748';
+                ctx.fillRect(0, 0, previewCanvas.width || 500, previewCanvas.height || 300);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '16px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText('请先上传图片', (previewCanvas.width || 500)/2, (previewCanvas.height || 300)/2);
+            }
+            return;
+        }
+        resetWatermarkSettings();
+        drawWatermarkOnCanvas();
+    });
+    
+    // 保存图片: 触发下载
+    downloadWatermarkedBtn.addEventListener('click', () => {
+        if (!originalImage) {
+            alert('没有可保存的图片，请先上传图片并添加水印');
+            return;
+        }
+        // 确保获取最新的带水印图片数据URL，重新从canvas获取保证最新状态
+        try {
+            const finalDataURL = previewCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `watermarked_${Date.now()}.png`;
+            link.href = finalDataURL;
+            link.click();
+        } catch(err) {
+            alert('保存失败，可刷新重试');
+        }
+    });
+    
+    // 当任何水印参数变更时可选择实时更新？提升体验：用户点击添加水印时再执行，免得性能频繁。但也支持部分参数变动自动重新绘制? 为了符合要求没有bug，不做自动实时，但为了便捷：添加水印是手动触发，同时也提供预览体验不错。
+    // 但为了用户方便，增加一个实时监听可选？为了防止bug太多，保持手动添加水印按钮更新。
+    // 额外: 为了让滑块和数值显示联动旋转和偏移在实际添加时生效，完全没问题，且重置按钮重置后点击添加水印生效。
+    
+    // 初始化界面与占位
+    function initPlaceholder() {
+        previewCanvas.width = 600;
+        previewCanvas.height = 400;
+        ctx.fillStyle = '#2d3748';
+        ctx.fillRect(0, 0, 600, 400);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '16px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('等待上传图片', 300, 200);
+        imgInfoSpan.innerText = '未载入图片';
+    }
+    initPlaceholder();
+    
+    // 监听原始图片尺寸变化，重绘（当图片加载完成）
+    window.addEventListener('resize', () => { if(originalImage) drawWatermarkOnCanvas(); });
+    
+    // 移动菜单
+    document.getElementById('menu-toggle').onclick = function() {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    };
+    
+    // 确保位置按钮初始高亮居中
+    document.querySelector('.pos-btn[data-pos="center"]').classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+</script>
+</body>
+</html>
