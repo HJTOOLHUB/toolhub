@@ -348,28 +348,7 @@
         font-weight: 470;
         @apply dark:text-neutral-500;
       }
-      /* 重大更新卡片 */
-      .update-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 500px;
-        background-color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        z-index: 10001;
-        display: none;
-        @apply dark:bg-neutral-800 dark:border dark:border-neutral-700;
-      }
-      .update-card.show { display: block; animation: fadeIn 0.3s ease; }
-      .update-title { color: #12f53c; font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; text-align: center; }
-      .update-content { margin-bottom: 2rem; line-height: 1.6; @apply dark:text-neutral-200; }
-      .update-confirm-btn { width: 100%; background-color: #12B7F5; color: white; border: none; border-radius: 8px; padding: 0.75rem; font-weight: 600; cursor: pointer; @apply hover:bg-primary/90; }
-      @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -45%); } to { opacity: 1; transform: translate(-50%, -50%); } }
-      @keyframes fadeBg { from { opacity: 0; } to { opacity: 1; } }
+      
       
       /* 玻璃模式全局样式 */
       .glass-mode .announcement-board,
@@ -655,11 +634,11 @@
     </div>
   </div>
 
-  <!-- 重要提示卡片 -->
+  <!-- 更新公告 -->
   <div id="importantOverlay" class="important-overlay"></div>
   <div id="importantCard" class="important-card">
     <div class="important-icon"><i class="fa fa-refresh"></i></div>
-    <div class="important-title">杂杂时钟2.1更新公告</div>
+    <div class="important-title">杂杂时钟3.1更新公告</div>
     <div class="important-content" id="importantMessageContent">
       1. 新增设置中心，将之前的相关设置集中在内<br>
       2. 优化用户界面，提升用户体验<br>
@@ -667,7 +646,7 @@
       4. 修复了一些已知的BUG<br>
       5. 新增自定义标语设置<br>
     </div>
-    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我已了解</button>
+    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 确认并使用</button>
   </div>
 
   <!-- 标语自定义卡片 (新增行间距) -->
@@ -709,7 +688,7 @@
     </div>
   </div>
 
-  <div id="updateCard" class="update-card"><div class="update-title">杂杂时钟3.0重大更新</div><div class="update-content"><ul><li>修复了已知的bug</li><li>增加日历卡片 & 中国节假日自动显示</li><li>增加自定义标语/颜色/大小/行间距</li><li>点击日期显示节假日/提醒详情</li><li>所有图标统一黑色风格</li></ul><p class="mt-2">感谢您的使用 —— 三龙S.L Studio</p></div><button id="confirmUpdate" class="update-confirm-btn">确认并开始使用</button></div>
+ 
 
   <!-- 顶部导航，返回首页按钮添加背景类似设置按钮 -->
   <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
@@ -799,7 +778,7 @@
       
       <div class="border-t border-gray-800 pt-8">
         <div class="flex flex-col md:flex-row justify-between items-center">
-          <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2025 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+          <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 copyright HJ'_DEV(合金). 杂杂时钟 v3.1 Beta</p>
           <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300" class="mb-4 md:mb-0">
           <div class="flex space-x-6">
             <a href="yszc.html" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a>
@@ -812,6 +791,38 @@
   </footer>
 
   <script>
+    // ===== 3.1更新公告强制弹窗逻辑 =====
+// 定义本次更新的唯一标识（区分其他版本）
+const UPDATE_KEY_31 = 'hasViewedUpdate31';
+const FORCE_SHOW_UPDATE_31 = 'forceShowUpdate31'; // 强制显示标记
+
+// 页面加载时，强制触发3.1更新公告（覆盖旧状态）
+document.addEventListener('DOMContentLoaded', function() {
+  const importantCard = document.getElementById('importantCard');
+  const importantOverlay = document.getElementById('importantOverlay');
+  const closeImportantBtn = document.getElementById('closeImportantBtn');
+
+  // 检查是否是"需要强制再次显示"的状态（首次进入/强制触发）
+  const hasForcedShow = localStorage.getItem(FORCE_SHOW_UPDATE_31);
+  const hasViewed = localStorage.getItem(UPDATE_KEY_31);
+
+  // 逻辑：如果未标记"已查看3.1更新" 或 未标记"已强制显示"，则弹窗
+  if (!hasViewed || !hasForcedShow) {
+    // 显示公告弹窗
+    importantCard.classList.add('show');
+    importantOverlay.classList.add('show');
+    // 标记"已强制显示"（避免重复强制）
+    localStorage.setItem(FORCE_SHOW_UPDATE_31, 'true');
+  }
+
+  // 关闭按钮点击事件：标记"已查看"，下次不再显示
+  closeImportantBtn.addEventListener('click', function() {
+    importantCard.classList.remove('show');
+    importantOverlay.classList.remove('show');
+    localStorage.setItem(UPDATE_KEY_31, 'true'); // 永久标记已查看
+  });
+});
+
     // 原有所有核心脚本逻辑保持不变（完整保留原有功能）
     const holidaysData = {"2025-01-01":{name:"元旦"},"2025-01-29":{name:"春节"},"2025-01-30":{name:"春节"},"2025-01-31":{name:"春节"},"2025-02-01":{name:"春节"},"2025-02-02":{name:"春节"},"2025-04-04":{name:"清明节"},"2025-05-01":{name:"劳动节"},"2025-05-02":{name:"劳动节"},"2025-05-03":{name:"劳动节"},"2025-05-31":{name:"端午节"},"2025-10-01":{name:"国庆节"},"2025-10-02":{name:"国庆节"},"2025-10-03":{name:"国庆节"},"2025-10-04":{name:"国庆节"},"2025-10-05":{name:"国庆节"},"2025-10-06":{name:"国庆节"},"2025-10-07":{name:"国庆节"},"2025-10-08":{name:"中秋节"},"2026-01-01":{name:"元旦"},"2026-02-17":{name:"春节"},"2026-02-18":{name:"春节"},"2026-02-19":{name:"春节"},"2026-02-20":{name:"春节"},"2026-02-21":{name:"春节"},"2026-02-22":{name:"春节"},"2026-04-05":{name:"清明节"},"2026-05-01":{name:"劳动节"},"2026-06-19":{name:"端午节"},"2026-10-01":{name:"国庆节"},"2026-10-02":{name:"国庆节"},"2026-10-03":{name:"国庆节"},"2026-10-04":{name:"国庆节"},"2026-10-05":{name:"国庆节"},"2026-10-06":{name:"国庆节"},"2026-10-07":{name:"国庆节"},"2026-10-08":{name:"中秋节"}};
     const workdayData = {"2025-04-27":true,"2025-05-10":true,"2025-09-28":true,"2025-10-11":true,"2026-02-14":true,"2026-02-28":true,"2026-09-27":true,"2026-10-10":true};
