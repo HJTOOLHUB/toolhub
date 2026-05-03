@@ -658,14 +658,14 @@
   <!-- 重要提示卡片 -->
   <div id="importantOverlay" class="important-overlay"></div>
   <div id="importantCard" class="important-card">
-    <div class="important-icon"><i class="fa fa-exclamation-triangle"></i></div>
-    <div class="important-title">工具库维护停用提示</div>
+    <div class="important-icon"><i class="fa fa-refresh"></i></div>
+    <div class="important-title">杂杂时钟2.1更新公告</div>
     <div class="important-content" id="importantMessageContent">
-      1. 维护时间：2026年4月22日22:00 - 2026年4月26日02:00不停机维护<br>
-      2. 受影响组件：除<杂杂时钟>与<网站主页面、网站协议>外的所有工具将停用<br>
-      3. 维护原因：其他工具因对应开发者未进行维护所导致严重BUG将停用<br>
-      4. 用户影响：在维护期间，受影响工具将无法使用，请提前做好数据备份<br>
-      5. 维护预告：我们正在加急开发新版工具，预计将在2026年5月上线，敬请期待！————S.L Studio<br>
+      1. 新增设置中心，将之前的相关设置集中在内<br>
+      2. 优化用户界面，提升用户体验<br>
+      3. 与主页面同步页脚<br>
+      4. 修复了一些已知的BUG<br>
+      5. 新增自定义标语设置<br>
     </div>
     <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我已了解</button>
   </div>
@@ -881,7 +881,7 @@
     }
     function initDarkMode(){ let cb=document.getElementById('darkModeTogglePanel'); let isDark=localStorage.getItem('darkMode')==='true'; if(isDark){ document.documentElement.classList.add('dark'); cb.checked=true; } cb.addEventListener('change',()=>{ if(cb.checked){ document.documentElement.classList.add('dark'); localStorage.setItem('darkMode','true'); showToast('已开启黑夜模式'); }else{ document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode','false'); showToast('已关闭黑夜模式'); } renderCalendar(); }); }
     function initGlassMode(){ let cb=document.getElementById('glassModeTogglePanel'); let isGlass=localStorage.getItem('glassMode')==='true'; if(isGlass){ document.body.classList.add('glass-mode'); cb.checked=true; } cb.addEventListener('change',()=>{ if(cb.checked){ document.body.classList.add('glass-mode'); localStorage.setItem('glassMode','true'); showToast('液态玻璃已开启'); }else{ document.body.classList.remove('glass-mode'); localStorage.setItem('glassMode','false'); showToast('液态玻璃已关闭'); } }); }
-    document.addEventListener('DOMContentLoaded',()=>{ initSloganUI(); initDarkMode(); initGlassMode(); fullscreenBtn.addEventListener('click',toggleFull); setInterval(updateClock,1000); updateClock(); renderCalendar(); renderRemindersList(); let ann=Array.from(document.querySelectorAll('.announcement')); let idx=0; document.getElementById('prevAnnounceBtn').onclick=()=>{ idx=(idx-1+ann.length)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; document.getElementById('nextAnnounceBtn').onclick=()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; setInterval(()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); },5000); document.getElementById('homeLink').addEventListener('click',(e)=>{ e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); });
+    document.addEventListener('DOMContentLoaded',()=>{ initSloganUI(); initDarkMode(); initGlassMode(); fullscreenBtn.addEventListener('click',toggleFull); setInterval(updateClock,1000); updateClock(); renderCalendar(); renderRemindersList(); let ann=Array.from(document.querySelectorAll('.announcement')); let idx=0; document.getElementById('prevAnnounceBtn').onclick=()=>{ idx=(idx-1+ann.length)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; document.getElementById('nextAnnounceBtn').onclick=()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; setInterval(()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); },5000); 
     let openSet=document.getElementById('openSettingsBtn'), panel=document.getElementById('settingsPanelCard'), overlay=document.getElementById('settingsPanelOverlay'), closePanel=document.getElementById('closeSettingsPanel'); openSet.onclick=()=>{ overlay.classList.add('show'); panel.classList.add('show'); }; closePanel.onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); }; overlay.onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); };
     document.getElementById('quickBgSettingBtn').onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); document.getElementById('bgOverlay').classList.add('show'); document.getElementById('bgSettingsCard').classList.add('show'); }; 
     document.getElementById('quickReminderSettingBtn').onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); document.getElementById('reminderOverlay').classList.add('show'); document.getElementById('reminderSettingsCard').classList.add('show'); }; 
