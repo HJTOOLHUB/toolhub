@@ -101,7 +101,7 @@
       .announcement-btn.next { right: 1rem; }
       .announcement-btn:hover { background-color: rgba(0,0,0,0.8); transform: translateY(-50%) scale(1.02); }
 
-      /* 提示框 */
+      /* 提示框 - 设置更高的z-index确保在遮罩层之上 */
       .toast {
         position: fixed;
         top: 20px;
@@ -111,7 +111,7 @@
         padding: 16px 24px;
         border-radius: 8px;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        z-index: 9999;
+        z-index: 10000;
         opacity: 0;
         transform: translateX(100%);
         transition: all 0.3s ease;
@@ -745,7 +745,7 @@
   <!-- 顶部导航 -->
   <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2"><i class="fa fa-clock-o text-2xl text-black dark:text-white"></i><h1 class="text-xl font-bold text-black dark:text-white">杂杂时钟校园版</h1></div>
+      <div class="flex items-center gap-2"><i class="fa fa-clock-o text-2xl text-black dark:text-white"></i><h1 class="text-xl font-bold text-black dark:text-white">杂杂时钟 | 校园版</h1></div>
       <nav><ul class="flex space-x-4"><li><a href="index.html" id="homeLink" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white inline-flex items-center gap-1"><i class="fa fa-home mr-1"></i>返回首页</a></li><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i>设置</button></li></ul></nav>
     </div>
   </header>
@@ -760,7 +760,7 @@
   </main>
 
   <!-- 页脚 -->
-  <footer class="bg-dark text-white pt-16 pb-8" style="background-color: #22262f;"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"><div><div class="flex items-center space-x-2 mb-6"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center" style="background: linear-gradient(135deg, #2e54ffe4, #9e44dfe9);"><i class="fa fa-wrench text-white text-xl"></i></div><span class="text-xl font-bold">HJ_ToolHub</span></div><p class="text-gray-400 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p><div class="flex space-x-4"><a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors"><i class="fab fa-qq text-2xl text-white"></i></a><a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors"><i class="fab fa-qq text-2xl text-white"></i></a><a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors"><i class="fab fa-qq text-2xl text-white"></i></a><a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors"><i class="fab fa-github text-2xl"></i></a></div></div><div><h3 class="text-lg font-semibold mb-6">快速链接</h3><ul class="space-y-3"><li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li><li><a href="#categories" class="text-gray-400 hover:text-white transition-colors">工具分类</a></li><li><a href="#popular" class="text-gray-400 hover:text-white transition-colors">热门工具</a></li><li><a href="#features" class="text-gray-400 hover:text-white transition-colors">特色介绍</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">工具分类</h3><ul class="space-y-3"><li><a href="index (2).html" class="text-gray-400 hover:text-white transition-colors">办公效率</a></li><li><a href="index (3).html" class="text-gray-400 hover:text-white transition-colors">图片处理</a></li><li><a href="index (4).html" class="text-gray-400 hover:text-white transition-colors">开发辅助</a></li><li><a href="index (5).html" class="text-gray-400 hover:text-white transition-colors">生活服务</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">联系我们</h3><ul class="space-y-3"><li class="flex items-start"><i class="fa fa-envelope mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">3301976275@qq.com</span></li><li class="flex items-start"><i class="fa fa-map-marker mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">广州市番禺区</span></li><li class="flex items-start"><i class="fa fa-phone mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">联系电话：137 1019 0930</span></li></ul></div></div><div class="border-t border-gray-800 pt-8"><div class="flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 copyright HJ'_DEV(合金). 杂杂时钟 v3.1 Beta</p><img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300" class="mb-4 md:mb-0"><div class="flex space-x-6"><a href="yszc.html" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a><a href="sytk.html" class="text-gray-500 hover:text-gray-300 text-sm">使用条款</a><a href="date.html" class="text-gray-500 hover:text-gray-300 text-sm">更新日志</a></div></div></div></div></footer>
+  <footer class="bg-dark text-white pt-16 pb-8" style="background-color: #22262f;"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"><div><div class="flex items-center space-x-2 mb-6"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center" style="background: linear-gradient(135deg, #2e54ffe4, #9e44dfe9);"><i class="fa fa-wrench text-white text-xl"></i></div><span class="text-xl font-bold">HJ_ToolHub</span></div><p class="text-gray-400 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p><div class="flex space-x-4"><a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition-colors"><i class="fab fa-qq text-2xl text-white"></i></a><a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 transition-colors"><i class="fab fa-weixin text-2xl text-white"></i></a><a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-purple-500 transition-colors"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></a><a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-600 transition-colors"><i class="fab fa-github text-2xl"></i></a></div></div><div><h3 class="text-lg font-semibold mb-6">快速链接</h3><ul class="space-y-3"><li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li><li><a href="#categories" class="text-gray-400 hover:text-white transition-colors">工具分类</a></li><li><a href="#popular" class="text-gray-400 hover:text-white transition-colors">热门工具</a></li><li><a href="#features" class="text-gray-400 hover:text-white transition-colors">特色介绍</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">工具分类</h3><ul class="space-y-3"><li><a href="index (2).html" class="text-gray-400 hover:text-white transition-colors">办公效率</a></li><li><a href="index (3).html" class="text-gray-400 hover:text-white transition-colors">图片处理</a></li><li><a href="index (4).html" class="text-gray-400 hover:text-white transition-colors">开发辅助</a></li><li><a href="index (5).html" class="text-gray-400 hover:text-white transition-colors">生活服务</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">联系我们</h3><ul class="space-y-3"><li class="flex items-start"><i class="fa fa-envelope mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">3301976275@qq.com</span></li><li class="flex items-start"><i class="fa fa-map-marker mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">广州市番禺区</span></li><li class="flex items-start"><i class="fa fa-phone mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">联系电话：137 1019 0930</span></li></ul></div></div><div class="border-t border-gray-800 pt-8"><div class="flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 copyright HJ'_DEV(合金). 杂杂时钟 v3.1 Beta</p><img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300" class="mb-4 md:mb-0"><div class="flex space-x-6"><a href="yszc.html" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a><a href="sytk.html" class="text-gray-500 hover:text-gray-300 text-sm">使用条款</a><a href="date.html" class="text-gray-500 hover:text-gray-300 text-sm">更新日志</a></div></div></div></div></footer>
 
   <script>
     // ===== 核心逻辑 (完全保留原有功能，仅增强动画效果) =====
@@ -769,31 +769,635 @@
     function getHolidayInfo(dateStr){ if(holidaysData[dateStr]) return {name:holidaysData[dateStr].name, type:"holiday"}; if(workdayData[dateStr]) return {name:"调休工作日", type:"workday"}; return null; }
     let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
     let calendarCurrentDate = new Date();
-    function showToast(msg, duration=3000, isReminder=false){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.classList.add('show'); if(isReminder) t.classList.add('reminder'); else t.classList.remove('reminder'); setTimeout(()=>{ t.classList.remove('show'); if(isReminder) t.classList.remove('reminder'); }, duration); }
-    function updateClock(){ let n=new Date(); document.getElementById('clockDisplay').innerText=`${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`; let week=['星期日','星期一','星期二','星期三','星期四','星期五','星期六']; document.getElementById('dateDisplay').innerHTML=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`; checkReminders(n); }
-    function checkReminders(now){ let today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; let update=false; reminderList.forEach(r=>{ if(r.date===today && !r.shown){ showToast(`📅 今日提醒：${r.name} - ${r.desc||'无描述'}`,5000,true); r.shown=true; update=true; } }); if(update){ localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); } }
-    let fullscreenBtn=document.getElementById('fullscreenBtn'); function toggleFull(){ if(!document.fullscreenElement){ document.documentElement.requestFullscreen(); fullscreenBtn.innerHTML='<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>'; }else{ document.exitFullscreen(); fullscreenBtn.innerHTML='<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>'; } }
-    function setBackgroundImage(src){ document.body.style.backgroundImage=`url(${src})`; localStorage.setItem('backgroundImage',src); localStorage.setItem('backgroundIsLocal', src.startsWith('data:')?'true':'false'); }
-    function resetBackground(){ document.body.style.backgroundImage=''; localStorage.removeItem('backgroundImage'); localStorage.removeItem('backgroundIsLocal'); document.getElementById('bgImageUrl').value=''; document.getElementById('localBgPreview').style.display='none'; showToast('背景已重置'); }
-    function renderRemindersList(){ let c=document.getElementById('remindersList'); if(!c)return; if(reminderList.length===0){c.innerHTML='<div class="text-center text-neutral-500">暂无提醒</div>';return;} c.innerHTML=''; reminderList.forEach(r=>{ let div=document.createElement('div'); div.className='p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center'; div.innerHTML=`<div><div class="font-bold">${escapeHtml(r.name)}</div><div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div><button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>`; c.appendChild(div); }); document.querySelectorAll('.delete-reminder-btn').forEach(btn=>btn.addEventListener('click',e=>{ let id=parseInt(btn.dataset.id); reminderList=reminderList.filter(i=>i.id!==id); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); showToast('提醒已删除'); })); }
-    function renderCalendar(){ let y=calendarCurrentDate.getFullYear(), m=calendarCurrentDate.getMonth(); document.getElementById('calendarMonth').innerHTML=`${y}年${m+1}月`; let firstDay=new Date(y,m,1).getDay(); let daysInMonth=new Date(y,m+1,0).getDate(); let prevLastDay=new Date(y,m,0).getDate(); let container=document.getElementById('calendarDays'); container.innerHTML=''; for(let i=firstDay;i>0;i--){ let cell=document.createElement('div'); cell.className='calendar-day other-month'; cell.textContent=prevLastDay-i+1; container.appendChild(cell); } let today=new Date(); for(let i=1;i<=daysInMonth;i++){ let cell=document.createElement('div'); let dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`; let isToday=(y===today.getFullYear()&&m===today.getMonth()&&i===today.getDate()); let weekDay=new Date(y,m,i).getDay(); let holiday=getHolidayInfo(dateStr); cell.className='calendar-day'; if(weekDay===0||weekDay===6) cell.classList.add('restday'); if(holiday && holiday.type==='holiday') cell.classList.add('holiday-badge'); if(holiday && holiday.type==='workday') cell.classList.add('workday-badge'); if(isToday) cell.classList.add('today'); if(reminderList.some(r=>r.date===dateStr)) cell.classList.add('reminder'); cell.textContent=i; cell.addEventListener('click',()=>{ let details=[]; if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`); let dayReminders=reminderList.filter(r=>r.date===dateStr); dayReminders.forEach(rem=>details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`)); if(details.length===0) details.push('  暂无内容显示'); let pop=document.createElement('div'); pop.className='detail-popup'; pop.innerHTML=`<strong>📅 ${dateStr}</strong><hr><div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div><button>关闭</button>`; document.body.appendChild(pop); requestAnimationFrame(()=>pop.classList.add('show')); let closeHandler=()=>{ pop.classList.remove('show'); setTimeout(()=>pop.remove(),300); }; pop.querySelector('button').addEventListener('click',closeHandler); setTimeout(()=>{ if(pop && pop.parentNode) closeHandler(); },6000); }); container.appendChild(cell); } let total=firstDay+daysInMonth; let next=42-total; for(let i=1;i<=next;i++){ let cell=document.createElement('div'); cell.className='calendar-day other-month'; cell.textContent=i; container.appendChild(cell); } }
-    function escapeHtml(str){ if(!str)return ''; return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
-    function initSloganUI(){ let container=document.getElementById('sloganContainer'); let savedText=localStorage.getItem('sloganText'); let savedColor=localStorage.getItem('sloganColor'); let savedSize=localStorage.getItem('sloganFontSize'); let savedLineHeight=localStorage.getItem('sloganLineHeight'); if(savedText) container.innerHTML=savedText.replace(/\n/g,'<br>'); else container.innerHTML="8B8晚自习三不准：<br>不准转头<br>不准讲话<br>不准下位"; if(savedColor) container.style.color=savedColor; else container.style.color="#dc2626"; if(savedSize) container.style.fontSize=savedSize+'px'; else container.style.fontSize='48px'; let lineH = savedLineHeight ? parseFloat(savedLineHeight) : 1.4; container.style.lineHeight = lineH; document.getElementById('sloganText').value=localStorage.getItem('sloganText')||"8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位"; document.getElementById('sloganColor').value=savedColor||"#dc2626"; document.getElementById('sloganFontSize').value=parseInt(savedSize||48); document.getElementById('sloganLineHeight').value=lineH; document.getElementById('applySloganBtn').onclick=()=>{ let txt=document.getElementById('sloganText').value; let col=document.getElementById('sloganColor').value; let sz=document.getElementById('sloganFontSize').value; let lh=document.getElementById('sloganLineHeight').value; container.innerHTML=txt.replace(/\n/g,'<br>'); container.style.color=col; container.style.fontSize=sz+'px'; container.style.lineHeight=lh; localStorage.setItem('sloganText',txt); localStorage.setItem('sloganColor',col); localStorage.setItem('sloganFontSize',sz); localStorage.setItem('sloganLineHeight',lh); showToast('标语已更新'); document.getElementById('sloganOverlay').classList.remove('show'); document.getElementById('sloganSettingsCard').classList.remove('show'); }; document.getElementById('resetSloganBtn').onclick=()=>{ let def="8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位"; container.innerHTML=def.replace(/\n/g,'<br>'); container.style.color="#dc2626"; container.style.fontSize="48px"; container.style.lineHeight="1.4"; localStorage.setItem('sloganText',def); localStorage.setItem('sloganColor','#dc2626'); localStorage.setItem('sloganFontSize','48'); localStorage.setItem('sloganLineHeight','1.4'); document.getElementById('sloganText').value=def; document.getElementById('sloganColor').value="#dc2626"; document.getElementById('sloganFontSize').value=48; document.getElementById('sloganLineHeight').value=1.4; showToast('恢复默认'); document.getElementById('sloganOverlay').classList.remove('show'); document.getElementById('sloganSettingsCard').classList.remove('show'); }; }
-    function initDarkMode(){ let cb=document.getElementById('darkModeTogglePanel'); let isDark=localStorage.getItem('darkMode')==='true'; if(isDark){ document.documentElement.classList.add('dark'); cb.checked=true; } cb.addEventListener('change',()=>{ if(cb.checked){ document.documentElement.classList.add('dark'); localStorage.setItem('darkMode','true'); showToast('已开启黑夜模式'); }else{ document.documentElement.classList.remove('dark'); localStorage.setItem('darkMode','false'); showToast('已关闭黑夜模式'); } renderCalendar(); }); }
-    function initGlassMode(){ let cb=document.getElementById('glassModeTogglePanel'); let isGlass=localStorage.getItem('glassMode')==='true'; if(isGlass){ document.body.classList.add('glass-mode'); cb.checked=true; } cb.addEventListener('change',()=>{ if(cb.checked){ document.body.classList.add('glass-mode'); localStorage.setItem('glassMode','true'); showToast('液态玻璃已开启'); }else{ document.body.classList.remove('glass-mode'); localStorage.setItem('glassMode','false'); showToast('液态玻璃已关闭'); } }); }
-    document.addEventListener('DOMContentLoaded',()=>{ initSloganUI(); initDarkMode(); initGlassMode(); fullscreenBtn.addEventListener('click',toggleFull); setInterval(updateClock,1000); updateClock(); renderCalendar(); renderRemindersList(); let ann=Array.from(document.querySelectorAll('.announcement')); let idx=0; document.getElementById('prevAnnounceBtn').onclick=()=>{ idx=(idx-1+ann.length)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; document.getElementById('nextAnnounceBtn').onclick=()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); }; setInterval(()=>{ idx=(idx+1)%ann.length; ann.forEach((a,i)=>i===idx?a.classList.add('active'):a.classList.remove('active')); },5000); 
-    let openSet=document.getElementById('openSettingsBtn'), panel=document.getElementById('settingsPanelCard'), overlay=document.getElementById('settingsPanelOverlay'), closePanel=document.getElementById('closeSettingsPanel'); openSet.onclick=()=>{ overlay.classList.add('show'); panel.classList.add('show'); }; closePanel.onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); }; overlay.onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); };
-    document.getElementById('quickBgSettingBtn').onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); document.getElementById('bgOverlay').classList.add('show'); document.getElementById('bgSettingsCard').classList.add('show'); }; 
-    document.getElementById('quickReminderSettingBtn').onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); document.getElementById('reminderOverlay').classList.add('show'); document.getElementById('reminderSettingsCard').classList.add('show'); }; 
-    document.getElementById('quickSloganSettingBtn').onclick=()=>{ overlay.classList.remove('show'); panel.classList.remove('show'); document.getElementById('sloganOverlay').classList.add('show'); document.getElementById('sloganSettingsCard').classList.add('show'); }; 
-    document.getElementById('backFromBgSettings').onclick=()=>{ document.getElementById('bgOverlay').classList.remove('show'); document.getElementById('bgSettingsCard').classList.remove('show'); overlay.classList.add('show'); panel.classList.add('show'); }; 
-    document.getElementById('backFromReminderSettings').onclick=()=>{ document.getElementById('reminderOverlay').classList.remove('show'); document.getElementById('reminderSettingsCard').classList.remove('show'); overlay.classList.add('show'); panel.classList.add('show'); }; 
-    document.getElementById('backFromSlogan').onclick=()=>{ document.getElementById('sloganOverlay').classList.remove('show'); document.getElementById('sloganSettingsCard').classList.remove('show'); overlay.classList.add('show'); panel.classList.add('show'); }; 
-    document.getElementById('bgOverlay').onclick=()=>{ document.getElementById('bgOverlay').classList.remove('show'); document.getElementById('bgSettingsCard').classList.remove('show'); }; 
-    document.getElementById('reminderOverlay').onclick=()=>{ document.getElementById('reminderOverlay').classList.remove('show'); document.getElementById('reminderSettingsCard').classList.remove('show'); }; 
-    document.getElementById('sloganOverlay').onclick=()=>{ document.getElementById('sloganOverlay').classList.remove('show'); document.getElementById('sloganSettingsCard').classList.remove('show'); }; 
-    const OFFICIAL_BG=["https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp","https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp","https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp","https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp","https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp","https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp","https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp","https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp","https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp"]; let thumbContainer=document.getElementById('officialBgThumbs'); OFFICIAL_BG.forEach(url=>{ let div=document.createElement('div'); div.className='bg-thumb-item'; let img=document.createElement('img'); img.src=url; div.appendChild(img); div.addEventListener('click',()=>{ setBackgroundImage(url); showToast('已应用官方背景'); document.getElementById('bgOverlay').classList.remove('show'); document.getElementById('bgSettingsCard').classList.remove('show'); }); thumbContainer.appendChild(div); }); document.getElementById('applyBgImage').onclick=()=>{ let url=document.getElementById('bgImageUrl').value.trim(); if(url) setBackgroundImage(url); else showToast('请输入URL',2000,true); }; document.getElementById('resetBgImage').onclick=()=>{ resetBackground(); }; document.getElementById('localBgUpload').addEventListener('change',e=>{ let f=e.target.files[0]; if(f){ let reader=new FileReader(); reader.onload=ev=>{ setBackgroundImage(ev.target.result); document.getElementById('localBgPreview').src=ev.target.result; document.getElementById('localBgPreview').style.display='block'; showToast('本地背景已应用'); document.getElementById('bgOverlay').classList.remove('show'); document.getElementById('bgSettingsCard').classList.remove('show'); }; reader.readAsDataURL(f); } }); document.querySelector('.local-upload-label').addEventListener('click',()=>document.getElementById('localBgUpload').click()); document.getElementById('addReminder').onclick=()=>{ let name=document.getElementById('reminderName').value.trim(); let date=document.getElementById('reminderDate').value; if(!name||!date){showToast('请填写名称和日期',2000,true);return;} reminderList.push({id:Date.now(),name,date,desc:document.getElementById('reminderDesc').value,shown:false}); localStorage.setItem('reminders',JSON.stringify(reminderList)); renderRemindersList(); renderCalendar(); showToast('提醒已添加'); document.getElementById('reminderName').value=''; document.getElementById('reminderDate').value=''; document.getElementById('reminderDesc').value=''; }; document.getElementById('clearReminders').onclick=()=>{ if(confirm('清空所有提醒？')){ reminderList=[]; localStorage.setItem('reminders','[]'); renderRemindersList(); renderCalendar(); showToast('已清空'); } }; let savedBg=localStorage.getItem('backgroundImage'); if(savedBg) document.body.style.backgroundImage=`url(${savedBg})`; document.getElementById('prevMonth').addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()-1); renderCalendar(); }); document.getElementById('nextMonth').addEventListener('click',()=>{ calendarCurrentDate.setMonth(calendarCurrentDate.getMonth()+1); renderCalendar(); }); 
-    const UPDATE_KEY_31 = 'hasViewedUpdate31'; const FORCE_SHOW_UPDATE_31 = 'forceShowUpdate31'; const importantCardDom = document.getElementById('importantCard'); const importantOverlayDom = document.getElementById('importantOverlay'); const closeImportantBtnDom = document.getElementById('closeImportantBtn'); if(!localStorage.getItem(UPDATE_KEY_31) || !localStorage.getItem(FORCE_SHOW_UPDATE_31)){ importantCardDom.classList.add('show'); importantOverlayDom.classList.add('show'); localStorage.setItem(FORCE_SHOW_UPDATE_31, 'true'); } closeImportantBtnDom.addEventListener('click', function() { importantCardDom.classList.remove('show'); importantOverlayDom.classList.remove('show'); localStorage.setItem(UPDATE_KEY_31, 'true'); }); });
+    function showToast(msg, duration=3000, isReminder=false) {
+      let t = document.getElementById('toast');
+      if(!t) return;
+      t.textContent = msg;
+      t.classList.add('show');
+      if(isReminder) {
+        t.classList.add('reminder');
+      } else {
+        t.classList.remove('reminder');
+      }
+      setTimeout(() => {
+        t.classList.remove('show');
+        if(isReminder) t.classList.remove('reminder');
+      }, duration);
+    }
+    function updateClock() {
+      let n = new Date();
+      let clockDisplay = document.getElementById('clockDisplay');
+      let dateDisplay = document.getElementById('dateDisplay');
+      if(!clockDisplay || !dateDisplay) return;
+      
+      clockDisplay.innerText = 
+        `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`;
+      let week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+      dateDisplay.textContent = 
+        `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`;
+      checkReminders(n);
+    }
+    function checkReminders(now) {
+      let today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      let update = false;
+      reminderList.forEach(r => {
+        if(r.date === today && !r.shown) {
+          showToast(` 今日提醒：${r.name} - ${r.desc||'无描述'}`, 5000, true);
+          r.shown = true;
+          update = true;
+        }
+      });
+      if(update) {
+        localStorage.setItem('reminders', JSON.stringify(reminderList));
+        renderRemindersList();
+        renderCalendar();
+      }
+    }
+    let fullscreenBtn = document.getElementById('fullscreenBtn');
+    function toggleFull() {
+      if(!fullscreenBtn) return;
+      if(!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error('Fullscreen request failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>';
+      } else {
+        document.exitFullscreen().catch(err => {
+          console.error('Fullscreen exit failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>';
+      }
+    }
+    function setBackgroundImage(src) {
+      document.body.style.backgroundImage = `url(${src})`;
+      localStorage.setItem('backgroundImage', src);
+      localStorage.setItem('backgroundIsLocal', src.startsWith('data:') ? 'true' : 'false');
+    }
+    function resetBackground() {
+      document.body.style.backgroundImage = '';
+      localStorage.removeItem('backgroundImage');
+      localStorage.removeItem('backgroundIsLocal');
+      document.getElementById('bgImageUrl').value = '';
+      document.getElementById('localBgPreview').style.display = 'none';
+      showToast('背景已重置');
+    }
+    function renderRemindersList() {
+      let c = document.getElementById('remindersList');
+      if(!c) return;
+      if(reminderList.length === 0) {
+        c.innerHTML = '<div class="text-center text-neutral-500">暂无提醒</div>';
+        return;
+      }
+      c.innerHTML = '';
+      reminderList.forEach(r => {
+        let div = document.createElement('div');
+        div.className = 'p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center';
+        div.innerHTML = `<div><div class="font-bold">${escapeHtml(r.name)}</div>
+          <div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div>
+          <button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>`;
+        c.appendChild(div);
+      });
+      document.querySelectorAll('.delete-reminder-btn').forEach(btn => btn.addEventListener('click', e => {
+        let id = parseInt(btn.dataset.id);
+        reminderList = reminderList.filter(i => i.id !== id);
+        localStorage.setItem('reminders', JSON.stringify(reminderList));
+        renderRemindersList();
+        renderCalendar();
+        showToast('提醒已删除');
+      }));
+    }
+    function renderCalendar() {
+      let y = calendarCurrentDate.getFullYear();
+      let m = calendarCurrentDate.getMonth();
+      document.getElementById('calendarMonth').innerHTML = `${y}年${m+1}月`;
+      
+      let firstDay = new Date(y, m, 1).getDay();
+      let daysInMonth = new Date(y, m+1, 0).getDate();
+      let prevLastDay = new Date(y, m, 0).getDate();
+      let container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+      
+      for(let i = firstDay; i > 0; i--) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = prevLastDay - i + 1;
+        container.appendChild(cell);
+      }
+      
+      let today = new Date();
+      for(let i = 1; i <= daysInMonth; i++) {
+        let cell = document.createElement('div');
+        let dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        let isToday = (y === today.getFullYear() && m === today.getMonth() && i === today.getDate());
+        let weekDay = new Date(y, m, i).getDay();
+        let holiday = getHolidayInfo(dateStr);
+        
+        cell.className = 'calendar-day';
+        if(weekDay === 0 || weekDay === 6) cell.classList.add('restday');
+        if(holiday && holiday.type === 'holiday') cell.classList.add('holiday-badge');
+        if(holiday && holiday.type === 'workday') cell.classList.add('workday-badge');
+        if(isToday) cell.classList.add('today');
+        if(reminderList.some(r => r.date === dateStr)) cell.classList.add('reminder');
+        cell.textContent = i;
+        
+        cell.addEventListener('click', () => {
+          let details = [];
+          if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`);
+          let dayReminders = reminderList.filter(r => r.date === dateStr);
+          dayReminders.forEach(rem => details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`));
+          if(details.length === 0) details.push('  暂无内容显示');
+          
+          let pop = document.createElement('div');
+          pop.className = 'detail-popup';
+          pop.innerHTML = `<strong> ${dateStr}</strong><hr>
+            <div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div>
+            <button>关闭</button>`;
+          document.body.appendChild(pop);
+          
+          requestAnimationFrame(() => pop.classList.add('show'));
+          let closeHandler = () => {
+            pop.classList.remove('show');
+            setTimeout(() => pop.remove(), 300);
+          };
+          pop.querySelector('button').addEventListener('click', closeHandler);
+          setTimeout(() => { if(pop && pop.parentNode) closeHandler(); }, 6000);
+        });
+        
+        container.appendChild(cell);
+      }
+      
+      let total = firstDay + daysInMonth;
+      let next = 42 - total;
+      for(let i = 1; i <= next; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = i;
+        container.appendChild(cell);
+      }
+    }
+    function escapeHtml(str) {
+      if(!str) return '';
+      return str.replace(/[&<>]/g, m => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[m]));
+    }
+    function initSloganUI() {
+      let container = document.getElementById('sloganContainer');
+      let savedText = localStorage.getItem('sloganText');
+      let savedColor = localStorage.getItem('sloganColor');
+      let savedSize = localStorage.getItem('sloganFontSize');
+      let savedLineHeight = localStorage.getItem('sloganLineHeight');
+      
+      if(savedText) {
+        container.innerHTML = savedText.replace(/\n/g, '<br>');
+      } else {
+        container.innerHTML = "8B8晚自习三不准：<br>不准转头<br>不准讲话<br>不准下位";
+      }
+      
+      if(savedColor) {
+        container.style.color = savedColor;
+      } else {
+        container.style.color = "#dc2626";
+      }
+      
+      if(savedSize) {
+        container.style.fontSize = savedSize + 'px';
+      } else {
+        container.style.fontSize = '48px';
+      }
+      
+      let lineH = savedLineHeight ? parseFloat(savedLineHeight) : 1.4;
+      container.style.lineHeight = lineH;
+      
+      document.getElementById('sloganText').value = localStorage.getItem('sloganText') || 
+        "8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位";
+      document.getElementById('sloganColor').value = savedColor || "#dc2626";
+      document.getElementById('sloganFontSize').value = parseInt(savedSize || 48);
+      document.getElementById('sloganLineHeight').value = lineH;
+      
+      document.getElementById('applySloganBtn').onclick = () => {
+        let txt = document.getElementById('sloganText').value;
+        let col = document.getElementById('sloganColor').value;
+        let sz = document.getElementById('sloganFontSize').value;
+        let lh = document.getElementById('sloganLineHeight').value;
+        
+        container.innerHTML = txt.replace(/\n/g, '<br>');
+        container.style.color = col;
+        container.style.fontSize = sz + 'px';
+        container.style.lineHeight = lh;
+        
+        localStorage.setItem('sloganText', txt);
+        localStorage.setItem('sloganColor', col);
+        localStorage.setItem('sloganFontSize', sz);
+        localStorage.setItem('sloganLineHeight', lh);
+        
+        showToast('标语已更新');
+        document.getElementById('sloganOverlay').classList.remove('show');
+        document.getElementById('sloganSettingsCard').classList.remove('show');
+      };
+      
+      document.getElementById('resetSloganBtn').onclick = () => {
+        let def = "8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位";
+        container.innerHTML = def.replace(/\n/g, '<br>');
+        container.style.color = "#dc2626";
+        container.style.fontSize = "48px";
+        container.style.lineHeight = "1.4";
+        
+        localStorage.setItem('sloganText', def);
+        localStorage.setItem('sloganColor', '#dc2626');
+        localStorage.setItem('sloganFontSize', '48');
+        localStorage.setItem('sloganLineHeight', '1.4');
+        
+        document.getElementById('sloganText').value = def;
+        document.getElementById('sloganColor').value = "#dc2626";
+        document.getElementById('sloganFontSize').value = 48;
+        document.getElementById('sloganLineHeight').value = 1.4;
+        
+        showToast('恢复默认');
+        document.getElementById('sloganOverlay').classList.remove('show');
+        document.getElementById('sloganSettingsCard').classList.remove('show');
+      };
+    }
+    function initDarkMode() {
+      let cb = document.getElementById('darkModeTogglePanel');
+      let isDark = localStorage.getItem('darkMode') === 'true';
+      if(isDark) {
+        document.documentElement.classList.add('dark');
+        cb.checked = true;
+      }
+      cb.addEventListener('change', () => {
+        if(cb.checked) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('darkMode', 'true');
+          showToast('已开启黑夜模式');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('darkMode', 'false');
+          showToast('已关闭黑夜模式');
+        }
+        renderCalendar();
+      });
+    }
+    function initGlassMode() {
+      let cb = document.getElementById('glassModeTogglePanel');
+      let isGlass = localStorage.getItem('glassMode') === 'true';
+      if(isGlass) {
+        document.body.classList.add('glass-mode');
+        cb.checked = true;
+      }
+      cb.addEventListener('change', () => {
+        if(cb.checked) {
+          document.body.classList.add('glass-mode');
+          localStorage.setItem('glassMode', 'true');
+          showToast('液态玻璃已开启');
+        } else {
+          document.body.classList.remove('glass-mode');
+          localStorage.setItem('glassMode', 'false');
+          showToast('液态玻璃已关闭');
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // 初始化UI组件
+      initSloganUI();
+      initDarkMode();
+      initGlassMode();
+      
+      // 全屏按钮事件
+      fullscreenBtn.addEventListener('click', toggleFull);
+      
+      // 时钟更新
+      setInterval(updateClock, 1000);
+      updateClock();
+      
+      // 渲染日历和提醒列表
+      renderCalendar();
+      renderRemindersList();
+      
+      // 公告轮播
+      let ann = Array.from(document.querySelectorAll('.announcement'));
+      let idx = 0;
+      let announcementInterval = null;
+      
+      const updateAnnouncement = () => {
+        ann.forEach((a, i) => {
+          if(i === idx) {
+            a.classList.add('active');
+          } else {
+            a.classList.remove('active');
+          }
+        });
+      };
+      
+      const prevBtn = document.getElementById('prevAnnounceBtn');
+      const nextBtn = document.getElementById('nextAnnounceBtn');
+      
+      if(prevBtn) {
+        prevBtn.onclick = () => {
+          idx = (idx - 1 + ann.length) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      if(nextBtn) {
+        nextBtn.onclick = () => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      // 设置定时器
+      if(ann.length > 1) {
+        announcementInterval = setInterval(() => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        }, 5000);
+      } 
+      // 设置面板控制
+      let openSet = document.getElementById('openSettingsBtn');
+      let panel = document.getElementById('settingsPanelCard');
+      let overlay = document.getElementById('settingsPanelOverlay');
+      let closePanel = document.getElementById('closeSettingsPanel');
+      
+      const closeSettingsPanel = () => {
+        if(overlay) overlay.classList.remove('show');
+        if(panel) panel.classList.remove('show');
+      };
+      
+      if(openSet && overlay && panel) {
+        openSet.onclick = () => {
+          overlay.classList.add('show');
+          panel.classList.add('show');
+        };
+      }
+      
+      if(closePanel) {
+        closePanel.onclick = closeSettingsPanel;
+      }
+      
+      if(overlay) {
+        overlay.onclick = closeSettingsPanel;
+      }
+      
+      // 快速设置按钮
+      const quickBgBtn = document.getElementById('quickBgSettingBtn');
+      if(quickBgBtn) {
+        quickBgBtn.onclick = () => {
+          closeSettingsPanel();
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.add('show');
+          if(bgCard) bgCard.classList.add('show');
+        };
+      }
+      
+      const quickReminderBtn = document.getElementById('quickReminderSettingBtn');
+      if(quickReminderBtn) {
+        quickReminderBtn.onclick = () => {
+          closeSettingsPanel();
+          const reminderOverlay = document.getElementById('reminderOverlay');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderOverlay) reminderOverlay.classList.add('show');
+          if(reminderCard) reminderCard.classList.add('show');
+        };
+      }
+      
+      const quickSloganBtn = document.getElementById('quickSloganSettingBtn');
+      if(quickSloganBtn) {
+        quickSloganBtn.onclick = () => {
+          closeSettingsPanel();
+          const sloganOverlay = document.getElementById('sloganOverlay');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganOverlay) sloganOverlay.classList.add('show');
+          if(sloganCard) sloganCard.classList.add('show');
+        };
+      }
+      
+      // 返回按钮
+      const backFromBgBtn = document.getElementById('backFromBgSettings');
+      if(backFromBgBtn) {
+        backFromBgBtn.onclick = () => {
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.remove('show');
+          if(bgCard) bgCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+      
+      const backFromReminderBtn = document.getElementById('backFromReminderSettings');
+      if(backFromReminderBtn) {
+        backFromReminderBtn.onclick = () => {
+          const reminderOverlay = document.getElementById('reminderOverlay');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderOverlay) reminderOverlay.classList.remove('show');
+          if(reminderCard) reminderCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+      
+      const backFromSloganBtn = document.getElementById('backFromSlogan');
+      if(backFromSloganBtn) {
+        backFromSloganBtn.onclick = () => {
+          const sloganOverlay = document.getElementById('sloganOverlay');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganOverlay) sloganOverlay.classList.remove('show');
+          if(sloganCard) sloganCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+      
+      // 遮罩层点击关闭
+      const bgOverlay = document.getElementById('bgOverlay');
+      if(bgOverlay) {
+        bgOverlay.onclick = () => {
+          bgOverlay.classList.remove('show');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgCard) bgCard.classList.remove('show');
+        };
+      }
+      
+      const reminderOverlay = document.getElementById('reminderOverlay');
+      if(reminderOverlay) {
+        reminderOverlay.onclick = () => {
+          reminderOverlay.classList.remove('show');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderCard) reminderCard.classList.remove('show');
+        };
+      }
+      
+      const sloganOverlay = document.getElementById('sloganOverlay');
+      if(sloganOverlay) {
+        sloganOverlay.onclick = () => {
+          sloganOverlay.classList.remove('show');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganCard) sloganCard.classList.remove('show');
+        };
+      }
+      
+      // 官方背景图片
+      const OFFICIAL_BG = [
+        "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp",
+        "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp",
+        "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp",
+        "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp",
+        "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp",
+        "https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp",
+        "https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp",
+        "https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp",
+        "https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp"
+      ];
+      
+      let thumbContainer = document.getElementById('officialBgThumbs');
+      OFFICIAL_BG.forEach(url => {
+        let div = document.createElement('div');
+        div.className = 'bg-thumb-item';
+        let img = document.createElement('img');
+        img.src = url;
+        div.appendChild(img);
+        div.addEventListener('click', () => {
+          setBackgroundImage(url);
+          showToast('已应用官方背景');
+          document.getElementById('bgOverlay').classList.remove('show');
+          document.getElementById('bgSettingsCard').classList.remove('show');
+        });
+        thumbContainer.appendChild(div);
+      });
+      
+      // 背景设置按钮
+      document.getElementById('applyBgImage').onclick = () => {
+        let url = document.getElementById('bgImageUrl').value.trim();
+        if(url) {
+          setBackgroundImage(url);
+        } else {
+          showToast('请输入URL', 2000, true);
+        }
+      };
+      
+      document.getElementById('resetBgImage').onclick = () => {
+        resetBackground();
+      };
+      
+      // 本地上传背景
+      document.getElementById('localBgUpload').addEventListener('change', e => {
+        let f = e.target.files[0];
+        if(f) {
+          let reader = new FileReader();
+          reader.onload = ev => {
+            setBackgroundImage(ev.target.result);
+            document.getElementById('localBgPreview').src = ev.target.result;
+            document.getElementById('localBgPreview').style.display = 'block';
+            showToast('本地背景已应用');
+            document.getElementById('bgOverlay').classList.remove('show');
+            document.getElementById('bgSettingsCard').classList.remove('show');
+          };
+          reader.readAsDataURL(f);
+        }
+      });
+      
+      document.querySelector('.local-upload-label').addEventListener('click', () => {
+        document.getElementById('localBgUpload').click();
+      });
+      
+      // 添加提醒
+      const addReminderBtn = document.getElementById('addReminder');
+      if(addReminderBtn) {
+        addReminderBtn.onclick = () => {
+          const nameInput = document.getElementById('reminderName');
+          const dateInput = document.getElementById('reminderDate');
+          const descInput = document.getElementById('reminderDesc');
+          
+          if(!nameInput || !dateInput) return;
+          
+          let name = nameInput.value.trim();
+          let date = dateInput.value;
+          
+          if(!name || !date) {
+            showToast('请填写名称和日期', 2000, true);
+            return;
+          }
+          
+          reminderList.push({
+            id: Date.now(),
+            name: name,
+            date: date,
+            desc: descInput ? descInput.value : '',
+            shown: false
+          });
+          
+          localStorage.setItem('reminders', JSON.stringify(reminderList));
+          renderRemindersList();
+          renderCalendar();
+          showToast('提醒已添加');
+          
+          nameInput.value = '';
+          dateInput.value = '';
+          if(descInput) descInput.value = '';
+        };
+      }
+      
+      // 清空提醒
+      const clearRemindersBtn = document.getElementById('clearReminders');
+      if(clearRemindersBtn) {
+        clearRemindersBtn.onclick = () => {
+          if(confirm('清空所有提醒？')) {
+            reminderList = [];
+            localStorage.setItem('reminders', '[]');
+            renderRemindersList();
+            renderCalendar();
+            showToast('已清空');
+          }
+        };
+      }
+      
+      // 加载保存的背景
+      let savedBg = localStorage.getItem('backgroundImage');
+      if(savedBg) {
+        document.body.style.backgroundImage = `url(${savedBg})`;
+      }
+      
+      // 日历导航
+      const prevMonthBtn = document.getElementById('prevMonth');
+      if(prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+          renderCalendar();
+        });
+      }
+      
+      const nextMonthBtn = document.getElementById('nextMonth');
+      if(nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+          renderCalendar();
+        });
+      }
+      
+      // 更新公告弹窗
+      const UPDATE_KEY_31 = 'hasViewedUpdate31';
+      const FORCE_SHOW_UPDATE_31 = 'forceShowUpdate31';
+      const importantCardDom = document.getElementById('importantCard');
+      const importantOverlayDom = document.getElementById('importantOverlay');
+      const closeImportantBtnDom = document.getElementById('closeImportantBtn');
+      
+      if(!importantCardDom || !importantOverlayDom || !closeImportantBtnDom) {
+        console.warn('Update announcement elements not found');
+      } else {
+        // 如果用户从未查看过更新，显示弹窗
+        if(!localStorage.getItem(UPDATE_KEY_31)) {
+          importantCardDom.classList.add('show');
+          importantOverlayDom.classList.add('show');
+          localStorage.setItem(FORCE_SHOW_UPDATE_31, 'true');
+        }
+        
+        closeImportantBtnDom.addEventListener('click', function() {
+          importantCardDom.classList.remove('show');
+          importantOverlayDom.classList.remove('show');
+          localStorage.setItem(UPDATE_KEY_31, 'true');
+        });
+      }
+    });
   </script>
 </body>
 </html>
