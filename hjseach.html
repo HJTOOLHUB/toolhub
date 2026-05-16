@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>合金搜索 HJSearch.com</title>
+    <!-- Tailwind + 字体 + 图标库 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png"
+      type="image/x-icon"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#3B82F6",
+              secondary: "#F59E0B",
+              accent: "#8B5CF6",
+              appleGreen: "#10B981",
+            },
+            fontFamily: { noto: ["Noto Sans SC", "system-ui", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* ---------- 全局修复 & 增强 UI 排版 ---------- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        transition:
+          background-color 0.3s,
+          color 0.2s;
+        zoom: 175%;
+      }
+      /* 卡片统一样式 */
+      .search-card,
+      .quick-links-card,
+      .calendar-card {
+        transition: all 0.3s ease;
+        border-radius: 28px;
+      }
+      .search-card:hover,
+      .quick-links-card:hover,
+      .calendar-card:hover,
+      #mainCard:hover {
+        transform: translateY(-4px);
+      }
+      /* 液态玻璃效果类 */
+      .glass-effect {
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background-color: rgba(255, 255, 255, 0.75);
+      }
+      .dark .glass-effect {
+        background-color: rgba(31, 41, 55, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      .glass-mode .search-card,
+      .glass-mode .quick-links-card,
+      .glass-mode .calendar-card,
+      .glass-mode #mainCard {
+        background-color: transparent !important;
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+      /* 开关样式（美观） */
+      .toggle-switch,
+      .glass-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+      }
+      .toggle-switch input,
+      .glass-toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider,
+      .glass-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: 0.3s;
+        border-radius: 34px;
+      }
+      .toggle-slider:before,
+      .glass-toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+      .toggle-switch input:checked + .toggle-slider,
+      .glass-toggle-switch input:checked + .glass-toggle-slider {
+        background-color: #3b82f6 !important;
+      }
+      .toggle-switch input:checked + .toggle-slider:before,
+      .glass-toggle-switch input:checked + .glass-toggle-slider:before {
+        transform: translateX(24px);
+        left: unset;
+      }
+
+      /* 弹窗卡片（设置中心等） */
+      @keyframes cardPopIn {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.8) rotateX(15deg);
+        }
+        60% {
+          transform: translate(-50%, -50%) scale(1.05) rotateX(-2deg);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+        }
+      }
+      @keyframes cardPopOut {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.85) rotateX(10deg);
+        }
+      }
+      .settings-panel-card,
+      .bg-settings-card,
+      .reminder-settings-card,
+      .quicklinks-settings-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.96);
+        width: 90%;
+        max-width: 560px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 36px;
+        padding: 1.8rem;
+        box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+        z-index: 10010;
+        display: none;
+        opacity: 0;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+      }
+      .dark .settings-panel-card,
+      .dark .bg-settings-card,
+      .dark .reminder-settings-card,
+      .dark .quicklinks-settings-card {
+        background: rgba(31, 41, 55, 0.95);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .settings-panel-card.show,
+      .bg-settings-card.show,
+      .reminder-settings-card.show,
+      .quicklinks-settings-card.show {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: cardPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      .settings-panel-card.hiding,
+      .bg-settings-card.hiding,
+      .reminder-settings-card.hiding,
+      .quicklinks-settings-card.hiding {
+        animation: cardPopOut 0.25s ease-in forwards;
+      }
+      .bg-overlay,
+      .reminder-overlay,
+      .quicklinks-overlay,
+      .settings-panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.55);
+        z-index: 9999;
+        display: none;
+        backdrop-filter: blur(4px);
+      }
+      .bg-overlay.show,
+      .reminder-overlay.show,
+      .quicklinks-overlay.show,
+      .settings-panel-overlay.show {
+        display: block;
+      }
+      /* 设置行样式 */
+      .settings-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.9rem 0.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .dark .settings-group-item {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+      }
+      .settings-label-icon {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+      .back-to-settings-btn {
+        background: none;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 40px;
+        transition: 0.2s;
+      }
+      .back-to-settings-btn:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .dark .back-to-settings-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      /* 官方背景缩略图 */
+      .bg-thumb-item {
+        width: 80px;
+        height: 60px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.2s;
+      }
+      .bg-thumb-item:hover {
+        border-color: #12b7f5;
+        transform: scale(1.02);
+      }
+      .bg-thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* 日历样式 (完整保留) */
+      .calendar-card {
+        width: 90%;
+        max-width: 32rem;
+        margin: 2rem auto 1.5rem;
+        background: white;
+        border-radius: 24px;
+        padding: 1rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      }
+      .dark .calendar-card {
+        background: #1f2937;
+        border: 1px solid #374151;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .calendar-nav-btn {
+        background: #f3f4f6;
+        border: none;
+        border-radius: 30px;
+        padding: 0.4rem 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .dark .calendar-nav-btn {
+        background: #374151;
+        color: white;
+      }
+      .calendar-nav-btn:hover {
+        background: #e5e7eb;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.4rem;
+      }
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        padding: 0.4rem 0;
+        color: #4b5563;
+      }
+      .dark .calendar-day-header {
+        color: #9ca3af;
+      }
+      .calendar-day {
+        aspect-ratio: 1/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+        position: relative;
+        background: transparent;
+      }
+      .calendar-day:hover {
+        background: #f3f4f6;
+      }
+      .dark .calendar-day:hover {
+        background: #374151;
+      }
+      .calendar-day.restday {
+        background: #dbeafe;
+        color: #3b82f6;
+      }
+      .dark .calendar-day.restday {
+        background: #1e3a8a40;
+        color: #7ab7ff;
+      }
+      .calendar-day.today {
+        border: 2px solid #10b981;
+        background: #e8f5e9;
+        font-weight: 900;
+      }
+      .calendar-day.reminder::after {
+        content: "●";
+        position: absolute;
+        bottom: 3px;
+        font-size: 10px;
+        color: #f59e0b;
+      }
+      .calendar-day.holiday-badge::before {
+        content: "休";
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 8px;
+        background: #ef4444;
+        color: white;
+        border-radius: 10px;
+        padding: 0px 4px;
+      }
+      .calendar-day.workday-badge::before {
+        content: "班";
+        background: #f97316;
+      }
+      .calendar-day.other-month {
+        color: #9ca3af;
+        font-weight: 400;
+      }
+      /* 详情弹窗 */
+      .detail-popup {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%) translateY(40px);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 36px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        z-index: 10030;
+        max-width: 90%;
+        width: 420px;
+        text-align: center;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+      }
+      .dark .detail-popup {
+        background: #1f2937e6;
+        color: white;
+      }
+      .detail-popup.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      /* 快速链接卡片内样式 */
+      .quick-link-item {
+        background: #f9fafb;
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+      }
+      .dark .quick-link-item {
+        background: #374151;
+      }
+      .quick-link-item a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        font-weight: 500;
+        color: #1f2937;
+      }
+      .dark .quick-link-item a {
+        color: #f3f4f6;
+      }
+      .quick-link-item:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+      }
+      /* 公用按钮 */
+      .btn-danger {
+        background-color: #ef4444 !important;
+        color: white !important;
+      }
+      .btn-danger:hover {
+        background-color: #dc2626 !important;
+      }
+      /* 页脚样式保持原样不破坏 */
+      footer a {
+        transition: color 0.2s;
+      }
+      /* 响应式微调 */
+      @media (max-width: 640px) {
+        .search-card {
+          padding: 1.5rem;
+        }
+        .calendar-card {
+          width: 95%;
+        }
+      }
+      /* 隐藏滚动条但保持功能 */
+      .overflow-y-auto {
+        scrollbar-width: thin;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-neutral-100 font-noto text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300"
+    style="
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    "
+  >
+    <div id="toast" class="toast"></div>
+    <!-- 遮罩层 -->
+    <div id="bgOverlay" class="bg-overlay"></div>
+    <div id="reminderOverlay" class="reminder-overlay"></div>
+    <div id="quicklinksOverlay" class="quicklinks-overlay"></div>
+    <div id="settingsPanelOverlay" class="settings-panel-overlay"></div>
+
+    <!-- 设置中心主面板 -->
+    <div id="settingsPanelCard" class="settings-panel-card">
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-2xl font-bold flex items-center gap-2">
+          <i class="fa fa-cog"></i> 设置中心
+        </h2>
+        <button
+          id="closeSettingsPanel"
+          class="text-3xl leading-5 text-gray-600 dark:text-gray-300 hover:text-black"
+        >
+          &times;
+        </button>
+      </div>
+      <div class="space-y-1">
+        <div class="settings-group-item cursor-pointer" id="quickBgSettingBtn">
+          <div class="settings-label-icon">
+            <i class="fa fa-picture-o w-6"></i><span>背景图片设置</span>
+          </div>
+          <i class="fa fa-chevron-right"></i>
+        </div>
+        <div
+          class="settings-group-item cursor-pointer"
+          id="quickReminderSettingBtn"
+        >
+          <div class="settings-label-icon">
+            <i class="fa fa-bell"></i><span>事件提醒设置</span>
+          </div>
+          <i class="fa fa-chevron-right"></i>
+        </div>
+        <div
+          class="settings-group-item cursor-pointer"
+          id="quickQuicklinksSettingBtn"
+        >
+          <div class="settings-label-icon">
+            <i class="fa fa-link"></i><span>快速链接设置</span>
+          </div>
+          <i class="fa fa-chevron-right"></i>
+        </div>
+        <div class="settings-group-item">
+          <div class="settings-label-icon">
+            <i class="fa fa-moon-o"></i><span>黑夜模式</span>
+          </div>
+          <label class="toggle-switch"
+            ><input type="checkbox" id="darkModeTogglePanel" /><span
+              class="toggle-slider"
+            ></span
+          ></label>
+        </div>
+        <div class="settings-group-item">
+          <div class="settings-label-icon">
+            <i class="fa fa-eyedropper"></i><span>液态玻璃</span>
+          </div>
+          <label class="glass-toggle-switch"
+            ><input type="checkbox" id="glassModeTogglePanel" /><span
+              class="glass-toggle-slider"
+            ></span
+          ></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 背景设置卡片 -->
+    <div id="bgSettingsCard" class="bg-settings-card">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">背景图片设置</h2>
+        <button id="backFromBgSettings" class="back-to-settings-btn">
+          <i class="fa fa-arrow-left"></i> 返回
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <div class="font-medium mb-2">
+            <i class="fa fa-image mr-1"></i> 官方精选背景
+          </div>
+          <div
+            id="officialBgThumbs"
+            class="flex flex-wrap gap-3 justify-center"
+          ></div>
+        </div>
+        <div>
+          <input
+            type="text"
+            id="bgImageUrl"
+            placeholder="图片URL (网络图片)"
+            class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+          />
+        </div>
+        <div class="flex items-center gap-3">
+          <label
+            class="bg-gray-200 dark:bg-neutral-700 px-4 py-2 rounded-full cursor-pointer"
+            ><i class="fa fa-upload"></i> 本地上传</label
+          ><input
+            type="file"
+            id="localBgUpload"
+            accept="image/*"
+            style="display: none"
+          /><span class="text-xs text-gray-500">支持 jpg/png</span>
+        </div>
+        <div class="flex gap-3">
+          <button
+            id="applyBgImage"
+            class="flex-1 bg-black text-white py-2 rounded-xl dark:bg-white dark:text-black"
+          >
+            应用</button
+          ><button id="resetBgImage" class="flex-1 btn-danger py-2 rounded-xl">
+            重置
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 事件提醒设置卡片 -->
+    <div id="reminderSettingsCard" class="reminder-settings-card">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">事件提醒设置</h2>
+        <button id="backFromReminderSettings" class="back-to-settings-btn">
+          <i class="fa fa-arrow-left"></i> 返回
+        </button>
+      </div>
+      <div class="space-y-3">
+        <input
+          type="text"
+          id="reminderName"
+          placeholder="提醒名称"
+          class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+        />
+        <input
+          type="date"
+          id="reminderDate"
+          class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+        />
+        <textarea
+          id="reminderDesc"
+          rows="2"
+          placeholder="描述（选填）"
+          class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+        ></textarea>
+        <div class="flex gap-3">
+          <button
+            id="addReminder"
+            class="flex-1 bg-black text-white py-2 rounded-xl dark:bg-white dark:text-black"
+          >
+            添加</button
+          ><button
+            id="clearReminders"
+            class="flex-1 btn-danger py-2 rounded-xl"
+          >
+            清空
+          </button>
+        </div>
+        <div>
+          <div
+            id="remindersList"
+            class="max-h-48 overflow-y-auto space-y-2 p-2 border rounded-xl"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 快速链接设置卡片 -->
+    <div id="quicklinksSettingsCard" class="quicklinks-settings-card">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">
+          <i class="fa fa-link"></i> 快速链接管理
+        </h2>
+        <button id="backFromQuicklinks" class="back-to-settings-btn">
+          <i class="fa fa-arrow-left"></i> 返回
+        </button>
+      </div>
+      <div class="space-y-3">
+        <input
+          type="text"
+          id="quicklinkName"
+          placeholder="链接名称 (例: 百度)"
+          class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+        />
+        <input
+          type="url"
+          id="quicklinkUrl"
+          placeholder="网址 (https://...)"
+          class="w-full px-4 py-2 rounded-xl border dark:bg-neutral-700"
+        />
+        <button
+          id="addQuicklinkBtn"
+          class="w-full bg-black text-white py-2 rounded-xl dark:bg-white dark:text-black"
+        >
+          <i class="fa fa-plus"></i> 添加链接
+        </button>
+        <div
+          id="quicklinksManageList"
+          class="max-h-56 overflow-y-auto space-y-2 p-2 border rounded-xl"
+        ></div>
+        <button
+          id="resetDefaultQuicklinks"
+          class="w-full btn-danger py-2 rounded-xl"
+        >
+          恢复默认链接
+        </button>
+      </div>
+    </div>
+
+    <!-- 顶部导航 (不含返回首页) -->
+    <header class="absolute top-0 right-0 z-50">
+      <div class="container mx-auto px-4 py-3 flex justify-end items-center">
+        <nav style="zoom: 125%;">
+          <ul class="flex space-x-4">
+            <li>
+              <button
+                id="openSettingsBtn"
+                class="bg-neutral-200/80 dark:bg-neutral-700/80 backdrop-blur-sm w-10 h-10 rounded-lg flex items-center justify-center hover:bg-gray-300 transition shadow-md"
+              >
+                <i class="fa fa-cog text-lg"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main
+      class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center"
+    >
+      <!-- 合并的大卡片：搜索 + 快捷导航 -->
+      <div
+        id="mainCard"
+        class="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-6 md:p-8 card-hover dark:bg-neutral-800 transition-all"
+      >
+        <!-- 搜索区域 -->
+        <div class="flex flex-col items-center mb-17">
+          <div class="mb-16 flex items-center gap-3 text-4xl">
+            <i class="fa fa-search" style="background: linear-gradient(to right, #5e5fae, #91CFD5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+            <p class="text-5xl md:text-6xl font-bold" style="background: linear-gradient(to right, #79bea5, #e3cc79); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">合金搜索</p>
+          </div>
+          <form
+            id="bingSearchForm"
+            action="https://www.bing.com/search"
+            method="GET"
+            target="_blank"
+            class="w-full space-y-4"
+          >
+            <div class="relative">
+              <input
+                type="text"
+                name="q"
+                id="searchInput"
+                placeholder="立刻搜索..."
+                class="w-full text-xl md:text-2xl py-4 px-6 rounded-full border-2 border-gray-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 outline-none focus:border-primary transition"
+              />
+              <button
+                type="submit"
+                class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-full hover:bg-blue-700 transition shadow-lg"
+              >
+                <i class="fa fa-arrow-right text-xl"></i>
+              </button>
+            </div>
+            <div class="flex justify-center gap-4">
+              <a
+                href="index.html"
+                class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-10 py-4 rounded-lg font-bold text-lg hover:opacity-90 transition shadow-lg inline-flex items-center justify-center"
+                ><i class="fa fa-archive mr-2"></i>返回工具库</a
+              >
+              <button
+                type="button"
+                id="fullscreenBtn"
+                class="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center gap-2"
+              >
+                <i class="fa fa-expand"></i> 全屏
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 分割线 -->
+        <div
+          class="border-t border-gray-200 dark:border-neutral-700 my-5"
+        ></div>
+
+        <!-- 快捷导航区域 -->
+        <div class="mb-6">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+              <i class="fa fa-link text-primary"></i> 快捷导航
+            </h3>
+            <button
+              id="editQuickLinksBtn"
+              class="text-sm bg-neutral-200 dark:bg-neutral-700 px-3 py-1.5 rounded-full hover:bg-primary/20 transition"
+            >
+              <i class="fa fa-pencil"></i> 管理
+            </button>
+          </div>
+          <div
+            id="quickLinksContainer"
+            class="flex flex-wrap gap-3 justify-start items-center"
+          >
+            <div class="text-gray-400 w-full text-center py-2">加载中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 日历卡片 -->
+      <div class="calendar-card card-hover">
+        <div class="calendar-header">
+          <button id="prevMonth" class="calendar-nav-btn">
+            <i class="fa fa-chevron-left mr-1"></i> 上月
+          </button>
+          <h2
+            id="calendarMonth"
+            class="font-extrabold text-lg dark:text-white"
+          ></h2>
+          <button id="nextMonth" class="calendar-nav-btn">
+            下月 <i class="fa fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+        <div class="calendar-grid mt-2">
+          <div class="calendar-day-header">日</div>
+          <div class="calendar-day-header">一</div>
+          <div class="calendar-day-header">二</div>
+          <div class="calendar-day-header">三</div>
+          <div class="calendar-day-header">四</div>
+          <div class="calendar-day-header">五</div>
+          <div class="calendar-day-header">六</div>
+          <div id="calendarDays" style="display: contents"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer
+      class="bg-dark text-white pt-12 pb-6"
+      style="background-color: #1f2937; zoom: 80%;"
+    >
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <div class="flex items-center space-x-2 mb-4">
+              <div
+                class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"
+              >
+                <i class="fa fa-wrench text-white text-xl"></i>
+              </div>
+              <span class="text-xl font-bold">HJ_ToolHub</span>
+            </div>
+            <p class="text-gray-400 text-sm">
+              合金实用工具集合，让您的工作和生活更高效便捷。
+            </p>
+            <div class="flex space-x-3 mt-4">
+              <a href="https://qm.qq.com/q/mVoOvLQ95S" class="text-gray-400 hover:text-white"
+                ><i class="fab fa-qq text-xl"></i></a
+              ><a href="weixin.html" class="text-gray-400 hover:text-white"
+                ><i class="fab fa-weixin text-xl"></i></a
+              ><a href="https://github.com/HJTOOLHUB/toolhub" class="text-gray-400 hover:text-white"
+                ><i class="fab fa-github text-xl"></i
+              ></a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="index.html#home" class="hover:text-white">工具首页</a></li>
+              <li><a href="index.html#categories" class="hover:text-white">工具分类</a></li>
+              <li><a href="index.html#popular" class="hover:text-white">热门工具</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">工具分类</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="index (2).html" class="hover:text-white">办公效率</a></li>
+              <li><a href="index (3).html" class="hover:text-white">图片处理</a></li>
+              <li><a href="index (4).html" class="hover:text-white">开发辅助</a></li>
+              <li><a href="index (5).html" class="hover:text-white">生活服务</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+            <ul class="space-y-2 text-gray-400 text-sm">
+              <li><i class="fa fa-envelope mr-2"></i> 3301976275@qq.com</li>
+              <li><i class="fa fa-map-marker mr-2"></i> 广州市番禺区</li>
+              <li><i class="fa fa-phone mr-2"></i> 137 1019 0930</li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500"
+        >
+          <p>© 2026 copyright HJ'_DEV(合金). 合金搜索 v1.0</p>
+          <img
+            src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp"
+            alt="logo"
+            class="h-12 my-2"
+          />
+          <div class="flex gap-4">
+            <a href="yszc.html" class="hover:text-gray-300">隐私政策</a>
+            <a href="sytk.html" class="hover:text-gray-300">使用条款</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // ---------- 全局变量 ----------
+      let reminderList = JSON.parse(localStorage.getItem("reminders") || "[]");
+      let calendarCurrentDate = new Date();
+      let quickLinks = JSON.parse(localStorage.getItem("quickLinks")) || [
+        { id: "1", name: "必应搜索", url: "https://www.bing.com/search" },
+        { id: "2", name: "豆包", url: "https://www.douban.com" },
+        { id: "3", name: "抖音", url: "https://www.douyin.com" },
+      ];
+
+      // 节假日数据（简版）
+      const holidaysData = {
+        "2026-01-01": { name: "元旦" },
+        "2026-02-17": { name: "春节" },
+        "2026-04-05": { name: "清明节" },
+        "2026-05-01": { name: "劳动节" },
+        "2026-06-19": { name: "端午节" },
+        "2026-10-01": { name: "国庆节" },
+        "2026-10-06": { name: "国庆节" },
+      };
+      const workdayData = { "2026-02-14": true, "2026-09-27": true };
+      function getHolidayInfo(dateStr) {
+        if (holidaysData[dateStr])
+          return { name: holidaysData[dateStr].name, type: "holiday" };
+        if (workdayData[dateStr]) return { name: "调休上班", type: "workday" };
+        return null;
+      }
+
+      function showToast(msg, dur = 3000, isErr = false) {
+        let t = document.getElementById("toast");
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add("show");
+        if (isErr) t.classList.add("reminder");
+        setTimeout(() => {
+          t.classList.remove("show");
+          if (isErr) t.classList.remove("reminder");
+        }, dur);
+      }
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(
+          /[&<>]/g,
+          (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
+        );
+      }
+
+      // 日历渲染
+      function renderCalendar() {
+        let y = calendarCurrentDate.getFullYear(),
+          m = calendarCurrentDate.getMonth();
+        document.getElementById("calendarMonth").innerHTML = `${y}年${m + 1}月`;
+        let firstDay = new Date(y, m, 1).getDay(),
+          daysInMonth = new Date(y, m + 1, 0).getDate(),
+          prevLastDay = new Date(y, m, 0).getDate();
+        let container = document.getElementById("calendarDays");
+        container.innerHTML = "";
+        for (let i = firstDay; i > 0; i--) {
+          let cell = document.createElement("div");
+          cell.className = "calendar-day other-month";
+          cell.textContent = prevLastDay - i + 1;
+          container.appendChild(cell);
+        }
+        let today = new Date();
+        for (let i = 1; i <= daysInMonth; i++) {
+          let cell = document.createElement("div");
+          let dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+          let isToday =
+            y === today.getFullYear() &&
+            m === today.getMonth() &&
+            i === today.getDate();
+          let weekDay = new Date(y, m, i).getDay(),
+            holiday = getHolidayInfo(dateStr);
+          cell.className = "calendar-day";
+          if (weekDay === 0 || weekDay === 6) cell.classList.add("restday");
+          if (holiday && holiday.type === "holiday")
+            cell.classList.add("holiday-badge");
+          if (holiday && holiday.type === "workday")
+            cell.classList.add("workday-badge");
+          if (isToday) cell.classList.add("today");
+          if (reminderList.some((r) => r.date === dateStr))
+            cell.classList.add("reminder");
+          cell.textContent = i;
+          cell.addEventListener("click", () => {
+            let details = [];
+            if (holiday)
+              details.push(
+                ` ${holiday.name} (${holiday.type === "holiday" ? "假日" : "调休"})`,
+              );
+            reminderList
+              .filter((r) => r.date === dateStr)
+              .forEach((rem) =>
+                details.push(` ${rem.name} - ${rem.desc || "无"}`),
+              );
+            if (details.length === 0) details.push(" 暂无安排");
+            let pop = document.createElement("div");
+            pop.className = "detail-popup";
+            pop.innerHTML = `<strong>${dateStr}</strong><hr style="margin:12px 0"><div style="white-space:pre-line;">${details.join("\n")}</div><button class="mt-3 bg-black dark:bg-white text-white dark:text-black px-5 py-1 rounded-full">关闭</button>`;
+            document.body.appendChild(pop);
+            setTimeout(() => pop.classList.add("show"), 10);
+            pop.querySelector("button").onclick = () => {
+              pop.classList.remove("show");
+              setTimeout(() => pop.remove(), 300);
+            };
+            setTimeout(() => {
+              if (pop && pop.parentNode) pop.classList.remove("show");
+            }, 5000);
+          });
+          container.appendChild(cell);
+        }
+        let total = firstDay + daysInMonth,
+          next = 42 - total;
+        for (let i = 1; i <= next; i++) {
+          let cell = document.createElement("div");
+          cell.className = "calendar-day other-month";
+          cell.textContent = i;
+          container.appendChild(cell);
+        }
+      }
+
+      function renderRemindersList() {
+        let c = document.getElementById("remindersList");
+        if (!c) return;
+        if (reminderList.length === 0) {
+          c.innerHTML = '<div class="text-center text-gray-500">暂无提醒</div>';
+          return;
+        }
+        c.innerHTML = "";
+        reminderList.forEach((r) => {
+          let d = document.createElement("div");
+          d.className =
+            "flex justify-between items-center p-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg";
+          d.innerHTML = `<div><div class="font-bold">${escapeHtml(r.name)}</div><div class="text-xs">${r.date} - ${escapeHtml(r.desc || "")}</div></div><button class="text-red-500 delete-rem" data-id="${r.id}"><i class="fa fa-trash"></i></button>`;
+          c.appendChild(d);
+        });
+        document.querySelectorAll(".delete-rem").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            let id = parseInt(btn.dataset.id);
+            reminderList = reminderList.filter((i) => i.id !== id);
+            localStorage.setItem("reminders", JSON.stringify(reminderList));
+            renderRemindersList();
+            renderCalendar();
+            showToast("已删除");
+          }),
+        );
+      }
+
+      function renderQuickLinksUI() {
+        let container = document.getElementById("quickLinksContainer");
+        if (!container) return;
+        if (quickLinks.length === 0) {
+          container.innerHTML =
+            '<div class="text-gray-400 w-full text-center">点击“管理”添加常用链接~</div>';
+          return;
+        }
+        container.innerHTML = "";
+        quickLinks.forEach((link) => {
+          let item = document.createElement("div");
+          item.className = "quick-link-item";
+          item.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener"><i class="fa fa-external-link text-primary"></i><span>${escapeHtml(link.name)}</span></a>`;
+          container.appendChild(item);
+        });
+        let manageDiv = document.getElementById("quicklinksManageList");
+        if (manageDiv) {
+          if (quickLinks.length === 0)
+            manageDiv.innerHTML =
+              '<div class="text-center text-gray-500">暂无链接，添加一个吧</div>';
+          else {
+            manageDiv.innerHTML = "";
+            quickLinks.forEach((link) => {
+              let row = document.createElement("div");
+              row.className = "flex justify-between items-center p-2 border-b";
+              row.innerHTML = `<div><strong>${escapeHtml(link.name)}</strong><div class="text-xs truncate">${link.url}</div></div><button class="text-red-500 del-manage" data-id="${link.id}"><i class="fa fa-times-circle"></i></button>`;
+              manageDiv.appendChild(row);
+            });
+            document.querySelectorAll(".del-manage").forEach((btn) =>
+              btn.addEventListener("click", (e) => {
+                let id = btn.dataset.id;
+                quickLinks = quickLinks.filter((l) => l.id != id);
+                saveQuickLinks();
+                renderQuickLinksUI();
+                showToast("已删除链接");
+              }),
+            );
+          }
+        }
+      }
+      function saveQuickLinks() {
+        localStorage.setItem("quickLinks", JSON.stringify(quickLinks));
+        renderQuickLinksUI();
+      }
+
+      // 背景 / 全屏 / 夜间 / 玻璃
+      function setBackgroundImage(src) {
+        document.body.style.backgroundImage = `url(${src})`;
+        localStorage.setItem("backgroundImage", src);
+        showToast("背景已更换");
+      }
+      function resetBackground() {
+        document.body.style.backgroundImage = "";
+        localStorage.removeItem("backgroundImage");
+        showToast("背景已重置");
+      }
+      let fullBtn = document.getElementById("fullscreenBtn");
+      function toggleFull() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+          fullBtn.innerHTML = '<i class="fa fa-compress"></i> 退出全屏';
+        } else {
+          document.exitFullscreen();
+          fullBtn.innerHTML = '<i class="fa fa-expand"></i> 全屏';
+        }
+      }
+      function initDarkMode() {
+        let cb = document.getElementById("darkModeTogglePanel");
+        let isDark = localStorage.getItem("darkMode") === "true";
+        if (isDark) {
+          document.documentElement.classList.add("dark");
+          cb.checked = true;
+        }
+        cb.addEventListener("change", () => {
+          if (cb.checked) {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("darkMode", "true");
+          } else {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("darkMode", "false");
+          }
+          renderCalendar();
+        });
+      }
+      function initGlassMode() {
+        let cb = document.getElementById("glassModeTogglePanel");
+        let isGlass = localStorage.getItem("glassMode") === "true";
+        if (isGlass) {
+          document.body.classList.add("glass-mode");
+          cb.checked = true;
+        }
+        cb.addEventListener("change", () => {
+          if (cb.checked) {
+            document.body.classList.add("glass-mode");
+            localStorage.setItem("glassMode", "true");
+          } else {
+            document.body.classList.remove("glass-mode");
+            localStorage.setItem("glassMode", "false");
+          }
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initDarkMode();
+        initGlassMode();
+        if (fullBtn) fullBtn.addEventListener("click", toggleFull);
+        renderCalendar();
+        renderRemindersList();
+        renderQuickLinksUI();
+        let savedBg = localStorage.getItem("backgroundImage");
+        if (savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
+        // 官方背景
+        const officialBgs = [
+          "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp",
+          "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp",
+          "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp",
+          "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp",
+          "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp",
+        ];
+        let thumbDiv = document.getElementById("officialBgThumbs");
+        if (thumbDiv)
+          officialBgs.forEach((url) => {
+            let div = document.createElement("div");
+            div.className = "bg-thumb-item";
+            let img = document.createElement("img");
+            img.src = url;
+            div.appendChild(img);
+            div.onclick = () => {
+              setBackgroundImage(url);
+              document.getElementById("bgOverlay")?.classList.remove("show");
+              document
+                .getElementById("bgSettingsCard")
+                ?.classList.remove("show");
+            };
+            thumbDiv.appendChild(div);
+          });
+        // 背景控件
+        document
+          .getElementById("applyBgImage")
+          ?.addEventListener("click", () => {
+            let url = document.getElementById("bgImageUrl").value.trim();
+            if (url) setBackgroundImage(url);
+            else showToast("请输入图片URL", 1500, true);
+          });
+        document
+          .getElementById("resetBgImage")
+          ?.addEventListener("click", resetBackground);
+        document
+          .getElementById("localBgUpload")
+          ?.addEventListener("change", (e) => {
+            let f = e.target.files[0];
+            if (f) {
+              let reader = new FileReader();
+              reader.onload = (ev) => {
+                setBackgroundImage(ev.target.result);
+                document.getElementById("bgOverlay")?.classList.remove("show");
+                document
+                  .getElementById("bgSettingsCard")
+                  ?.classList.remove("show");
+              };
+              reader.readAsDataURL(f);
+            }
+          });
+        document
+          .querySelector(".local-upload-label")
+          ?.addEventListener("click", () =>
+            document.getElementById("localBgUpload").click(),
+          );
+        // 提醒
+        document
+          .getElementById("addReminder")
+          ?.addEventListener("click", () => {
+            let name = document.getElementById("reminderName").value.trim();
+            let date = document.getElementById("reminderDate").value;
+            if (!name || !date) {
+              showToast("请填写名称和日期", 1500, true);
+              return;
+            }
+            reminderList.push({
+              id: Date.now(),
+              name,
+              date,
+              desc: document.getElementById("reminderDesc").value,
+              shown: false,
+            });
+            localStorage.setItem("reminders", JSON.stringify(reminderList));
+            renderRemindersList();
+            renderCalendar();
+            showToast("提醒已添加");
+            document.getElementById("reminderName").value = "";
+            document.getElementById("reminderDate").value = "";
+            document.getElementById("reminderDesc").value = "";
+          });
+        document
+          .getElementById("clearReminders")
+          ?.addEventListener("click", () => {
+            if (confirm("清空全部提醒？")) {
+              reminderList = [];
+              localStorage.setItem("reminders", "[]");
+              renderRemindersList();
+              renderCalendar();
+              showToast("已清空");
+            }
+          });
+        // 快速链接增删
+        document
+          .getElementById("addQuicklinkBtn")
+          ?.addEventListener("click", () => {
+            let name = document.getElementById("quicklinkName").value.trim();
+            let url = document.getElementById("quicklinkUrl").value.trim();
+            if (!name || !url) {
+              showToast("名称和网址不能为空", 1500, true);
+              return;
+            }
+            quickLinks.push({ id: Date.now().toString(), name, url });
+            saveQuickLinks();
+            document.getElementById("quicklinkName").value = "";
+            document.getElementById("quicklinkUrl").value = "";
+            showToast("链接已添加");
+          });
+        document
+          .getElementById("resetDefaultQuicklinks")
+          ?.addEventListener("click", () => {
+            quickLinks = [
+              { id: "1", name: "必应搜索", url: "https://www.bing.com/search" },
+              { id: "2", name: "豆包", url: "https://www.doubao.com" },
+              { id: "3", name: "抖音", url: "https://www.douyin.com" },
+            ];
+            saveQuickLinks();
+            showToast("恢复默认链接");
+          });
+        // 面板控制
+        let openSet = document.getElementById("openSettingsBtn"),
+          panel = document.getElementById("settingsPanelCard"),
+          overlay = document.getElementById("settingsPanelOverlay"),
+          closePanel = document.getElementById("closeSettingsPanel");
+        const closeAll = () => {
+          [panel, bgCard, remCard, quickCard].forEach((card) => {
+            if (card && card.classList.contains("show")) {
+              card.classList.remove("show");
+              card.classList.add("hiding");
+              setTimeout(() => {
+                card.classList.remove("hiding");
+              }, 250);
+            }
+          });
+          overlay.classList.remove("show");
+        };
+        if (openSet)
+          openSet.onclick = () => {
+            overlay.classList.add("show");
+            panel.classList.add("show");
+          };
+        if (closePanel) closePanel.onclick = closeAll;
+        if (overlay) overlay.onclick = closeAll;
+        let bgOvl = document.getElementById("bgOverlay"),
+          bgCard = document.getElementById("bgSettingsCard"),
+          remOvl = document.getElementById("reminderOverlay"),
+          remCard = document.getElementById("reminderSettingsCard"),
+          quickOvl = document.getElementById("quicklinksOverlay"),
+          quickCard = document.getElementById("quicklinksSettingsCard");
+        document
+          .getElementById("quickBgSettingBtn")
+          ?.addEventListener("click", () => {
+            closeAll();
+            bgOvl.classList.add("show");
+            bgCard.classList.add("show");
+          });
+        document
+          .getElementById("quickReminderSettingBtn")
+          ?.addEventListener("click", () => {
+            closeAll();
+            remOvl.classList.add("show");
+            remCard.classList.add("show");
+          });
+        document
+          .getElementById("quickQuicklinksSettingBtn")
+          ?.addEventListener("click", () => {
+            closeAll();
+            quickOvl.classList.add("show");
+            quickCard.classList.add("show");
+          });
+        document
+          .getElementById("editQuickLinksBtn")
+          ?.addEventListener("click", () => {
+            quickOvl.classList.add("show");
+            quickCard.classList.add("show");
+          });
+        document
+          .getElementById("backFromBgSettings")
+          ?.addEventListener("click", () => {
+            bgOvl.classList.remove("show");
+            bgCard.classList.remove("show");
+            closeAll();
+            overlay.classList.add("show");
+            panel.classList.add("show");
+          });
+        document
+          .getElementById("backFromReminderSettings")
+          ?.addEventListener("click", () => {
+            remOvl.classList.remove("show");
+            remCard.classList.remove("show");
+            closeAll();
+            overlay.classList.add("show");
+            panel.classList.add("show");
+          });
+        document
+          .getElementById("backFromQuicklinks")
+          ?.addEventListener("click", () => {
+            quickOvl.classList.remove("show");
+            quickCard.classList.remove("show");
+            closeAll();
+            overlay.classList.add("show");
+            panel.classList.add("show");
+          });
+        if (bgOvl)
+          bgOvl.onclick = () => {
+            bgOvl.classList.remove("show");
+            if (bgCard.classList.contains("show")) {
+              bgCard.classList.remove("show");
+              bgCard.classList.add("hiding");
+              setTimeout(() => {
+                bgCard.classList.remove("hiding");
+              }, 250);
+            }
+          };
+        if (remOvl)
+          remOvl.onclick = () => {
+            remOvl.classList.remove("show");
+            if (remCard.classList.contains("show")) {
+              remCard.classList.remove("show");
+              remCard.classList.add("hiding");
+              setTimeout(() => {
+                remCard.classList.remove("hiding");
+              }, 250);
+            }
+          };
+        if (quickOvl)
+          quickOvl.onclick = () => {
+            quickOvl.classList.remove("show");
+            if (quickCard.classList.contains("show")) {
+              quickCard.classList.remove("show");
+              quickCard.classList.add("hiding");
+              setTimeout(() => {
+                quickCard.classList.remove("hiding");
+              }, 250);
+            }
+          };
+        // 日历翻页
+        document.getElementById("prevMonth")?.addEventListener("click", () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+          renderCalendar();
+        });
+        document.getElementById("nextMonth")?.addEventListener("click", () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+          renderCalendar();
+        });
+      });
+    </script>
+    <!-- 简易toast样式 -->
+    <style>
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #fff;
+        color: #1f2937;
+        padding: 12px 20px;
+        border-radius: 40px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        z-index: 11000;
+        opacity: 0;
+        transform: translateX(120%);
+        transition: 0.25s;
+        border-left: 4px solid #12b7f5;
+        font-weight: 500;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .toast.reminder {
+        border-left-color: #ef4444;
+        background: #fee2e2;
+      }
+      .dark .toast {
+        background: #1f2937;
+        color: #f3f4f6;
+        border-left-color: #10b981;
+      }
+    </style>
+    <style>
+      .line-clamp-1 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+      }
+      .line-clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+    </style>
+  </body>
+</html>
