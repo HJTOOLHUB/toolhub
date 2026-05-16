@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=yes"
     />
-    <title>合金搜索 HJSearch.com</title>
+    <title>合金搜索 HJSearch</title>
     <!-- Tailwind + 字体 + 图标库 -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -114,9 +114,11 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #cbd5e1;
+        background-color: #c7c7c7;
         transition: 0.3s;
         border-radius: 34px;
+        width: 52px;
+        height: 28px;
       }
       .toggle-slider:before,
       .glass-toggle-slider:before {
@@ -132,7 +134,7 @@
       }
       .toggle-switch input:checked + .toggle-slider,
       .glass-toggle-switch input:checked + .glass-toggle-slider {
-        background-color: #3b82f6 !important;
+        background-color: #00cc03 !important;
       }
       .toggle-switch input:checked + .toggle-slider:before,
       .glass-toggle-switch input:checked + .glass-toggle-slider:before {
@@ -402,7 +404,7 @@
         transform: translateX(-50%) translateY(40px);
         background: rgba(255, 255, 255, 0.98);
         backdrop-filter: blur(20px);
-        border-radius: 36px;
+        border-radius: 10px;
         padding: 1.5rem 2rem;
         box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
         z-index: 10030;
@@ -472,6 +474,114 @@
       .overflow-y-auto {
         scrollbar-width: thin;
       }
+      /* 搜索记录遮罩层 */
+      .search-history-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: transparent;
+        z-index: 5000;
+        display: none;
+      }
+      .search-history-overlay.show {
+        display: block;
+      }
+      /* 搜索输入框容器 */
+      .search-input-wrapper {
+        position: relative;
+        z-index: 5000;
+        display: block;
+        width: 100%;
+      }
+      /* 搜索记录下拉面板样式 */
+      .search-history-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #2a2a2a;
+        border-radius: 4px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 10001;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(0);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        pointer-events: none;
+      }
+      .dark .search-history-dropdown {
+        background: #1a1a1a;
+      }
+      .search-history-dropdown.show {
+        max-height: 320px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+      .search-history-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 18px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        color: #e0e0e0;
+      }
+      .search-history-item:hover {
+        background: #3a3a3a;
+      }
+      .dark .search-history-item:hover {
+        background: #2a2a2a;
+      }
+      /* 搜索记录设置面板样式 */
+      .search-history-settings-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.96);
+        width: 90%;
+        max-width: 560px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 36px;
+        padding: 1.8rem;
+        box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3);
+        z-index: 10010;
+        display: none;
+        opacity: 0;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transform-style: preserve-3d;
+        perspective: 1000px;
+      }
+      .dark .search-history-settings-card {
+        background: rgba(31, 41, 55, 0.95);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .search-history-settings-card.show {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: cardPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+      .search-history-settings-card.hiding {
+        animation: cardPopOut 0.25s ease-in forwards;
+      }
+      .search-history-overlay-new {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.55);
+        z-index: 9999;
+        display: none;
+        backdrop-filter: blur(4px);
+      }
+      .search-history-overlay-new.show {
+        display: block;
+      }
     </style>
   </head>
   <body
@@ -488,6 +598,8 @@
     <div id="reminderOverlay" class="reminder-overlay"></div>
     <div id="quicklinksOverlay" class="quicklinks-overlay"></div>
     <div id="settingsPanelOverlay" class="settings-panel-overlay"></div>
+    <div id="searchHistoryOverlay" class="search-history-overlay"></div>
+    <div id="searchHistoryOverlayNew" class="search-history-overlay-new"></div>
 
     <!-- 设置中心主面板 -->
     <div id="settingsPanelCard" class="settings-panel-card">
@@ -524,6 +636,15 @@
         >
           <div class="settings-label-icon">
             <i class="fa fa-link"></i><span>快速链接设置</span>
+          </div>
+          <i class="fa fa-chevron-right"></i>
+        </div>
+        <div
+          class="settings-group-item cursor-pointer"
+          id="quickSearchHistorySettingBtn"
+        >
+          <div class="settings-label-icon">
+            <i class="fa fa-history"></i><span>搜索记录设置</span>
           </div>
           <i class="fa fa-chevron-right"></i>
         </div>
@@ -690,6 +811,33 @@
       </div>
     </div>
 
+    <!-- 搜索记录设置卡片 -->
+    <div id="searchHistorySettingsCard" class="search-history-settings-card">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">
+          <i class="fa fa-history"></i> 搜索记录管理
+        </h2>
+        <button id="backFromSearchHistory" class="back-to-settings-btn">
+          <i class="fa fa-arrow-left"></i> 返回
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+          共 <span id="searchHistoryCount">0</span> 条搜索记录
+        </div>
+        <div
+          id="searchHistoryList"
+          class="max-h-64 overflow-y-auto space-y-2 p-2 border rounded-xl"
+        ></div>
+        <button
+          id="clearSearchHistory"
+          class="w-full btn-danger py-2 rounded-xl"
+        >
+          <i class="fa fa-trash"></i> 清空全部搜索记录
+        </button>
+      </div>
+    </div>
+
     <!-- 顶部导航 (不含返回首页) -->
     <header class="absolute top-0 right-0 z-50">
       <div class="container mx-auto px-4 py-3 flex justify-end items-center">
@@ -710,6 +858,7 @@
 
     <main
       class="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center"
+      style="color: #000000;"
     >
       <!-- 合并的大卡片：搜索 + 快捷导航 -->
       <div
@@ -719,8 +868,8 @@
         <!-- 搜索区域 -->
         <div class="flex flex-col items-center mb-17">
           <div class="mb-16 flex items-center gap-3 text-4xl">
-            <i class="fa fa-search" style="background: linear-gradient(to right, #5e5fae, #91CFD5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
-            <p class="text-5xl md:text-6xl font-bold" style="background: linear-gradient(to right, #79bea5, #e3cc79); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">合金搜索</p>
+            <i class="fa fa-search" style="background: linear-gradient(to right, #79bea5, #505acf); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+            <p class="text-5xl md:text-6xl font-bold" style="background: linear-gradient(to right, #505acf, #79bea5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">HJ Seach</p>
           </div>
           <form
             id="bingSearchForm"
@@ -729,34 +878,35 @@
             target="_blank"
             class="w-full space-y-4"
           >
-            <div class="relative">
-              <input
-                type="text"
-                name="q"
-                id="searchInput"
-                placeholder="立刻搜索..."
-                class="w-full text-xl md:text-2xl py-4 px-6 rounded-full border-2 border-gray-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 outline-none focus:border-primary transition"
-              />
-              <button
-                type="submit"
-                class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-full hover:bg-blue-700 transition shadow-lg"
-              >
-                <i class="fa fa-arrow-right text-xl"></i>
-              </button>
+            <!-- 搜索输入框容器 -->
+            <div id="searchInputWrapper" class="search-input-wrapper">
+              <div class="relative">
+                <input
+                  type="text"
+                  name="q"
+                  id="searchInput"
+                  placeholder="在HJ_Seach中搜索或输入网址..."
+                  autocomplete="off"
+                  class="w-full text-xl md:text-2xl py-4 px-6 rounded-full border-2 border-gray-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 outline-none focus:border-primary transition"
+                />
+                <button
+                  type="submit"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white p-3 rounded-full hover:bg-blue-700 transition shadow-lg"
+                >
+                  <i class="fa fa-arrow-right text-xl"></i>
+                </button>
+              </div>
+              <!-- 搜索记录下拉面板 -->
+              <div id="searchHistoryDropdown" class="search-history-dropdown">
+                <div id="searchHistoryDropdownContent"></div>
+              </div>
             </div>
             <div class="flex justify-center gap-4">
               <a
                 href="index.html"
-                class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-10 py-4 rounded-lg font-bold text-lg hover:opacity-90 transition shadow-lg inline-flex items-center justify-center"
-                ><i class="fa fa-archive mr-2"></i>返回工具库</a
-              >
-              <button
-                type="button"
-                id="fullscreenBtn"
-                class="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center gap-2"
-              >
-                <i class="fa fa-expand"></i> 全屏
-              </button>
+                class="bg-primary hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center gap-2 border border-solid border-[rgb(107,114,128)]"
+                style="border-width: 1px; border-style: solid; border-color: rgb(107, 114, 128);"
+                ><i class="fa fa-archive mr-2"></i>返回工具库</a>
             </div>
           </form>
         </div>
@@ -873,7 +1023,7 @@
         <div
           class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500"
         >
-          <p>© 2026 copyright HJ'_DEV(合金). 合金搜索 v1.0</p>
+          <p>© 2026 copyright HJ'_DEV(合金). HJ Seach</p>
           <img
             src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp"
             alt="logo"
@@ -896,6 +1046,7 @@
         { id: "2", name: "豆包", url: "https://www.douban.com" },
         { id: "3", name: "抖音", url: "https://www.douyin.com" },
       ];
+      let searchHistory = JSON.parse(localStorage.getItem("searchHistory")) || [];
 
       // 节假日数据（简版）
       const holidaysData = {
@@ -932,6 +1083,93 @@
           /[&<>]/g,
           (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m],
         );
+      }
+
+      // 搜索记录管理
+      function saveSearchHistory(query) {
+        if (!query || !query.trim()) return;
+        const trimmedQuery = query.trim();
+        searchHistory = searchHistory.filter(item => item.query !== trimmedQuery);
+        searchHistory.unshift({
+          id: Date.now(),
+          query: trimmedQuery,
+          time: new Date().toLocaleString('zh-CN')
+        });
+        if (searchHistory.length > 100) {
+          searchHistory = searchHistory.slice(0, 100);
+        }
+        localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+      }
+
+      function renderSearchHistoryDropdown() {
+        const container = document.getElementById("searchHistoryDropdownContent");
+        const dropdown = document.getElementById("searchHistoryDropdown");
+        if (!container || !dropdown) return;
+
+        const recentHistory = searchHistory.slice(0, 5);
+
+        if (recentHistory.length === 0) {
+          container.innerHTML = '<div class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">暂无搜索记录</div>';
+        } else {
+          container.innerHTML = recentHistory.map(item => `
+            <div class="search-history-item" data-query="${escapeHtml(item.query)}">
+              <i class="fa fa-clock-o text-gray-400 mr-3"></i>
+              <span class="flex-1">${escapeHtml(item.query)}</span>
+              <i class="fa fa-arrow-up text-gray-300 text-xs"></i>
+            </div>
+          `).join('');
+
+          container.querySelectorAll('.search-history-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const query = item.dataset.query;
+              const localDropdown = document.getElementById("searchHistoryDropdown");
+              const form = document.getElementById("bingSearchForm");
+              const localSearchInput = document.getElementById("searchInput");
+              
+              if (localSearchInput && form) {
+                localSearchInput.value = query;
+                if (localDropdown) localDropdown.classList.remove('show');
+                form.submit();
+              }
+            });
+          });
+        }
+      }
+
+      function renderSearchHistorySettings() {
+        const container = document.getElementById("searchHistoryList");
+        const countSpan = document.getElementById("searchHistoryCount");
+        if (!container || !countSpan) return;
+
+        countSpan.textContent = searchHistory.length;
+
+        if (searchHistory.length === 0) {
+          container.innerHTML = '<div class="text-center text-gray-500 dark:text-gray-400 py-4">暂无搜索记录</div>';
+          return;
+        }
+
+        container.innerHTML = searchHistory.map(item => `
+          <div class="flex justify-between items-center p-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg">
+            <div class="flex-1 min-w-0">
+              <div class="font-medium truncate">${escapeHtml(item.query)}</div>
+              <div class="text-xs text-gray-500">${item.time}</div>
+            </div>
+            <button class="text-red-500 hover:text-red-700 ml-2 delete-search-history" data-id="${item.id}">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.delete-search-history').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = parseInt(btn.dataset.id);
+            searchHistory = searchHistory.filter(item => item.id !== id);
+            localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+            renderSearchHistorySettings();
+            showToast("已删除该搜索记录");
+          });
+        });
       }
 
       // 日历渲染
@@ -1348,6 +1586,99 @@
             closeAll();
             overlay.classList.add("show");
             panel.classList.add("show");
+          });
+
+        // 搜索记录下拉面板事件
+        const searchInput = document.getElementById("searchInput");
+        const searchHistoryDropdown = document.getElementById("searchHistoryDropdown");
+        let closeTimer = null;
+
+        // 显示下拉框
+        function openSearchHistory() {
+          if (closeTimer) {
+            clearTimeout(closeTimer);
+            closeTimer = null;
+          }
+          if (searchHistory.length > 0) {
+            renderSearchHistoryDropdown();
+            searchHistoryDropdown.classList.add('show');
+          }
+        }
+
+        // 关闭下拉框（带延迟）
+        function closeSearchHistory() {
+          closeTimer = setTimeout(() => {
+            searchHistoryDropdown.classList.remove('show');
+          }, 100);
+        }
+
+        // 绑定事件
+        if (searchInput) {
+          searchInput.addEventListener('mouseenter', openSearchHistory);
+          searchInput.addEventListener('click', openSearchHistory);
+          searchInput.addEventListener('mouseleave', closeSearchHistory);
+        }
+
+        if (searchHistoryDropdown) {
+          searchHistoryDropdown.addEventListener('mouseenter', openSearchHistory);
+          searchHistoryDropdown.addEventListener('mouseleave', closeSearchHistory);
+        }
+
+
+
+        // 搜索表单提交时保存记录
+        document.getElementById("bingSearchForm")?.addEventListener("submit", (e) => {
+          const query = searchInput?.value?.trim();
+          if (query) {
+            saveSearchHistory(query);
+          }
+        });
+
+        // 搜索记录设置面板相关元素
+        const searchHistoryOvl = document.getElementById("searchHistoryOverlayNew");
+        const searchHistoryCard = document.getElementById("searchHistorySettingsCard");
+
+        document
+          .getElementById("quickSearchHistorySettingBtn")
+          ?.addEventListener("click", () => {
+            closeAll();
+            renderSearchHistorySettings();
+            searchHistoryOvl.classList.add("show");
+            searchHistoryCard.classList.add("show");
+          });
+
+        document
+          .getElementById("backFromSearchHistory")
+          ?.addEventListener("click", () => {
+            searchHistoryOvl.classList.remove("show");
+            searchHistoryCard.classList.remove("show");
+            closeAll();
+            overlay.classList.add("show");
+            panel.classList.add("show");
+          });
+
+        if (searchHistoryOvl) {
+          searchHistoryOvl.onclick = () => {
+            searchHistoryOvl.classList.remove("show");
+            if (searchHistoryCard.classList.contains("show")) {
+              searchHistoryCard.classList.remove("show");
+              searchHistoryCard.classList.add("hiding");
+              setTimeout(() => {
+                searchHistoryCard.classList.remove("hiding");
+              }, 250);
+            }
+          };
+        }
+
+        document
+          .getElementById("clearSearchHistory")
+          ?.addEventListener("click", () => {
+            if (confirm("确定要清空全部搜索记录吗？此操作不可恢复。")) {
+              searchHistory = [];
+              localStorage.setItem("searchHistory", "[]");
+              renderSearchHistorySettings();
+              showToast("已清空全部搜索记录");
+            }
           });
         if (bgOvl)
           bgOvl.onclick = () => {
