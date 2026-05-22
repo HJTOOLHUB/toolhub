@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>修复工具文档</title>
+  <link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .win10-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      position: relative;
+    }
+    .win10-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    }
+    .fix-card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .step-card {
+      background: #f9f9f9;
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      transition: all 0.15s ease;
+    }
+    .step-card:hover {
+      background: #f5f5f5;
+      border-color: rgba(0, 120, 212, 0.2);
+    }
+    .btn-fix {
+      background: linear-gradient(180deg, rgba(240,248,255,0.9) 0%, rgba(220,235,255,0.85) 50%, rgba(180,210,255,0.8) 100%);
+      color: #003366;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(100, 150, 200, 0.4);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.5) inset,
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        0 4px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-fix::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+    }
+    .btn-fix:hover {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,248,255,0.9) 50%, rgba(200,225,255,0.85) 100%);
+      box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.6) inset,
+        0 4px 8px rgba(0, 0, 0, 0.12),
+        0 8px 16px rgba(0, 100, 180, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    .btn-fix:active {
+      background: linear-gradient(180deg, rgba(180,210,255,0.8) 0%, rgba(160,200,255,0.75) 100%);
+      transform: translateY(1px);
+      box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.4) inset,
+        0 1px 2px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+    .btn-fix:disabled {
+      background: linear-gradient(180deg, rgba(200,200,200,0.8) 0%, rgba(180,180,180,0.75) 100%);
+      color: #888;
+      cursor: not-allowed;
+      box-shadow: none;
+      text-shadow: none;
+    }
+    .status-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .success-icon { color: #107c10; }
+    .error-icon { color: #e81123; }
+    .warning-icon { color: #ff8c00; }
+    .info-icon { color: #0078d4; }
+    .progress-bar {
+      height: 4px;
+      background: #e5e5e5;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #0078d4;
+      transition: width 0.3s ease;
+    }
+    .code-block {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f9f9f9;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+      text-decoration: none;
+      color: #333333;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+    .link-item:hover {
+      background: #f0f0f0;
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .badge {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .win10-loading {
+      display: inline-flex;
+      gap: 4px;
+      margin-right: 8px;
+    }
+    .win10-loading span {
+      width: 8px;
+      height: 8px;
+      background: #0078d4;
+      border-radius: 50%;
+      animation: win10-dot 1.4s infinite ease-in-out both;
+    }
+    .win10-loading span:nth-child(1) { animation-delay: -0.32s; }
+    .win10-loading span:nth-child(2) { animation-delay: -0.16s; }
+    .win10-loading span:nth-child(3) { animation-delay: 0s; }
+    @keyframes win10-dot {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .win10-title {
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    .win10-text {
+      color: #4a4a4a;
+    }
+    .win10-divider {
+      height: 1px;
+      background: rgba(0, 0, 0, 0.08);
+      margin: 1.5rem 0;
+    }
+    .win10-section {
+      background: #fafafa;
+      border-radius: 6px;
+      padding: 1.25rem;
+      margin: 1rem 0;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    kbd {
+      background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 100%);
+      border: 1px solid #b0b0b0;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 0.85em;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+      color: #333;
+    }
+    .icon-btn {
+      background: transparent;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s ease;
+    }
+    .icon-btn:hover {
+      background: rgba(0, 0, 0, 0.06);
+      color: #333;
+    }
+    .tool-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      background: #ffffff;
+      border-radius: 8px 8px 0 0;
+    }
+    .tool-body {
+      padding: 1.5rem;
+    }
+    .tool-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      background: #fafafa;
+      border-radius: 0 0 8px 8px;
+    }
+  </style>
+</head>
+<body>
+    <div class="tool-body" style="max-width: 800px; margin: 0 auto;">
+      <div class="text-center mb-6">
+        <div class="status-icon mb-4">
+          <i class="fa fa-check-circle success-icon" id="statusIcon"></i>
+          <div class="win10-loading" id="win10Loading" style="display: none;">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <p class="win10-text" id="statusDesc">点击下方按钮开始自动清理</p>
+        <div class="progress-bar mt-4" style="display: none;" id="progressBar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="text-center mb-6">
+        <button id="startFixBtn" class="btn-fix" onclick="startFix()">
+          <span>开始修复</span>
+        </button>
+      </div>
+
+      <div id="mainContent" style="display: none;">
+      <div class="win10-divider"></div>
+
+      <h3 class="text-lg font-semibold win10-title mb-4">
+        <i class=" mr-2"></i>手动清理步骤
+      </h3>
+      
+      <div class="step-card">
+        <h4 class="font-semibold mb-2 win10-title">S1：清理浏览器缓存</h4>
+        <p class="win10-text mb-3">按 <kbd>Ctrl + Shift + Delete</kbd> 打开清除浏览数据</p>
+        <div class="code-block text-sm">
+          选择时间范围：所有时间<br>
+          ☑ Cookie及其他网站数据<br>
+          ☑ 缓存的图片和文件<br>
+          点击"清除数据"
+        </div>
+      </div>
+
+      <div class="step-card">
+        <h4 class="font-semibold mb-2 win10-title">S2：清理LocalStorage</h4>
+        <p class="win10-text mb-3">按 <kbd>F12</kbd> 打开控制台，执行：</p>
+        <div class="code-block">
+          localStorage.clear();
+        </div>
+      </div>
+
+      <div class="step-card">
+        <h4 class="font-semibold mb-2 win10-title">S3：禁用硬件加速</h4>
+        <p class="win10-text">设置 → 系统 → 关闭"使用硬件加速模式"</p>
+      </div>
+
+      <div class="win10-divider"></div>
+
+      <h3 class="text-lg font-semibold win10-title mb-4">
+        <i class="fa fa-link mr-2"></i>访问已修复的页面
+      </h3>
+      
+      <div class="grid gap-2">
+        <a href="index.html" class="link-item">
+          <i class="fa fa-search text-blue-500"></i>
+          <span class="flex-1">HJ Search 搜索页面</span>
+          <span class="badge">已修复</span>
+        </a>
+        <a href="office-time.html" class="link-item">
+          <i class="fa fa-clock-o text-green-500"></i>
+          <span class="flex-1">杂杂时钟 - 风华无界</span>
+          <span class="badge">已修复</span>
+        </a>
+        <a href="office-timeschool.html" class="link-item">
+          <i class="fa fa-clock-o text-purple-500"></i>
+          <span class="flex-1">在线时钟校园版</span>
+          <span class="badge">已修复</span>
+        </a>
+      </div>
+
+      <div class="win10-section mt-4">
+        <h4 class="font-semibold mb-2 win10-title">
+          <i class="fa fa-exclamation-circle mr-2"></i>注意事项
+        </h4>
+        <ul class="win10-text text-sm space-y-1">
+          <li>• 清理缓存后，可能需要重新登录某些网站</li>
+          <li>• 如果问题依然存在，请联系邮箱：<mark style="background: #ffff00; padding: 2px 4px; border-radius: 2px;">3301976275@qq.com</mark> 电话：<mark style="background: #ffff00; padding: 2px 4px; border-radius: 2px;">13710190930</mark>，获取帮助</li>
+          <li>• 如果问题依然存在，请添加微信：<mark style="background: #ffff00; padding: 2px 4px; border-radius: 2px;">13710190930</mark>上传工单，获取帮助</li>
+          <li>• 建议同时清理其他已访问的网站缓存</li>
+        </ul>
+      </div>
+      </div>
+    </div>
+
+  <script>
+    const STORAGE_KEYS = [
+      'backgroundImage',
+      'backgroundIsLocal',
+      'darkMode',
+      'glassMode',
+      'reminders',
+      'quickLinks',
+      'searchHistory',
+      'sloganText',
+      'sloganColor',
+      'sloganFontSize',
+      'sloganLineHeight',
+      'hasViewedUpdate31',
+      'hasViewedUpdate32',
+      'forceShowUpdate31',
+      'forceShowUpdate32'
+    ];
+
+    const CLEANUP_TASKS = [
+      { name: 'LocalStorage', task: clearAllLocalStorage },
+      { name: 'SessionStorage', task: clearSessionStorage },
+      { name: 'Cookies', task: clearCookies },
+      { name: '缓存文件', task: clearCacheStorage },
+      { name: 'IndexedDB', task: clearIndexedDB }
+    ];
+
+    let fixInProgress = false;
+
+    function updateStatus(icon, desc, iconClass) {
+      const statusIcon = document.getElementById('statusIcon');
+      const win10Loading = document.getElementById('win10Loading');
+      
+      if (iconClass === 'animate-pulse') {
+        statusIcon.style.display = 'none';
+        win10Loading.style.display = 'inline-flex';
+      } else {
+        statusIcon.style.display = 'block';
+        win10Loading.style.display = 'none';
+        statusIcon.className = `fa ${icon} status-icon ${iconClass}`;
+      }
+      document.getElementById('statusDesc').textContent = desc;
+    }
+
+    function updateProgress(percent) {
+      const progressBar = document.getElementById('progressBar');
+      const progressFill = document.getElementById('progressFill');
+      progressBar.style.display = 'block';
+      progressFill.style.width = percent + '%';
+    }
+
+    async function clearAllLocalStorage() {
+      return new Promise((resolve) => {
+        localStorage.clear();
+        setTimeout(resolve, 200);
+      });
+    }
+
+    async function clearSessionStorage() {
+      return new Promise((resolve) => {
+        sessionStorage.clear();
+        setTimeout(resolve, 200);
+      });
+    }
+
+    async function clearCookies() {
+      return new Promise((resolve) => {
+        if (document.cookie) {
+          const cookies = document.cookie.split(';');
+          cookies.forEach((cookie) => {
+            const eqPos = cookie.indexOf('=');
+            const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+          });
+        }
+        setTimeout(resolve, 200);
+      });
+    }
+
+    async function clearCacheStorage() {
+      return new Promise((resolve) => {
+        if ('caches' in window) {
+          caches.keys().then((names) => {
+            names.forEach((name) => caches.delete(name));
+          });
+        }
+        setTimeout(resolve, 300);
+      });
+    }
+
+    async function clearIndexedDB() {
+      return new Promise((resolve) => {
+        const databases = indexedDB.databases();
+        databases.then((dbs) => {
+          dbs.forEach((db) => {
+            indexedDB.deleteDatabase(db.name);
+          });
+          resolve();
+        }).catch(() => resolve());
+        setTimeout(resolve, 500);
+      });
+    }
+
+    async function reloadCurrentPage() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          window.location.href = window.location.pathname + '?fixed=true';
+          resolve();
+        }, 500);
+      });
+    }
+
+    function showContent() {
+      document.getElementById('mainContent').style.display = 'block';
+    }
+
+    async function startFix() {
+      if (fixInProgress) return;
+      fixInProgress = true;
+      
+      showContent();
+      
+      const btn = document.getElementById('startFixBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="win10-loading"><span></span><span></span><span></span></span>正在修复中...';
+      
+      updateStatus('fa-spinner fa-spin', '正在修复中...', 'animate-pulse');
+      
+      try {
+        for (let i = 0; i < CLEANUP_TASKS.length; i++) {
+          const { name, task } = CLEANUP_TASKS[i];
+          updateStatus('fa-spinner fa-spin', `正在清理${name}...`, 'animate-pulse');
+          await task();
+          updateProgress(((i + 1) / CLEANUP_TASKS.length) * 100);
+        }
+        
+        updateStatus('fa-check', '清理完成！正在刷新...', 'success-icon');
+        await reloadCurrentPage();
+        
+      } catch (error) {
+        updateStatus('fa-exclamation-circle', error.message, 'error-icon');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-refresh"></i> 重试修复';
+        fixInProgress = false;
+      }
+    }
+
+    window.onload = () => {
+      const hasStoredData = STORAGE_KEYS.some(key => localStorage.getItem(key) !== null);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isFixed = urlParams.get('fixed') === 'true';
+      
+      if (isFixed) {
+        showContent();
+        updateStatus('fa-check-circle', '修复完成！', 'success-icon');
+      } else if (hasStoredData) {
+        updateStatus('fa-exclamation-triangle', '检测到残留数据，建议点击上方按钮进行清理', 'warning-icon');
+      }
+    };
+  </script>
+</body>
+</html>
