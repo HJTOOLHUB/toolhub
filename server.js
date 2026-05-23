@@ -1,9 +1,6 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const authRoutes = require('./src/routes/auth');
-const userRoutes = require('./src/routes/users');
-const adminRoutes = require('./src/routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     if (req.method === 'OPTIONS') {
         return res.sendStatus(200);
     }
@@ -30,11 +27,6 @@ app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// API 路由
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/admin', adminRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
@@ -51,7 +43,7 @@ if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
 
-['users.json', 'tools.json', 'logs.json'].forEach(file => {
+['tools.json', 'logs.json'].forEach(file => {
     const filePath = path.join(dataDir, file);
     if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, file === 'logs.json' ? JSON.stringify({ logs: [] }, null, 2) : JSON.stringify([], null, 2));
@@ -79,11 +71,7 @@ app.listen(PORT, () => {
 ║   🌐 网络访问: http://0.0.0.0:${PORT}                        ║
 ║                                                           ║
 ║   📝 API 接口:                                            ║
-║   • POST /api/auth/register - 用户注册                    ║
-║   • POST /api/auth/login - 用户登录                       ║
-║   • GET /api/auth/me - 获取当前用户信息                    ║
-║   • PUT /api/users/profile - 更新个人资料                  ║
-║   • GET /api/admin/stats - 管理统计                       ║
+║   • GET /api/health - 健康检查                             ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
     `);
