@@ -296,31 +296,33 @@
                     </a>
                 </div>
                 
-                <!-- 桌面端导航-->
-                <nav class="hidden md:flex space-x-8 items-center">
-                    <a href="#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
-                    <a href="#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
-                    <a href="#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
-                    <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
-                </nav>
-                
-                <!-- 用户操作区 -->
-                <div class="hidden md:flex items-center space-x-4" id="auth-section">
-                    <!-- 已登录状态 -->
-                    <div id="logged-in-section" class="hidden items-center space-x-3">
-                        <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                            <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
-                            <span id="nav-user-name" class="text-gray-700 font-medium"></span>
-                        </a>
-                        <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
-                            管理后台
-                        </a>
-                        <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                    
+                <!-- 右侧导航与用户操作 -->
+                <div class="flex items-center space-x-6 ml-auto">
+                    <!-- 桌面端导航-->
+                    <nav class="hidden md:flex space-x-8 items-center">
+                        <a href="#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
+                        <a href="#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
+                        <a href="#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
+                        <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
+                    </nav>
 
+                    <!-- 用户操作区 -->
+                    <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                        <!-- 已登录状态 -->
+                        <div id="logged-in-section" class="hidden items-center space-x-3">
+                            <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                                <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                                <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                            </a>
+                            <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                管理后台
+                            </a>
+                            <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                        
+                    </div>
                 </div>
                                 
                 <!-- 移动端菜单按钮-->
