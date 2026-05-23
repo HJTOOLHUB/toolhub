@@ -1,0 +1,23 @@
+[
+  {
+    "id": "314649e6-3dab-4c95-8b29-b82d844aab95",
+    "username": "admin",
+    "email": "admin@example.com",
+    "passwordHash": "$2a$10$pnZKx7Xk.5rc6pVbYHYig.WEb8lWkwalKlll3EeU5dYsCVjaX1Y/i",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",
+    "role": "superadmin",
+    "vipLevel": "svip",
+    "title": "系统管理员",
+    "exp": 999999,
+    "level": "grandmaster",
+    "createdAt": "2026-05-23T11:59:20.007Z",
+    "updatedAt": "2026-05-23T12:18:06.176Z",
+    "lastLoginAt": "2026-05-23T12:18:06.175Z",
+    "status": "active",
+    "stats": {
+      "loginCount": 0,
+      "toolsUsed": 0
+    },
+    "stats.loginCount": 1
+  }
+]

@@ -113,22 +113,16 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center">
                 <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <i class="fa fa-wrench text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                    <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                    <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                 </a>
             </div>
             <nav class="hidden md:flex space-x-8">
-                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
-                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
-                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
-                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+                <a href="index.html#home.html" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories.html" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular.html" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features.html" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
             </nav>
-            <div class="hidden md:flex items-center relative">
-                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
-                <i class="fa fa-search absolute left-3 text-gray-400"></i>
-            </div>
             <div class="md:hidden">
                 <button id="menu-toggle" class="text-gray-700 hover:text-primary">
                     <i class="fa fa-bars text-2xl"></i>
@@ -138,14 +132,10 @@
     </div>
     <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
         <div class="container mx-auto px-4 py-3 space-y-3">
-            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
-            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
-            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
-            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
-            <div class="relative pt-2">
-                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
-                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
-            </div>
+            <a href="index.html#home.html" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories.html" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular.html" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features.html" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
         </div>
     </div>
 </header>
@@ -156,7 +146,7 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div>
                     <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">文档对比工具</h1>
-                    <p class="text-gray-600 max-w-2xl">对比两份文档的差异，支持Word、TXT格式，高亮显示增删内容</p>
+                    <p class="text-gray-600 max-w-2xl">对比两份文档的差异，支持Word、TXT格式，高亮显示增删内</p>
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
@@ -169,7 +159,7 @@
 
     <section class="py-8 bg-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- 双文件上传区域 -->
+            <!-- 双文件上传区域-->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- 原始文档 -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
@@ -183,7 +173,7 @@
                     <div class="p-6">
                         <input type="file" id="fileLeft" class="hidden" accept=".txt,.docx,.doc">
                         <div id="uploadAreaLeft" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary cursor-pointer transition">
-                            <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
+                            <i class="fa fa-cloud-upload text-3xl text-gray-600 mb-2"></i>
                             <p class="text-gray-600 mb-2">点击上传原始文档</p>
                             <button id="selectLeftBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary/90">选择文件</button>
                             <p id="fileNameLeft" class="text-sm text-primary mt-2 hidden"></p>
@@ -203,7 +193,7 @@
                     <div class="p-6">
                         <input type="file" id="fileRight" class="hidden" accept=".txt,.docx,.doc">
                         <div id="uploadAreaRight" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary cursor-pointer transition">
-                            <i class="fa fa-cloud-upload text-3xl text-gray-400 mb-2"></i>
+                            <i class="fa fa-cloud-upload text-3xl text-gray-600 mb-2"></i>
                             <p class="text-gray-600 mb-2">点击上传对比文档</p>
                             <button id="selectRightBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary/90">选择文件</button>
                             <p id="fileNameRight" class="text-sm text-primary mt-2 hidden"></p>
@@ -212,7 +202,7 @@
                 </div>
             </div>
 
-            <!-- 对比控制栏 -->
+            <!-- 对比控制?-->
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-gray-50 p-4 rounded-lg">
                 <div class="flex items-center space-x-3">
                     <button id="compareBtn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary/90 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
@@ -222,7 +212,7 @@
                         <i class="fa fa-arrow-right-arrow-left mr-1"></i> 交换文档
                     </button>
                     <button id="clearBtn" class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100">
-                        <i class="fa fa-trash-o mr-1"></i> 清空
+                        <i class="fa fa-trash mr-1"></i> 清空
                     </button>
                 </div>
                 <div class="flex items-center space-x-4 text-sm">
@@ -237,7 +227,7 @@
                 </div>
             </div>
 
-            <!-- 对比结果展示区 -->
+            <!-- 对比结果展示?-->
             <div id="resultArea" class="hidden">
                 <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
                     <div class="bg-gray-50 px-6 py-3 border-b border-gray-200 flex justify-between items-center flex-wrap gap-2">
@@ -246,16 +236,16 @@
                             <button id="splitViewBtn" class="px-3 py-1 text-sm font-medium text-gray-500 hover:text-gray-700 transition">并排视图</button>
                         </div>
                         <div id="statistics" class="text-sm text-gray-500">
-                            <!-- 统计信息动态显示 -->
+                            <!-- 统计信息动态显?-->
                         </div>
                     </div>
                     <div id="compareResult" class="compare-container p-4">
-                        <!-- 对比结果动态渲染 -->
+                        <!-- 对比结果动态渲?-->
                     </div>
                 </div>
             </div>
 
-            <!-- 加载状态 -->
+            <!-- 加载状?-->
             <div id="loadingDiv" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
                 <div class="bg-white rounded-xl p-8 text-center shadow-xl">
                     <div class="loading-spinner mx-auto mb-4"></div>
@@ -266,28 +256,78 @@
     </section>
 </main>
 
-<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+<footer class="bg-gray-100 pt-16 pb-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <i class="fa fa-wrench text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold">ToolHub</span>
+                <div class="flex items-center space-x-2 mb-6">
+                    <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                    <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                 </div>
-                <p class="text-gray-400 text-sm">智能文档对比，快速定位差异。</p>
+                <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p>
+                <div class="flex space-x-4">
+                    <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                        <i class="fab fa-qq text-2xl text-gray-700"></i>
+                    </a>
+                    <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                        <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                    </a>
+                    <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                        <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                        <i class="fab fa-github text-2xl text-gray-700"></i>
+                    </a>
+                </div>
             </div>
             <div>
-                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
-                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                <ul class="space-y-3">
+                    <li><a href="index.html#home.html" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                    <li><a href="index.html#categories.html" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                    <li><a href="index.html#popular.html" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                    <li><a href="index.html#features.html" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                <ul class="space-y-3">
+                    <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                    <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                    <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                    <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">3301976275@qq.com</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">广州市番禺区</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">联系电话：137 1019 0930</span>
+                    </li>
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
-            <p>©2026 Copyright S.L Studio</p>
+        <div class="border-t border-gray-200 pt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                <div class="flex space-x-6">
+                    <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                    <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                    <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                </div>
+            </div>
         </div>
     </div>
 </footer>
@@ -318,7 +358,7 @@
     let rightContent = '';
     let currentView = 'unified'; // unified / split
 
-    // 辅助函数：提取文件文本内容
+    // 辅助函数：提取文件文本内?
     async function extractTextFromFile(file) {
         if (!file) return '';
         const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
@@ -333,7 +373,7 @@
                 return result.value || '';
             }
             else if (ext === '.doc') {
-                return ''; // .doc 不支持，返回空
+                return ''; // .doc 不支持，返回?
             }
             else {
                 return '';
@@ -352,7 +392,7 @@
     fileLeftInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
             leftFile = e.target.files[0];
-            fileNameLeftSpan.textContent = `已选择：${leftFile.name}`;
+            fileNameLeftSpan.textContent = `已选择?{leftFile.name}`;
             fileNameLeftSpan.classList.remove('hidden');
             // 自动提取内容
             leftContent = await extractTextFromFile(leftFile);
@@ -372,7 +412,7 @@
     fileRightInput.addEventListener('change', async (e) => {
         if (e.target.files.length > 0) {
             rightFile = e.target.files[0];
-            fileNameRightSpan.textContent = `已选择：${rightFile.name}`;
+            fileNameRightSpan.textContent = `已选择?{rightFile.name}`;
             fileNameRightSpan.classList.remove('hidden');
             rightContent = await extractTextFromFile(rightFile);
         } else {
@@ -401,13 +441,13 @@
                 if (isLeft) {
                     leftFile = file;
                     fileLeftInput.files = files;
-                    fileNameLeftSpan.textContent = `已选择：${leftFile.name}`;
+                    fileNameLeftSpan.textContent = `已选择?{leftFile.name}`;
                     fileNameLeftSpan.classList.remove('hidden');
                     leftContent = await extractTextFromFile(leftFile);
                 } else {
                     rightFile = file;
                     fileRightInput.files = files;
-                    fileNameRightSpan.textContent = `已选择：${rightFile.name}`;
+                    fileNameRightSpan.textContent = `已选择?{rightFile.name}`;
                     fileNameRightSpan.classList.remove('hidden');
                     rightContent = await extractTextFromFile(rightFile);
                 }
@@ -425,7 +465,7 @@
     // 交换文档
     swapBtn.addEventListener('click', async () => {
         if (!leftFile && !rightFile) return;
-        // 交换文件对象和内容
+        // 交换文件对象和内?
         const tempFile = leftFile;
         leftFile = rightFile;
         rightFile = tempFile;
@@ -436,7 +476,7 @@
         
         // 更新UI
         if (leftFile) {
-            fileNameLeftSpan.textContent = `已选择：${leftFile.name}`;
+            fileNameLeftSpan.textContent = `已选择?{leftFile.name}`;
             fileNameLeftSpan.classList.remove('hidden');
             // 更新input
             const leftDataTransfer = new DataTransfer();
@@ -448,7 +488,7 @@
         }
         
         if (rightFile) {
-            fileNameRightSpan.textContent = `已选择：${rightFile.name}`;
+            fileNameRightSpan.textContent = `已选择?{rightFile.name}`;
             fileNameRightSpan.classList.remove('hidden');
             const rightDataTransfer = new DataTransfer();
             rightDataTransfer.items.add(rightFile);
@@ -464,7 +504,7 @@
         }
     });
 
-    // 清空所有
+    // 清空所?
     clearBtn.addEventListener('click', () => {
         leftFile = null;
         rightFile = null;
@@ -533,7 +573,7 @@
         const rightLines = rightText.split(/\r?\n/);
         const maxLines = Math.max(leftLines.length, rightLines.length);
         let diffMap = new Map();
-        // 使用行级差异简单标记
+        // 使用行级差异简单标?
         const lineDiffs = [];
         for (let i = 0; i < maxLines; i++) {
             const leftLine = i < leftLines.length ? leftLines[i] : '';
@@ -608,8 +648,8 @@
                     stats.added = split.addedCount;
                     stats.removed = split.removedCount;
                 }
-                compareResultDiv.innerHTML = resultHtml || '<div class="text-center text-gray-400 py-8">两个文档内容完全一致，没有差异</div>';
-                statisticsSpan.innerHTML = `<i class="fa fa-bar-chart mr-1"></i>新增: <span class="text-green-600 font-semibold">${stats.added}</span> 行 &nbsp;|&nbsp; 删除: <span class="text-red-600 font-semibold">${stats.removed}</span> 行`;
+                compareResultDiv.innerHTML = resultHtml || '<div class="text-center text-gray-600 py-8">两个文档内容完全一致，没有差异</div>';
+                statisticsSpan.innerHTML = `<i class="fa fa-bar-chart mr-1"></i>新增: <span class="text-green-600 font-semibold">${stats.added}</span> ?&nbsp;|&nbsp; 删除: <span class="text-red-600 font-semibold">${stats.removed}</span> 行`;
                 resultArea.classList.remove('hidden');
             } catch (err) {
                 console.error(err);
@@ -625,7 +665,7 @@
             alert('请完整上传左侧和右侧文档');
             return;
         }
-        // 确保内容已提取
+        // 确保内容已提?
         if (!leftContent || !rightContent) {
             leftContent = await extractTextFromFile(leftFile);
             rightContent = await extractTextFromFile(rightFile);

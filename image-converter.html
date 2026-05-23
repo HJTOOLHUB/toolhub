@@ -79,22 +79,16 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center">
                 <a href="index.html" class="flex items-center space-x-2">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <i class="fa fa-wrench text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                    <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                    <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                 </a>
             </div>
             <nav class="hidden md:flex space-x-8">
-                <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium">首页</a>
-                <a href="index.html#categories" class="text-primary font-medium">工具分类</a>
-                <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
-                <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
+                <a href="index.html#home.html" class="text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories.html" class="text-primary font-medium">工具分类</a>
+                <a href="index.html#popular.html" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features.html" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
             </nav>
-            <div class="hidden md:flex items-center relative">
-                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
-                <i class="fa fa-search absolute left-3 text-gray-400"></i>
-            </div>
             <div class="md:hidden">
                 <button id="menu-toggle" class="text-gray-700 hover:text-primary">
                     <i class="fa fa-bars text-2xl"></i>
@@ -104,14 +98,10 @@
     </div>
     <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
         <div class="container mx-auto px-4 py-3 space-y-3">
-            <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
-            <a href="index.html#categories" class="block py-2 text-primary">工具分类</a>
-            <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
-            <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
-            <div class="relative pt-2">
-                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
-                <i class="fa fa-search absolute left-5 top-4 text-gray-400"></i>
-            </div>
+            <a href="index.html#home.html" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+            <a href="index.html#categories.html" class="block py-2 text-primary">工具分类</a>
+            <a href="index.html#popular.html" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
+            <a href="index.html#features.html" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
         </div>
     </div>
 </header>
@@ -122,7 +112,7 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div>
                     <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片格式转换工具</h1>
-                    <p class="text-gray-600 max-w-2xl">支持 JPG、PNG、WebP、BMP 格式互转 | 批量转换 | 保持原始清晰度 | 本地处理无上传</p>
+                    <p class="text-gray-600 max-w-2xl">支持 JPG、PNG、WebP、BMP 格式互转 | 批量转换 | 保持原始清晰�?| 本地处理无上�</p>
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
@@ -151,19 +141,19 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">图片质量 (仅 JPEG/WebP)</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">图片质量 (�?JPEG/WebP)</label>
                                 <input type="range" id="qualitySlider" min="0.6" max="1.0" step="0.01" value="0.92" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                <div class="flex justify-between text-xs text-gray-400 mt-1"><span>小体积</span><span>高质量</span></div>
+                                <div class="flex justify-between text-xs text-gray-600 mt-1"><span>小体�</span><span>高质�</span></div>
                                 <p id="qualityValue" class="text-xs text-primary mt-1 text-right">当前质量: 0.92</p>
                             </div>
                             <div class="bg-blue-50 p-3 rounded-lg text-sm">
                                 <div class="flex items-center gap-2 mb-2"><i class="fa fa-info-circle text-primary"></i> <span class="font-medium">转换说明</span></div>
                                 <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
                                     <li>支持格式: JPG, PNG, WebP, BMP, GIF (GIF 会转为静态图)</li>
-                                    <li>批量转换最多 20 张图片</li>
-                                    <li>转换在浏览器本地完成，不经过服务器</li>
-                                    <li>PNG 格式质量参数无效，保留无损压缩</li>
-                                    <li>WebP 格式提供高压缩比和良好画质</li>
+                                    <li>批量转换最�?20 张图�</li>
+                                    <li>转换在浏览器本地完成，不经过服务�</li>
+                                    <li>PNG 格式质量参数无效，保留无损压�</li>
+                                    <li>WebP 格式提供高压缩比和良好画�</li>
                                 </ul>
                             </div>
                         </div>
@@ -182,13 +172,13 @@
 
                 <!-- 右侧：上传与任务列表 -->
                 <div class="lg:col-span-2">
-                    <!-- 上传区 -->
+                    <!-- 上传�?-->
                     <div id="dropZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6 cursor-pointer hover:border-primary transition bg-gray-50">
-                        <i class="fa fa-cloud-upload text-4xl text-gray-400 mb-3"></i>
+                        <i class="fa fa-cloud-upload text-4xl text-gray-600 mb-3"></i>
                         <p class="text-gray-600 mb-2">拖拽图片至此区域，或点击选择文件</p>
                         <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp,image/gif" class="hidden">
                         <button id="selectFilesBtn" class="bg-primary text-white px-5 py-2 rounded-lg text-sm hover:bg-primary/90">选择图片</button>
-                        <p class="text-xs text-gray-400 mt-3">支持 JPG、PNG、WebP、BMP、GIF，最多 20 张，单张不超过 50MB</p>
+                        <p class="text-xs text-gray-600 mt-3">支持 JPG、PNG、WebP、BMP、GIF，最�?20 张，单张不超�?50MB</p>
                     </div>
                     
                     <!-- 任务列表 -->
@@ -200,7 +190,7 @@
                             </div>
                         </div>
                         <div id="imageList" class="divide-y divide-gray-100 max-h-[550px] overflow-y-auto scrollbar-thin">
-                            <div class="text-center text-gray-400 py-12">🖼️ 点击上方区域上传图片，选择目标格式开始转换</div>
+                            <div class="text-center text-gray-600 py-12">🖼�?点击上方区域上传图片，选择目标格式开始转�</div>
                         </div>
                     </div>
                 </div>
@@ -209,28 +199,78 @@
     </section>
 </main>
 
-<footer class="bg-dark text-white pt-12 pb-6 mt-8">
+<footer class="bg-white/90 backdrop-blur-sm pt-16 pb-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
-                <div class="flex items-center space-x-2 mb-4">
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                        <i class="fa fa-wrench text-white text-xl"></i>
-                    </div>
-                    <span class="text-xl font-bold">ToolHub</span>
+                <div class="flex items-center space-x-2 mb-6">
+                    <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                    <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                 </div>
-                <p class="text-gray-400 text-sm">格式转换，轻松搞定。</p>
+                <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p>
+                <div class="flex space-x-4">
+                    <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                        <i class="fab fa-qq text-2xl text-gray-700"></i>
+                    </a>
+                    <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                        <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                    </a>
+                    <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                        <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"></path>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                        <i class="fab fa-github text-2xl text-gray-700"></i>
+                    </a>
+                </div>
             </div>
             <div>
-                <h3 class="text-lg font-semibold mb-4">快速链接</h3>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="index.html#home" class="text-gray-400 hover:text-white">首页</a></li>
-                    <li><a href="index.html#categories" class="text-gray-400 hover:text-white">工具分类</a></li>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                <ul class="space-y-3">
+                    <li><a href="index.html#home.html" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                    <li><a href="index.html#categories.html" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                    <li><a href="index.html#popular.html" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                    <li><a href="index.html#features.html" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                <ul class="space-y-3">
+                    <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                    <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                    <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                    <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">3301976275@qq.com</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">广州市番禺区</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                        <span class="text-gray-700">联系电话：137 1019 0930</span>
+                    </li>
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-700 pt-6 text-center text-gray-400 text-sm">
-            <p>©2026 Copyright S.L Studio</p>
+        <div class="border-t border-gray-200 pt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                <div class="flex space-x-6">
+                    <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                    <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                    <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                </div>
+            </div>
         </div>
     </div>
 </footer>
@@ -263,7 +303,7 @@
         qualityValue.innerText = `当前质量: ${val}`;
     });
     
-    // 获取文件扩展名映射
+    // 获取文件扩展名映�?
     function getExtensionFromMime(mime) {
         if (mime === 'image/jpeg') return 'jpg';
         if (mime === 'image/png') return 'png';
@@ -282,7 +322,7 @@
                     (item.file.type === 'image/jpg' && targetMime === 'image/jpeg');
                 
                 if (isSameFormat && quality >= 0.95) {
-                    // 格式相同且质量要求很高，直接使用原文件
+                    // 格式相同且质量要求很高，直接使用原文�?
                     const blob = item.file.slice(0, item.file.size, targetMime);
                     item.convertedBlob = blob;
                     item.convertedSize = blob.size;
@@ -315,13 +355,13 @@
                             item.status = 'completed';
                             resolve(true);
                         } else {
-                            reject(new Error('转换失败，无法生成图片'));
+                            reject(new Error('转换失败，无法生成图�?));
                         }
                     }, outputMime, qualityParam);
                 };
                 img.onerror = () => {
                     URL.revokeObjectURL(objectUrl);
-                    reject(new Error('图片加载失败，可能文件损坏'));
+                    reject(new Error('图片加载失败，可能文件损�?));
                 };
                 img.src = objectUrl;
             } catch (err) {
@@ -340,7 +380,7 @@
         const currentCount = imageItems.length;
         let addCount = validFiles.length;
         if (currentCount + addCount > 20) {
-            alert(`最多同时处理20张图片，当前已有${currentCount}张，将只添加前${20 - currentCount}张`);
+            alert(`最多同时处理 20 张图片，当前已有${currentCount}张，将只添加 {20 - currentCount}张`);
             validFiles.splice(0, 20 - currentCount);
         }
         for (let file of validFiles) {
@@ -365,7 +405,7 @@
     // 渲染列表
     function renderImageList() {
         if (imageItems.length === 0) {
-            imageListDiv.innerHTML = '<div class="text-center text-gray-400 py-12">🖼️ 暂无图片，请上传需要转换的图片</div>';
+            imageListDiv.innerHTML = '<div class="text-center text-gray-600 py-12">🖼�?暂无图片，请上传需要转换的图片</div>';
             taskCountSpan.innerText = '0';
             downloadAllBtn.disabled = true;
             return;
@@ -376,9 +416,9 @@
             const sizeKB = (item.originalSize / 1024).toFixed(1);
             const convertedKB = item.convertedSize ? (item.convertedSize / 1024).toFixed(1) : '-';
             let statusHtml = '';
-            if (item.status === 'pending') statusHtml = '<span class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">待转换</span>';
-            else if (item.status === 'converting') statusHtml = '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"><i class="fa fa-spinner fa-spin"></i> 转换中</span>';
-            else if (item.status === 'completed') statusHtml = '<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">已完成</span>';
+            if (item.status === 'pending') statusHtml = '<span class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">待转�</span>';
+            else if (item.status === 'converting') statusHtml = '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"><i class="fa fa-spinner fa-spin"></i> 转换�</span>';
+            else if (item.status === 'completed') statusHtml = '<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">已完�</span>';
             else if (item.status === 'error') statusHtml = '<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">失败</span>';
             
             html += `
@@ -386,8 +426,8 @@
                     <img src="${item.originalUrl}" class="image-preview w-16 h-16 object-cover rounded-lg border">
                     <div class="flex-1 min-w-[150px]">
                         <div class="font-medium text-sm truncate max-w-[200px]" title="${escapeHtml(item.file.name)}">${escapeHtml(item.file.name)}</div>
-                        <div class="text-xs text-gray-500 mt-0.5">原大小: ${sizeKB} KB</div>
-                        <div class="text-xs text-gray-500">转换后: ${convertedKB} KB</div>
+                        <div class="text-xs text-gray-500 mt-0.5">原大�? ${sizeKB} KB</div>
+                        <div class="text-xs text-gray-500">转换�? ${convertedKB} KB</div>
                         <div class="mt-1">${statusHtml}</div>
                     </div>
                     <div class="flex gap-2">
@@ -434,7 +474,7 @@
     async function convertAll() {
         const pendingItems = imageItems.filter(i => i.status !== 'completed' && i.status !== 'converting');
         if (pendingItems.length === 0) {
-            alert('所有图片已完成转换！');
+            alert('所有图片已完成转换�?);
             return;
         }
         if (isConverting) return;
@@ -469,7 +509,7 @@
         batchProgressDiv.classList.add('hidden');
         convertAllBtn.disabled = false;
         isConverting = false;
-        alert(`批量转换完成！成功转换 ${imageItems.filter(i=>i.status==='completed').length} 张图片。`);
+        alert(`批量转换完成！成功转�?${imageItems.filter(i=>i.status==='completed').length} 张图片。`);
         updateStats();
     }
     
@@ -477,7 +517,7 @@
     async function downloadAllAsZip() {
         const completedItems = imageItems.filter(i => i.status === 'completed' && i.convertedBlob);
         if (completedItems.length === 0) {
-            alert('没有已转换的图片可下载');
+            alert('没有已转换的图片可下�?);
             return;
         }
         const zip = new JSZip();
@@ -492,9 +532,9 @@
         saveAs(content, `converted_images_${Date.now()}.zip`);
     }
     
-    // 清空所有
+    // 清空所�?
     function clearAll() {
-        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的转换结果将丢失。')) {
+        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的转换结果将丢失�?)) {
             imageItems.forEach(item => {
                 if (item.originalUrl) URL.revokeObjectURL(item.originalUrl);
                 if (item.convertedUrl) URL.revokeObjectURL(item.convertedUrl);
@@ -553,7 +593,7 @@
         document.getElementById('mobile-menu').classList.toggle('hidden');
     };
     
-    // 初始化
+    // 初始�?
     updateStats();
 </script>
 </body>

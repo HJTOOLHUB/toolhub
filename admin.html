@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 在线工具平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .header-nav a:hover {
+            opacity: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-card-title {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .stat-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-subtitle {
+            color: #95a5a6;
+            font-size: 0.85rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-bronze { background: #fdebd0; color: #cd7f32; }
+        .badge-silver { background: #f5f5f5; color: #808080; }
+        .badge-gold { background: #fef9e7; color: #f39c12; }
+        .badge-platinum { background: #e8f8f5; color: #1abc9c; }
+        .badge-diamond { background: #ebf5fb; color: #3498db; }
+        .badge-master { background: #f4ecf7; color: #9b59b6; }
+        .badge-grandmaster { background: #fdebd0; color: #d35400; }
+
+        .badge-vip { background: #f1c40f; color: white; }
+        .badge-svip { background: #e74c3c; color: white; }
+        .badge-user { background: #95a5a6; color: white; }
+        .badge-admin { background: #9b59b6; color: white; }
+        .badge-superadmin { background: #2c3e50; color: white; }
+        .badge-active { background: #27ae60; color: white; }
+        .badge-banned { background: #e74c3c; color: white; }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background: white;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination span {
+            color: #666;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .logs-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .log-action {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .log-time {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .log-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .user-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .detail-label {
+            color: #999;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #e74c3c; }
+        .toast.info { background: #3498db; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .table-container {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>
+                <i class="fas fa-cog"></i>
+                管理后台
+            </h1>
+            <nav class="header-nav">
+                <a href="index.html"><i class="fas fa-home"></i> 返回首页</a>
+            </nav>
+        </div>
+        <div class="header-right">
+            <a href="user-center.html" class="btn btn-secondary">
+                <i class="fas fa-user"></i>
+                用户中心
+            </a>
+            <button id="logout-btn" class="btn btn-danger">
+                <i class="fas fa-sign-out-alt"></i>
+                退出
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 统计卡片 -->
+        <div class="stats-grid" id="stats-container">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">总用户数</span>
+                    <div class="stat-card-icon" style="background: #ebf5fb; color: #3498db;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="stat-total-users">-</div>
+                <div class="stat-card-subtitle">注册用户总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">活跃用户</span>
+                    <div class="stat-card-icon" style="background: #e8f8f5; color: #27ae60;">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="stat-active-users">-</div>
+                <div class="stat-card-subtitle">状态正常的用户</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">总工具数</span>
+                    <div class="stat-card-icon" style="background: #fef9e7; color: #f39c12;">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="stat-total-tools">-</div>
+                <div class="stat-card-subtitle">平台工具总数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <span class="stat-card-title">今日日志</span>
+                    <div class="stat-card-icon" style="background: #f5eef8; color: #9b59b6;">
+                        <i class="fas fa-history"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="stat-recent-logs">-</div>
+                <div class="stat-card-subtitle">最近操作记录</div>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-users"></i> 用户管理</h2>
+            </div>
+            <div class="card-body">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="user-search" placeholder="搜索用户名或邮箱...">
+                    <select class="filter-select" id="filter-role">
+                        <option value="">全部角色</option>
+                        <option value="user">普通用户</option>
+                        <option value="admin">管理员</option>
+                        <option value="superadmin">超级管理员</option>
+                    </select>
+                    <select class="filter-select" id="filter-vip">
+                        <option value="">全部VIP</option>
+                        <option value="none">普通用户</option>
+                        <option value="vip">VIP会员</option>
+                        <option value="svip">SVIP会员</option>
+                    </select>
+                    <select class="filter-select" id="filter-status">
+                        <option value="">全部状态</option>
+                        <option value="active">正常</option>
+                        <option value="banned">禁用</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>用户</th>
+                                <th>邮箱</th>
+                                <th>角色</th>
+                                <th>VIP</th>
+                                <th>等级</th>
+                                <th>称号</th>
+                                <th>状态</th>
+                                <th>注册时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <tr>
+                                <td colspan="9" class="loading">
+                                    <i class="fas fa-spinner"></i>
+                                    <p>加载中...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="users-pagination"></div>
+            </div>
+        </div>
+
+        <!-- 操作日志 -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> 操作日志</h2>
+                <button class="btn btn-primary" onclick="loadLogs()">
+                    <i class="fas fa-sync"></i>
+                    刷新
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="logs-container" id="logs-container">
+                    <div class="loading">
+                        <i class="fas fa-spinner"></i>
+                        <p>加载中...</p>
+                    </div>
+                </div>
+                <div class="pagination" id="logs-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户详情弹窗 -->
+    <div class="modal" id="user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>用户详情</h3>
+                <button class="modal-close" onclick="closeModal('user-modal')">&times;</button>
+            </div>
+            <div class="modal-body" id="user-detail-body">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>加载中...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('user-modal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑用户弹窗 -->
+    <div class="modal" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑用户</h3>
+                <button class="modal-close" onclick="closeModal('edit-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-user-form">
+                    <input type="hidden" id="edit-user-id">
+                    <div class="form-group">
+                        <label>用户名</label>
+                        <input type="text" class="form-input" id="edit-username" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label>角色</label>
+                        <select class="form-select" id="edit-role">
+                            <option value="user">普通用户</option>
+                            <option value="admin">管理员</option>
+                            <option value="superadmin">超级管理员</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>VIP等级</label>
+                        <select class="form-select" id="edit-vip">
+                            <option value="none">普通用户</option>
+                            <option value="vip">VIP会员</option>
+                            <option value="svip">SVIP会员</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>称号</label>
+                        <input type="text" class="form-input" id="edit-title" maxlength="20" placeholder="输入称号">
+                    </div>
+                    <div class="form-group">
+                        <label>状态</label>
+                        <select class="form-select" id="edit-status">
+                            <option value="active">正常</option>
+                            <option value="banned">禁用</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('edit-modal')">取消</button>
+                <button class="btn btn-primary" onclick="saveUser()">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentUser = null;
+        let currentPage = 1;
+        let totalPages = 1;
+
+        // 检查权限
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            currentUser = JSON.parse(userStr);
+            if (currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                alert('您没有管理员权限');
+                window.location.href = 'index.html';
+                return null;
+            }
+            
+            return currentUser;
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // 获取请求头
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            };
+        }
+
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/stats`, {
+                    headers: getHeaders()
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('stat-total-users').textContent = result.data.totalUsers;
+                    document.getElementById('stat-active-users').textContent = result.data.activeUsers;
+                    document.getElementById('stat-total-tools').textContent = result.data.totalTools;
+                    document.getElementById('stat-recent-logs').textContent = result.data.recentLogs;
+                }
+            } catch (error) {
+                console.error('加载统计失败:', error);
+            }
+        }
+
+        // 加载用户列表
+        async function loadUsers(page = 1) {
+            currentPage = page;
+            const search = document.getElementById('user-search').value;
+            const role = document.getElementById('filter-role').value;
+            const vip = document.getElementById('filter-vip').value;
+            const status = document.getElementById('filter-status').value;
+
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner"></i><p>加载中...</p></td></tr>';
+
+            try {
+                let url = `${API_BASE}/admin/users?page=${page}&limit=10`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                if (role) url += `&role=${role}`;
+                if (vip) url += `&vipLevel=${vip}`;
+                if (status) url += `&status=${status}`;
+
+                const response = await fetch(url, {
+                    headers: getHeaders()
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    renderUsers(result.data.items);
+                    renderPagination(result.data.pagination);
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('加载用户失败:', error);
+                showToast('加载用户失败', 'error');
+            }
+        }
+
+        // 渲染用户列表
+        function renderUsers(users) {
+            const tbody = document.getElementById('users-table-body');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="empty-state">暂无用户</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <img src="${user.avatar}" style="width:35px;height:35px;border-radius:50%;">
+                            <strong>${user.username}</strong>
+                        </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td><span class="badge badge-${user.role}">${getRoleName(user.role)}</span></td>
+                    <td><span class="badge badge-${user.vipLevel}">${getVipName(user.vipLevel)}</span></td>
+                    <td><span class="badge badge-${user.level}">${getLevelName(user.level)}</span></td>
+                    <td>${user.title || '-'}</td>
+                    <td><span class="badge badge-${user.status}">${user.status === 'active' ? '正常' : '禁用'}</span></td>
+                    <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn btn-sm btn-primary" onclick="viewUser('${user.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="editUser('${user.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            ${user.role !== 'superadmin' ? `
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}', '${user.username}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(pagination) {
+            const container = document.getElementById('users-pagination');
+            const { page, totalPages } = pagination;
+            
+            let html = `
+                <button ${page <= 1 ? 'disabled' : ''} onclick="loadUsers(${page - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span>第 ${page} / ${totalPages} 页</span>
+                <button ${page >= totalPages ? 'disabled' : ''} onclick="loadUsers(${page + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // 获取角色名称
+        function getRoleName(role) {
+            const roles = { user: '普通用户', admin: '管理员', superadmin: '超级管理员' };
+            return roles[role] || role;
+        }
+
+        // 获取VIP名称
+        function getVipName(vip) {
+            const vips = { none: '普通', vip: 'VIP', svip: 'SVIP' };
+            return vips[vip] || vip;
+        }
+
+        // 获取等级名称
+        function getLevelName(level) {
+            const levels = {
+                bronze: '青铜',
+                silver: '白银',
+                gold: '黄金',
+                platinum: '铂金',
+                diamond: '钻石',
+                master: '大师',
+                grandmaster: '宗师'
+            };
+            return levels[level] || level;
+        }
+
+        // 查看用户详情
+        async function viewUser(userId) {
+            const modal = document.getElementById('user-modal');
+            const body = document.getElementById('user-detail-body');
+            
+            modal.classList.add('show');
+            body.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>加载中...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    headers: getHeaders()
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.data;
+                    body.innerHTML = `
+                        <div class="user-detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">用户ID</div>
+                                <div class="detail-value">${user.id}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">用户名</div>
+                                <div class="detail-value">${user.username}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">邮箱</div>
+                                <div class="detail-value">${user.email}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">角色</div>
+                                <div class="detail-value"><span class="badge badge-${user.role}">${getRoleName(user.role)}</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">VIP等级</div>
+                                <div class="detail-value"><span class="badge badge-${user.vipLevel}">${getVipName(user.vipLevel)}</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">用户等级</div>
+                                <div class="detail-value"><span class="badge badge-${user.level}">${getLevelName(user.level)}</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">称号</div>
+                                <div class="detail-value">${user.title || '无'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">经验值</div>
+                                <div class="detail-value">${user.exp}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">注册时间</div>
+                                <div class="detail-value">${new Date(user.createdAt).toLocaleString()}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">最后登录</div>
+                                <div class="detail-value">${user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : '从未登录'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">状态</div>
+                                <div class="detail-value"><span class="badge badge-${user.status}">${user.status === 'active' ? '正常' : '禁用'}</span></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">登录次数</div>
+                                <div class="detail-value">${user.stats?.loginCount || 0}</div>
+                            </div>
+                        </div>
+                        
+                        ${user.userStats ? `
+                        <h4 style="margin: 20px 0 10px;">操作统计</h4>
+                        <div class="detail-item">
+                            <div class="detail-label">总操作数</div>
+                            <div class="detail-value">${user.userStats.totalActions}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">最近活动</div>
+                            <div class="detail-value">${user.userStats.lastActivity ? new Date(user.userStats.lastActivity).toLocaleString() : '无'}</div>
+                        </div>
+                        ` : ''}
+                    `;
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('加载用户详情失败:', error);
+                showToast('加载失败', 'error');
+            }
+        }
+
+        // 编辑用户
+        async function editUser(userId) {
+            const modal = document.getElementById('edit-modal');
+            
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    headers: getHeaders()
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.data;
+                    document.getElementById('edit-user-id').value = user.id;
+                    document.getElementById('edit-username').value = user.username;
+                    document.getElementById('edit-role').value = user.role;
+                    document.getElementById('edit-vip').value = user.vipLevel;
+                    document.getElementById('edit-title').value = user.title || '';
+                    document.getElementById('edit-status').value = user.status;
+                    
+                    modal.classList.add('show');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('加载用户信息失败:', error);
+                showToast('加载失败', 'error');
+            }
+        }
+
+        // 保存用户修改
+        async function saveUser() {
+            const userId = document.getElementById('edit-user-id').value;
+            const data = {
+                role: document.getElementById('edit-role').value,
+                vipLevel: document.getElementById('edit-vip').value,
+                title: document.getElementById('edit-title').value,
+                status: document.getElementById('edit-status').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('用户更新成功');
+                    closeModal('edit-modal');
+                    loadUsers(currentPage);
+                    loadStats();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('保存用户失败:', error);
+                showToast('保存失败', 'error');
+            }
+        }
+
+        // 删除用户
+        async function deleteUser(userId, username) {
+            if (!confirm(`确定要删除用户 "${username}" 吗？此操作不可恢复！`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('用户删除成功');
+                    loadUsers(currentPage);
+                    loadStats();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('删除用户失败:', error);
+                showToast('删除失败', 'error');
+            }
+        }
+
+        // 加载日志
+        async function loadLogs(page = 1) {
+            const container = document.getElementById('logs-container');
+            container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i><p>加载中...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/logs?page=${page}&limit=20`, {
+                    headers: getHeaders()
+                });
+                const result = await response.json();
+
+                if (result.success && result.data.logs.length > 0) {
+                    container.innerHTML = result.data.logs.map(log => `
+                        <div class="log-item">
+                            <div class="log-header">
+                                <span class="log-action">${log.username} - ${getActionText(log.action)}</span>
+                                <span class="log-time">${new Date(log.timestamp).toLocaleString()}</span>
+                            </div>
+                            <div class="log-details">
+                                <small>IP: ${log.ip}</small>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<div class="empty-state">暂无日志记录</div>';
+                }
+            } catch (error) {
+                console.error('加载日志失败:', error);
+                container.innerHTML = '<div class="empty-state">加载失败</div>';
+            }
+        }
+
+        // 获取操作文本
+        function getActionText(action) {
+            const actions = {
+                'login': '登录',
+                'register': '注册',
+                'logout': '退出',
+                'updateProfile': '更新资料',
+                'changePassword': '修改密码',
+                'exp_gained': '获得经验',
+                'adminUpdateUser': '管理员更新用户',
+                'adminDeleteUser': '管理员删除用户',
+                'adminCreateTool': '创建工具',
+                'adminUpdateTool': '更新工具',
+                'adminDeleteTool': '删除工具',
+                'grantTitle': '授予称号'
+            };
+            return actions[action] || action;
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // 搜索和筛选
+        document.getElementById('user-search').addEventListener('input', debounce(() => loadUsers(1), 500));
+        document.getElementById('filter-role').addEventListener('change', () => loadUsers(1));
+        document.getElementById('filter-vip').addEventListener('change', () => loadUsers(1));
+        document.getElementById('filter-status').addEventListener('change', () => loadUsers(1));
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 退出登录
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            if (checkAuth()) {
+                loadStats();
+                loadUsers();
+                loadLogs();
+            }
+        });
+    </script>
+</body>
+</html>

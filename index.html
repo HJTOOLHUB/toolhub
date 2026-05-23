@@ -43,61 +43,295 @@
             .card-hover:hover {
                 transform: translateY(-5px);
             }
+            .typing-cursor::after {
+                content: '|';
+                animation: blink 1s infinite;
+            }
+            img {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-user-drag: none;
+                user-drag: none;
+            }
+            .hide-content {
+                opacity: 0;
+                transform: translateY(30px);
+                pointer-events: none;
+            }
+            .show-content {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: opacity 0.6s ease, transform 0.6s ease;
+            }
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* 背景动画样式 */
+        #hero-animation {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        #hero-animation.hidden {
+            opacity: 0;
+            transform: scale(1.1);
+        }
+        
+        .grid-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+        
+        @keyframes grid-move {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0);
+            }
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(50px);
+            }
+        }
+        
+        /* 炫酷文字渐变效果 */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        /* 霓虹发光效果 */
+        .neon-glow {
+            text-shadow: 
+                0 0 5px rgba(102, 126, 234, 0.8),
+                0 0 10px rgba(102, 126, 234, 0.6),
+                0 0 15px rgba(102, 126, 234, 0.4),
+                0 0 20px rgba(102, 126, 234, 0.2);
+            animation: neon-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes neon-pulse {
+            from {
+                text-shadow: 
+                    0 0 5px rgba(102, 126, 234, 0.8),
+                    0 0 10px rgba(102, 126, 234, 0.6),
+                    0 0 15px rgba(102, 126, 234, 0.4),
+                    0 0 20px rgba(102, 126, 234, 0.2);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px rgba(102, 126, 234, 1),
+                    0 0 20px rgba(102, 126, 234, 0.8),
+                    0 0 30px rgba(102, 126, 234, 0.6),
+                    0 0 40px rgba(102, 126, 234, 0.4);
+            }
+        }
+        
+        /* 按钮悬停效果 */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+        
+        .btn-glow:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-glow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* 装饰性几何图形 */
+        .floating-shape {
+            position: absolute;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            animation: float-shape 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 10%;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation-delay: 0s;
+        }
+        
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            right: 15%;
+            border-radius: 50%;
+            animation-delay: 2s;
+        }
+        
+        .shape-3 {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            transform: rotate(45deg);
+            animation-delay: 4s;
+        }
+        
+        @keyframes float-shape {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+        
+        /* 图片3D悬浮效果 */
+        .image-3d {
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .image-3d:hover {
+            transform: perspective(1000px) rotateY(5deg) rotateX(5deg) scale(1.05);
+            box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 卡片翻转效果 */
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-flip-inner {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flip:hover .card-flip-inner {
+            transform: rotateY(10deg);
+        }
+        
+        /* 闪烁星星效果 */
+        .star-twinkle {
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* 背景渐变动画 */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient-bg 15s ease infinite;
+        }
+        
+        @keyframes gradient-bg {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
     </style>
 </head>
 <body class="font-noto bg-gray-50 text-gray-800">
 
-<!-- ===================== 新增：进入网站自动弹出红色提示弹窗 ===================== -->
-<div id="noticeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-    <div class="relative w-full max-w-lg mx-4 bg-red-600 text-white rounded-2xl shadow-2xl p-8 border border-red-700/30">
-        <div class="flex items-center mb-4">
-            <i class="fa-solid fa-exclamation-triangle text-3xl mr-3"></i>
-            <h3 class="text-2xl font-bold">提示</h3>
-            1. 维护时间：2026年6月2日 00:00 - 2026年6月6日 00:00<br>
-            2. 受影响工具：除<杂杂时钟>和<网站主页>外的所有工具将停用<br>
-            3. 原因说明：其他工具因其他开发者未进行维护，受严重BUG影响将停用<br>
-            4. 用户影响：在维护期间，受影响工具将无法使用，请提前做好数据备份<br>
-            5. 新版预告：我们正在积极开发新版工具，预计将在2026年6月上线，敬请期待<br>
-        </div>
-    
-        <button onclick="closeNotice()" class="w-full py-3 bg-white text-red-600 font-bold rounded-xl hover:bg-gray-100 transition-all">
-            我已知晓
-        </button>
-    </div>
-</div>
-
-<script>
-    // 关闭弹窗
-    function closeNotice() {
-        document.getElementById('noticeModal').style.display = 'none';
-    }
-</script>
-<!-- ===================== 弹窗结束，其他代码完全不变 ===================== -->
-
-    <!-- 导航栏 -->
+    <!-- 导航栏-->
     <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="#" class="flex items-center space-x-2">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                            <i class="fa-solid fa-wrench text-white text-xl"></i>
-                        </div>
-                        <span class="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">HJ_ToolHub</span>
+                    <a href="#home" class="flex items-center space-x-2">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                     </a>
                 </div>
                 
-                <!-- 桌面端导航 -->
-                <nav class="hidden md:flex space-x-8">
+                <!-- 桌面端导航-->
+                <nav class="hidden md:flex space-x-8 items-center">
                     <a href="#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
                     <a href="#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
                     <a href="#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
                     <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
                 </nav>
+                
+                <!-- 用户操作区 -->
+                <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                    <!-- 已登录状态 -->
+                    <div id="logged-in-section" class="hidden items-center space-x-3">
+                        <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                            <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                            <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                        </a>
+                        <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                            管理后台
+                        </a>
+                        <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 未登录状态 -->
+                    <div id="logged-out-section">
+                        <a href="login.html" class="px-4 py-2 text-primary hover:bg-primary/5 rounded-lg transition-colors font-medium">
+                            登录
+                        </a>
+                        <a href="register.html" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium">
+                            注册
+                        </a>
+                    </div>
+                </div>
                                 
-                <!-- 移动端菜单按钮 -->
+                <!-- 移动端菜单按钮-->
                 <div class="md:hidden">
                     <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
                         <i class="fa-solid fa-bars text-2xl"></i>
@@ -106,7 +340,7 @@
             </div>
         </div>
         
-        <!-- 移动端菜单 -->
+        <!-- 移动端菜单-->
         <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
             <div class="container mx-auto px-4 py-3 space-y-3">
                 <a href="#home" class="block py-2 text-gray-700 hover:text-primary font-medium">首页</a>
@@ -115,30 +349,39 @@
                 <a href="#features" class="block py-2 text-gray-700 hover:text-primary font-medium">特色介绍</a>
                 <div class="relative pt-2">
                     <input type="text" placeholder="" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                    <i class="fa-solid fa-search absolute left-5 top-4 text-gray-400"></i>
+                    <i class="fa-solid fa-search absolute left-5 top-4 text-gray-600"></i>
                 </div>
             </div>
         </div>
     </header>
 
     <main>
-        <!-- 开头区�?-->
-        <section id="home" class="pt-16 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white">
-            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- 开头区域-->
+        <section id="home" class="pt-16 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white relative overflow-hidden">
+            <!-- 背景动画容器 -->
+            <div id="hero-animation" class="absolute inset-0 pointer-events-none">
+                <!-- 网格背景 -->
+                <div class="grid-background"></div>
+                <!-- 装饰性几何图形 -->
+                <div class="floating-shape shape-1"></div>
+                <div class="floating-shape shape-2"></div>
+                <div class="floating-shape shape-3"></div>
+            </div>
+            
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex flex-col md:flex-row items-center">
                     <div class="md:w-1/2 md:pr-12 mb-10 md:mb-0">
                         <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6">
-                            让工作更高效<br>
-                            <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">实用工具集合</span>
+                            <span id="typing-effect" class="typing-cursor gradient-text"></span>
                         </h1>
                         <p class="text-lg text-gray-600 mb-8 max-w-lg">
                             精选优质高质量在线工具，无需安装，即开即用。从日常办公到专业设计，满足你的各种需求。
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="#categories" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full shadow-lg shadow-primary/20 transition-all text-center">
-                                浏览工具
-                            </a>
-                            <a href="#popular" class="bg-white hover:bg-gray-50 text-primary border border-primary font-medium py-3 px-8 rounded-full transition-all text-center">
+                            <a href="#categories" class="btn-glow bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full shadow-lg shadow-primary/20 transition-all text-center relative z-10">
+                    浏览工具
+                </a>
+                            <a href="#popular" class="btn-glow bg-white hover:bg-gray-50 text-primary border border-primary font-medium py-3 px-8 rounded-full transition-all text-center relative z-10">
                                 热门推荐
                             </a>
                         </div>
@@ -155,30 +398,101 @@
                             <div class="ml-4">
                                 <div class="flex items-center">
                                     <div class="flex text-yellow-400">
-                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star star-twinkle"></i>
                                     </div>
                                     <span class="ml-2 text-gray-600 font-medium">1,0</span>
                                 </div>
-                                <p class="text-sm text-gray-500">来自0个用户的好评如潮（应该是）</p>
+                                <p class="text-sm text-gray-500">来自0个用户的好评如潮（应该是0） </p>
                             </div>
                         </div>
                     </div>
                     <div class="md:w-1/2 relative">
-                        <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                            <img src="https://img.cdn1.vip/i/69f710bf6fde4_1777799359.webp" alt="展示" class="w-full h-auto">
+                        <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500 image-3d">
+                            <img src="https://img.cdn1.vip/i/6a1162e24d15e_1779524322.webp" alt="展示" class="w-full h-auto">
                         </div>
                         <div class="absolute top-10 -right-5 w-32 h-32 bg-secondary/20 rounded-full blur-3xl -z-10"></div>
                         <div class="absolute -bottom-5 -left-5 w-40 h-40 bg-primary/20 rounded-full blur-3xl -z-10"></div>
                     </div>
                 </div>
+                
+                <!-- 信任徽章 -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-lock text-green-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">安全可靠</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-cloud text-blue-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">云端处理</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-clock text-purple-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">快速响应</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-heart text-red-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">永久免费</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 使用统计 -->
+                <div class="mt-8 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-xl font-bold text-dark mb-2">数据统计</h3>
+                    <p class="text-gray-600">我们持续为您提供高效、安全、便捷的使用体验</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">30+</div>
+                            <p class="text-gray-600">实用工具</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-secondary mb-2">1K+</div>
+                            <p class="text-gray-600">累计使用</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-accent mb-2">100%</div>
+                            <p class="text-gray-600">服务可用</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-amber-500 mb-2">0</div>
+                            <p class="text-gray-600">广告弹窗</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 向下滑动提示 -->
+                <div class="mt-12 text-center">
+                    <button id="scroll-hint" class="inline-flex flex-col items-center text-gray-400 hover:text-primary cursor-pointer transition-all duration-300">
+                        <span class="text-sm mb-2">向下滚动查看更多</span>
+                        <i class="fa-solid fa-chevron-down animate-bounce text-xl"></i>
+                    </button>
+                </div>
+                
             </div>
         </section>
         <!-- 工具分类 -->
-        <section id="categories" class="py-16 bg-white">
+        <section id="categories" class="py-16 bg-white hide-content">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">工具分类</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto">按类别浏览我们的工具集合，快速找到你需要的那一个</p>
+                    <p class="text-gray-600 max-w-2xl mx-auto">按类别浏览我们的工具集合，快速找到你需要的那一款工具。</p>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -212,7 +526,7 @@
                         </div>
                     </div>
                     
-                    <!-- 开发工具 -->
+                    <!-- 开发工具-->
                     <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
                         <div class="w-14 h-14 rounded-lg bg-purple-100 flex items-center justify-center mb-5">
                             <i class="fa-solid fa-code text-accent text-2xl"></i>
@@ -246,11 +560,11 @@
         </section>
 
         <!-- 热门工具 -->
-        <section id="popular" class="py-16 bg-gray-50">
+        <section id="popular" class="py-16 bg-gray-50 hide-content">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
                     <div>
-                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">🔥热门工具</h2>
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">热门工具</h2>
                         <p class="text-gray-600 max-w-2xl">用户最常使用的实用工具</p>
                     </div>
                     <a href="#" class="mt-4 md:mt-0 text-primary font-medium hover:text-primary/80 transition-colors">
@@ -311,7 +625,7 @@
                         </div>
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-3">
-                                <h3 class="text-xl font-semibold">单位转换器</h3>
+                                <h3 class="text-xl font-semibold">单位转换</h3>
                                 <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
                             </div>
                             <p class="text-gray-600 mb-4">支持长度、重量、面积、体积等多种单位转换，精确便捷</p>
@@ -331,7 +645,7 @@
         </section>
 
         <!-- 特色介绍 -->
-        <section id="features" class="py-16 bg-white">
+        <section id="features" class="py-16 bg-white hide-content">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">为什么选择我们</h2>
@@ -381,7 +695,7 @@
                         </div>
                         <div>
                             <div class="text-4xl md:text-5xl font-bold mb-2 counter" data-target="5">5</div>
-                            <p class="text-white/80">用户满意度(%)</p>
+                            <p class="text-white/80">用户满意</p>
                         </div>
                     </div>
                 </div>
@@ -389,10 +703,10 @@
         </section>
 
         <!-- 用户评价 -->
-        <section class="py-16 bg-gray-50">
+        <section class="py-16 bg-gray-50 hide-content">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">用户这么说</h2>
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">用户评价</h2>
                     <p class="text-gray-600 max-w-2xl mx-auto">来自真实用户的使用体验和评价</p>
                 </div>
                 
@@ -425,12 +739,12 @@
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-solid fa-star"></i>
                         </div>
-                        <p class="text-gray-600 mb-6">"作为一名设计师，图片压缩工具帮我省了很多事，压缩后的图片质量几乎没有损失，但体积大大减小，方便分享和上传。</p>
+                        <p class="text-gray-600 mb-6">"作为一名设计师，图片压缩工具帮我省了很多事，压缩后的图片质量几乎没有损失，但体积大大减小，方便分享和上传</p>
                         <div class="flex items-center">
                             <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
                             <div>
                                 <h4 class="font-semibold">隔壁老王</h4>
-                                <p class="text-sm text-gray-500">UI设计师</p>
+                                <p class="text-sm text-gray-500">UI设计</p>
                             </div>
                         </div>
                     </div>
@@ -458,84 +772,82 @@
         </section>
 
 <!-- 页脚 -->
-    <footer class="bg-dark text-white pt-16 pb-8">
+    <footer class="bg-gray-100 pt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div>
                     <div class="flex items-center space-x-2 mb-6">
-                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-                            <i class="fa-solid fa-wrench text-white text-xl"></i>
-                        </div>
-                        <span class="text-xl font-bold">HJ_ToolHub</span>
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
                     </div>
-                    <p class="text-gray-400 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p>
+                    <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷</p>
                     <div class="flex space-x-4">
-                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition-colors">
-                            <i class="fab fa-qq text-2xl text-white"></i>
+                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-qq text-2xl text-gray-700"></i>
                         </a>
-                        <a href="weixin" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 transition-colors">
-                            <i class="fab fa-weixin text-2xl text-white"></i>
+                        <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                            <i class="fab fa-weixin text-2xl text-gray-700"></i>
                         </a>
-                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-purple-500 transition-colors">
-                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                            <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                             </svg>
                         </a>
-                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-600 transition-colors">
-                            <i class="fab fa-github text-2xl"></i>
+                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github text-2xl text-gray-700"></i>
                         </a>
                     </div>
                 </div>
                 
                 <div>
-                    <h3 class="text-lg font-semibold mb-6">快速链接</h3>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
                     <ul class="space-y-3">
-                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
-                        <li><a href="#categories" class="text-gray-400 hover:text-white transition-colors">工具分类</a></li>
-                        <li><a href="#popular" class="text-gray-400 hover:text-white transition-colors">热门工具</a></li>
-                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">特色介绍</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li>
+                        <li><a href="#home" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="#categories" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                        <li><a href="#popular" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                        <li><a href="#features" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-lg font-semibold mb-6">工具分类</h3>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
                     <ul class="space-y-3">
-                        <li><a href="index (2)" class="text-gray-400 hover:text-white transition-colors">办公效率</a></li>
-                        <li><a href="index (3)" class="text-gray-400 hover:text-white transition-colors">图片处理</a></li>
-                        <li><a href="index (4)" class="text-gray-400 hover:text-white transition-colors">开发辅助</a></li>
-                        <li><a href="index (5)" class="text-gray-400 hover:text-white transition-colors">生活服务</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li>
+                        <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                        <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                        <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                        <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-lg font-semibold mb-6">联系我们</h3>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
                     <ul class="space-y-3">
                         <li class="flex items-start">
-                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">3301976275@qq.com</span>
+                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">3301976275@qq.com</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">广州市番禺区</span>
+                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">广州市番禺区</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">联系电话：137 1019 0930</span>
+                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">联系电话：137 1019 0930</span>
                         </li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 pt-8">
+            <div class="border-t border-gray-200 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
                     <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
                     <div class="flex space-x-6">
-                        <a href="yszc" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a>
-                        <a href="sytk" class="text-gray-500 hover:text-gray-300 text-sm">使用条款</a>
-                        <a href="hjseach" class="text-gray-500 hover:text-gray-300 text-sm">合金搜索</a>
+                        <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                        <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                        <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
                     </div>
                 </div>
             </div>
@@ -547,7 +859,70 @@
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 
+    <!-- 更新公告弹窗 -->
+    <div id="update-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 hidden">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 overflow-hidden border-4 border-white">
+            <img src="https://img.cdn1.vip/i/6a1162e24d15e_1779524322.webp" alt="更新公告" class="w-full h-auto">
+            <div class="p-4 bg-white">
+                <button id="confirm-btn" class="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // 登录状态检查
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            const loggedInSection = document.getElementById('logged-in-section');
+            const loggedOutSection = document.getElementById('logged-out-section');
+            const adminLink = document.getElementById('admin-link');
+            const userAvatar = document.getElementById('nav-user-avatar');
+            const userName = document.getElementById('nav-user-name');
+            
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                loggedInSection.classList.remove('hidden');
+                loggedInSection.classList.add('flex');
+                loggedOutSection.classList.add('hidden');
+                
+                userAvatar.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+                userName.textContent = user.username;
+                
+                if (user.role === 'admin' || user.role === 'superadmin') {
+                    adminLink.classList.remove('hidden');
+                }
+                
+                // 退出登录
+                document.getElementById('nav-logout-btn').addEventListener('click', async () => {
+                    try {
+                        await fetch('/api/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                    } catch (error) {
+                        console.error('退出登录失败:', error);
+                    }
+                    
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                });
+            } else {
+                loggedInSection.classList.add('hidden');
+                loggedInSection.classList.remove('flex');
+                loggedOutSection.classList.remove('hidden');
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        
         // 移动端菜单切换
         const menuToggle = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -599,10 +974,10 @@
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    // 关闭移动菜单（如果打开�?
+                    // 关闭移动菜单（如果打开）
                     mobileMenu.classList.add('hidden');
                     
-                    // 滚动到目标位�?
+                    // 滚动到目标位置
                     targetElement.scrollIntoView({
                         behavior: 'smooth'
                     });
@@ -637,6 +1012,194 @@
         
         counters.forEach(counter => {
             observer.observe(counter);
+        });
+        
+        // 打字机效果
+        const fullText = '让工作更高效<br><span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">实用工具集合</span>';
+        const typingElement = document.getElementById('typing-effect');
+        const typingSpeed = 60;
+        const deletingSpeed = 30;
+        const pauseAfterTyping = 1500;
+        const pauseAfterDeleting = 1000;
+        let isTyping = true;
+        let displayText = '';
+        let animationId = null;
+        
+        function animate() {
+            if (isTyping) {
+                if (displayText.length < fullText.length) {
+                    const nextChar = fullText[displayText.length];
+                    if (nextChar === '<') {
+                        const endTagIndex = fullText.indexOf('>', displayText.length) + 1;
+                        displayText += fullText.substring(displayText.length, endTagIndex);
+                    } else {
+                        displayText += nextChar;
+                    }
+                    typingElement.innerHTML = displayText;
+                    animationId = setTimeout(animate, typingSpeed);
+                } else {
+                    isTyping = false;
+                    animationId = setTimeout(animate, pauseAfterTyping);
+                }
+            } else {
+                if (displayText.length > 0) {
+                    const lastChar = displayText[displayText.length - 1];
+                    
+                    if (lastChar === '>') {
+                        const startTagIndex = displayText.lastIndexOf('<');
+                        displayText = displayText.substring(0, startTagIndex);
+                    } else {
+                        displayText = displayText.substring(0, displayText.length - 1);
+                    }
+                    typingElement.innerHTML = displayText;
+                    animationId = setTimeout(animate, deletingSpeed);
+                } else {
+                    isTyping = true;
+                    animationId = setTimeout(animate, pauseAfterDeleting);
+                }
+            }
+        }
+        
+        const typingObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && displayText === '') {
+                    animate();
+                    typingObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        typingObserver.observe(typingElement);
+
+        // 背景动画显示控制
+        const heroAnimation = document.getElementById('hero-animation');
+        let animationHidden = false;
+        
+        function hideAnimation() {
+            if (heroAnimation && !animationHidden) {
+                animationHidden = true;
+                heroAnimation.classList.add('hidden');
+            }
+        }
+        
+        function showAnimation() {
+            if (heroAnimation && animationHidden) {
+                animationHidden = false;
+                heroAnimation.classList.remove('hidden');
+            }
+        }
+
+        // 内容显示控制
+        let contentShown = false;
+        const scrollHintBtn = document.getElementById('scroll-hint');
+        
+        function showContent() {
+            if (!contentShown) {
+                contentShown = true;
+                const hiddenSections = document.querySelectorAll('.hide-content');
+                hiddenSections.forEach((section, index) => {
+                    setTimeout(() => {
+                        section.classList.remove('hide-content');
+                        section.classList.add('show-content');
+                    }, index * 100);
+                });
+            }
+            // 隐藏向下滚动提示
+            if (scrollHintBtn) {
+                scrollHintBtn.style.opacity = '0';
+                scrollHintBtn.style.transform = 'translateY(20px)';
+                scrollHintBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        const browseToolsBtn = document.querySelector('a[href="#categories"]');
+        const popularBtn = document.querySelector('a[href="#popular"]');
+
+        if (browseToolsBtn) {
+            browseToolsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    const categoriesSection = document.getElementById('categories');
+                    if (categoriesSection) {
+                        categoriesSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            });
+        }
+
+        if (popularBtn) {
+            popularBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    const popularSection = document.getElementById('popular');
+                    if (popularSection) {
+                        popularSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            });
+        }
+
+        // 滚动检测
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 200) {
+                showContent();
+                hideAnimation();
+            } else {
+                showAnimation();
+            }
+        });
+
+        // 向下滑动提示按钮点击事件
+        if (scrollHintBtn) {
+            scrollHintBtn.addEventListener('click', function() {
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    window.scrollBy({
+                        top: 500,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            });
+        }
+
+        // 更新公告弹窗
+        const updateModal = document.getElementById('update-modal');
+        const confirmBtn = document.getElementById('confirm-btn');
+
+        if (!localStorage.getItem('updateAnnouncementShown')) {
+            updateModal.classList.remove('hidden');
+        }
+
+        confirmBtn.addEventListener('click', function() {
+            updateModal.classList.add('hidden');
+            localStorage.setItem('updateAnnouncementShown', 'true');
+        });
+
+        // 图片保护 - 阻止拖动和右键复制
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
         });
     </script>
 </body>

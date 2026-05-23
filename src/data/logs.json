@@ -1,0 +1,14 @@
+{
+  "logs": [
+    {
+      "id": "1c874401-0bc3-4268-9507-a05a4f290ef4",
+      "timestamp": "2026-05-23T12:18:06.182Z",
+      "action": "login",
+      "userId": "314649e6-3dab-4c95-8b29-b82d844aab95",
+      "username": "admin",
+      "details": {},
+      "ip": "::ffff:127.0.0.1",
+      "userAgent": "unknown"
+    }
+  ]
+}

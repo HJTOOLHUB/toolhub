@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 在线工具平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            min-height: 550px;
+        }
+
+        .register-left {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+        }
+
+        .register-left h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .register-left p {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .register-left-features {
+            margin-top: 30px;
+        }
+
+        .register-left-features li {
+            list-style: none;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .register-left-features li i {
+            width: 24px;
+        }
+
+        .register-right {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .register-right h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .form-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .password-requirements {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        .back-home:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .register-container {
+                flex-direction: column;
+            }
+
+            .register-left {
+                padding: 30px;
+            }
+
+            .register-left h2 {
+                font-size: 1.5rem;
+            }
+
+            .register-left-features {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-home">
+        <i class="fas fa-arrow-left"></i>
+        返回首页
+    </a>
+
+    <div class="register-container">
+        <div class="register-left">
+            <h2>加入我们！</h2>
+            <p>注册成为在线工具平台会员，开启高效工作之旅。免费注册，立即使用所有工具。</p>
+            <ul class="register-left-features">
+                <li><i class="fas fa-check-circle"></i> 50+ 精选工具免费用</li>
+                <li><i class="fas fa-check-circle"></i> 经验值系统升级</li>
+                <li><i class="fas fa-check-circle"></i> VIP会员专属特权</li>
+                <li><i class="fas fa-check-circle"></i> 操作历史记录</li>
+            </ul>
+        </div>
+
+        <div class="register-right">
+            <h2>用户注册</h2>
+            
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label>用户名 <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="3-20个字符" required minlength="3" maxlength="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>邮箱 <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="请输入有效邮箱" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>密码 <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="至少6个字符" required minlength="6">
+                    </div>
+                    <div class="password-requirements">建议使用字母、数字组合</div>
+                </div>
+
+                <div class="form-group">
+                    <label>确认密码 <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="confirm-password" placeholder="再次输入密码" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register" id="register-btn">
+                    <span>注 册</span>
+                </button>
+            </form>
+
+            <div class="form-footer">
+                已有账号？<a href="login.html">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // 检查是否已登录
+        const token = localStorage.getItem('token');
+        if (token) {
+            window.location.href = 'user-center.html';
+        }
+
+        // 注册表单提交
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const registerBtn = document.getElementById('register-btn');
+
+            // 清除之前的消息
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            // 验证密码
+            if (password !== confirmPassword) {
+                errorMessage.textContent = '两次输入的密码不一致';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // 验证密码长度
+            if (password.length < 6) {
+                errorMessage.textContent = '密码长度至少6个字符';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // 验证用户名长度
+            if (username.length < 3 || username.length > 20) {
+                errorMessage.textContent = '用户名长度必须在3-20个字符之间';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 注册中...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successMessage.textContent = '注册成功！正在跳转到用户中心...';
+                    successMessage.classList.add('show');
+                    
+                    // 保存token和用户信息
+                    localStorage.setItem('token', result.data.token);
+                    localStorage.setItem('user', JSON.stringify(result.data.user));
+                    
+                    // 延迟跳转
+                    setTimeout(() => {
+                        window.location.href = 'user-center.html';
+                    }, 1500);
+                } else {
+                    errorMessage.textContent = result.message;
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                errorMessage.textContent = '网络错误，请稍后重试';
+                errorMessage.classList.add('show');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '注 册';
+            }
+        });
+
+        // 实时验证密码匹配
+        document.getElementById('confirm-password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = '#e0e0e0';
+            }
+        });
+    </script>
+</body>
+</html>
