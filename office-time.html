@@ -837,6 +837,13 @@
         </div>
         <label class="glass-toggle-switch"><input type="checkbox" id="glassModeTogglePanel"><span class="glass-toggle-slider"></span></label>
       </div>
+      <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
+        <div class="settings-label-icon text-black dark:text-white">
+          <i class="fa fa-wrench"></i>
+          <span class="text-black dark:text-white">修复工具</span>
+        </div>
+        <i class="fa fa-external-link text-black dark:text-white"></i>
+      </div>
     </div>
   </div>
 
@@ -1131,13 +1138,26 @@
     // 全局变量：提醒列表、当前日历日期
     let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
     let calendarCurrentDate = new Date();
-    
+    let activePopup = null;
+    let activePopupTimeout = null;
+
     // ============ 工具函数 ============
     // 获取日期的节假日信息
     function getHolidayInfo(dateStr) {
       if(holidaysData[dateStr]) return {name: holidaysData[dateStr].name, type: "holiday"};
       if(workdayData[dateStr]) return {name: "调休工作日", type: "workday"};
       return null;
+    }
+
+    function cleanupPopup() {
+      if(activePopupTimeout) {
+        clearTimeout(activePopupTimeout);
+        activePopupTimeout = null;
+      }
+      if(activePopup && activePopup.parentNode) {
+        activePopup.remove();
+        activePopup = null;
+      }
     }
     
     // 显示提示消息
@@ -1292,21 +1312,30 @@
         
         // 点击日期显示详情弹窗
         cell.addEventListener('click', () => {
+          cleanupPopup();
           let details = [];
           if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type === 'holiday' ? '法定假日' : '调休上班'})`);
           let dayReminders = reminderList.filter(r => r.date === dateStr);
           dayReminders.forEach(rem => details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`));
           if(details.length === 0) details.push('  暂无内容显示');
-          
+
           let pop = document.createElement('div');
           pop.className = 'detail-popup';
           pop.innerHTML = `<strong> ${dateStr}</strong><hr><div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div><button>关闭</button>`;
           document.body.appendChild(pop);
+          activePopup = pop;
           requestAnimationFrame(() => pop.classList.add('show'));
-          
-          let closeHandler = () => { pop.classList.remove('show'); setTimeout(() => pop.remove(), 300); };
+
+          let closeHandler = () => {
+            pop.classList.remove('show');
+            setTimeout(() => pop.remove(), 300);
+            if(activePopup === pop) {
+              activePopup = null;
+              activePopupTimeout = null;
+            }
+          };
           pop.querySelector('button').addEventListener('click', closeHandler);
-          setTimeout(() => { if(pop && pop.parentNode) closeHandler(); }, 6000);
+          activePopupTimeout = setTimeout(closeHandler, 6000);
         });
         container.appendChild(cell);
       }
@@ -1551,6 +1580,11 @@
         document.getElementById('sloganSettingsCard').classList.remove('show');
         overlay.classList.add('show');
         panel.classList.add('show');
+      };
+
+      // 修复工具按钮
+      document.getElementById('settingsOpenFixToolBtn').onclick = () => {
+        window.open("edge-fix.html", "_blank");
       };
       
       // ============ 遮罩层点击关闭 ============

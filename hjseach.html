@@ -810,6 +810,12 @@
             ></span
           ></label>
         </div>
+        <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
+          <div class="settings-label-icon">
+            <i class="fa fa-wrench"></i><span>修复工具</span>
+          </div>
+          <i class="fa fa-external-link"></i>
+        </div>
       </div>
     </div>
 
@@ -1208,15 +1214,33 @@
         return null;
       }
 
+      let activePopup = null;
+      let activePopupTimeout = null;
+      let toastTimeout = null;
+      function cleanupPopup() {
+        if (activePopupTimeout) {
+          clearTimeout(activePopupTimeout);
+          activePopupTimeout = null;
+        }
+        if (activePopup && activePopup.parentNode) {
+          activePopup.remove();
+          activePopup = null;
+        }
+      }
+
       function showToast(msg, dur = 3000, isErr = false) {
         let t = document.getElementById("toast");
         if (!t) return;
+        if (toastTimeout) {
+          clearTimeout(toastTimeout);
+        }
         t.textContent = msg;
         t.classList.add("show");
         if (isErr) t.classList.add("reminder");
-        setTimeout(() => {
+        toastTimeout = setTimeout(() => {
           t.classList.remove("show");
           if (isErr) t.classList.remove("reminder");
+          toastTimeout = null;
         }, dur);
       }
       function escapeHtml(str) {
@@ -1351,6 +1375,7 @@
             cell.classList.add("reminder");
           cell.textContent = i;
           cell.addEventListener("click", () => {
+            cleanupPopup();
             let details = [];
             if (holiday)
               details.push(
@@ -1366,14 +1391,18 @@
             pop.className = "detail-popup";
             pop.innerHTML = `<strong>${dateStr}</strong><hr style="margin:12px 0"><div style="white-space:pre-line;">${details.join("\n")}</div><button class="mt-3 bg-black dark:bg-white text-white dark:text-black px-5 py-1 rounded-full">关闭</button>`;
             document.body.appendChild(pop);
+            activePopup = pop;
             setTimeout(() => pop.classList.add("show"), 10);
-            pop.querySelector("button").onclick = () => {
+            let closeHandler = () => {
               pop.classList.remove("show");
               setTimeout(() => pop.remove(), 300);
+              if (activePopup === pop) {
+                activePopup = null;
+                activePopupTimeout = null;
+              }
             };
-            setTimeout(() => {
-              if (pop && pop.parentNode) pop.classList.remove("show");
-            }, 5000);
+            pop.querySelector("button").onclick = closeHandler;
+            activePopupTimeout = setTimeout(closeHandler, 5000);
           });
           container.appendChild(cell);
         }
@@ -1728,6 +1757,12 @@
             closeAll();
             overlay.classList.add("show");
             panel.classList.add("show");
+          });
+
+        document
+          .getElementById("settingsOpenFixToolBtn")
+          ?.addEventListener("click", () => {
+            window.open("edge-fix.html", "_blank");
           });
 
         // 搜索记录下拉面板事件

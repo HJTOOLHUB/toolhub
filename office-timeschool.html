@@ -810,6 +810,10 @@
         <div class="settings-label-icon"><i class="fa fa-eyedropper text-black dark:text-white"></i><span>液态玻璃</span></div>
         <label class="glass-toggle-switch"><input type="checkbox" id="glassModeTogglePanel"><span class="glass-toggle-slider"></span></label>
       </div>
+      <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
+        <div class="settings-label-icon"><i class="fa fa-wrench text-black dark:text-white"></i><span>修复工具</span></div>
+        <i class="fa fa-external-link text-black dark:text-white"></i>
+      </div>
     </div>
   </div>
 
@@ -844,10 +848,10 @@
   <div id="sloganSettingsCard" class="slogan-settings-card">
     <div class="card-header-flex"><h2 class="text-2xl font-bold">自定义标语区域</h2><button id="backFromSlogan" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
     <div class="space-y-4">
-      <div><label class="block font-medium">标语文字（支持换行）</label><textarea id="sloganText" rows="4" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
+      <div><label class="block font-medium">标语文字（支持换行）</label><textarea id="sloganText" rows="4" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
       <div><label class="block font-medium">文字颜色</label><input type="color" id="sloganColor" class="w-full h-10 rounded border: none"></div>
-      <div><label class="block font-medium">文字大小 (px)</label><input type="number" id="sloganFontSize" min="12" max="96" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><label class="block font-medium">每行文字间距</label><input type="number" id="sloganLineHeight" step="0.1" min="0.8" max="3" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><label class="block font-medium">文字大小 (px)</label><input type="number" id="sloganFontSize" min="12" max="96" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><label class="block font-medium">每行文字间距</label><input type="number" id="sloganLineHeight" step="0.1" min="0.8" max="3" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
       <button id="applySloganBtn" class="w-full bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black"><i class="fa fa-save"></i> 应用标语设置</button>
       <button id="resetSloganBtn" class="w-full btn-danger py-3 rounded-lg">恢复默认</button>
     </div>
@@ -858,7 +862,7 @@
     <div class="card-header-flex"><h2 class="text-2xl font-bold">背景图片设置</h2><button id="backFromBgSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
     <div class="space-y-4">
       <div class="official-bg-section"><div class="official-bg-title"><i class="fa fa-image text-black dark:text-white"></i> 官方精选背景</div><div class="bg-thumbnails" id="officialBgThumbs"></div></div>
-      <div><i class="fa fa-image text-black dark:text-white"></i> 网络图片上传<input type="text" id="bgImageUrl" placeholder="图片URL" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><i class="fa fa-image text-black dark:text-white"></i> 网络图片上传<input type="text" id="bgImageUrl" placeholder="图片URL" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
       <div class="local-upload-area"><label class="local-upload-label"><i class="fa fa-upload"></i> 本地上传</label><input type="file" id="localBgUpload" accept="image/*" style="display:none"><div id="localBgPreview" class="bg-preview-img"></div></div>
       <div class="flex space-x-3"><button id="applyBgImage" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">应用</button><button id="resetBgImage" class="flex-1 btn-danger py-3 rounded-lg">重置</button></div>
     </div>
@@ -868,9 +872,9 @@
   <div id="reminderSettingsCard" class="reminder-settings-card">
     <div class="card-header-flex"><h2 class="text-2xl font-bold">事件提醒设置</h2><button id="backFromReminderSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
     <div class="space-y-4">
-      <div><input type="text" id="reminderName" placeholder="提醒名称" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><input type="date" id="reminderDate" class="w-full px-4 py-3 rounded-lg border bg-gray dark:bg-gray-700 text-gray-400 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><textarea id="reminderDesc" rows="2" placeholder="描述" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
+      <div><input type="text" id="reminderName" placeholder="提醒名称" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><input type="date" id="reminderDate" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><textarea id="reminderDesc" rows="2" placeholder="描述" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
       <div class="flex space-x-3"><button id="addReminder" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">添加</button><button id="clearReminders" class="flex-1 btn-danger py-3 rounded-lg">清空</button></div>
       <div><div id="remindersList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg"></div></div>
     </div>
@@ -903,9 +907,25 @@
     function getHolidayInfo(dateStr){ if(holidaysData[dateStr]) return {name:holidaysData[dateStr].name, type:"holiday"}; if(workdayData[dateStr]) return {name:"调休工作日", type:"workday"}; return null; }
     let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
     let calendarCurrentDate = new Date();
+    let activePopup = null;
+    let activePopupTimeout = null;
+    let toastTimeout = null;
+    function cleanupPopup() {
+      if(activePopupTimeout) {
+        clearTimeout(activePopupTimeout);
+        activePopupTimeout = null;
+      }
+      if(activePopup && activePopup.parentNode) {
+        activePopup.remove();
+        activePopup = null;
+      }
+    }
     function showToast(msg, duration=3000, isReminder=false) {
       let t = document.getElementById('toast');
       if(!t) return;
+      if(toastTimeout) {
+        clearTimeout(toastTimeout);
+      }
       t.textContent = msg;
       t.classList.add('show');
       if(isReminder) {
@@ -913,9 +933,10 @@
       } else {
         t.classList.remove('reminder');
       }
-      setTimeout(() => {
+      toastTimeout = setTimeout(() => {
         t.classList.remove('show');
         if(isReminder) t.classList.remove('reminder');
+        toastTimeout = null;
       }, duration);
     }
     function updateClock() {
@@ -1035,6 +1056,7 @@
         cell.textContent = i;
         
         cell.addEventListener('click', () => {
+          cleanupPopup();
           let details = [];
           if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`);
           let dayReminders = reminderList.filter(r => r.date === dateStr);
@@ -1047,14 +1069,19 @@
             <div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div>
             <button>关闭</button>`;
           document.body.appendChild(pop);
+          activePopup = pop;
           
           requestAnimationFrame(() => pop.classList.add('show'));
           let closeHandler = () => {
             pop.classList.remove('show');
             setTimeout(() => pop.remove(), 300);
+            if(activePopup === pop) {
+              activePopup = null;
+              activePopupTimeout = null;
+            }
           };
           pop.querySelector('button').addEventListener('click', closeHandler);
-          setTimeout(() => { if(pop && pop.parentNode) closeHandler(); }, 6000);
+          activePopupTimeout = setTimeout(closeHandler, 6000);
         });
         
         container.appendChild(cell);
@@ -1339,6 +1366,13 @@
           if(sloganCard) sloganCard.classList.remove('show');
           if(overlay) overlay.classList.add('show');
           if(panel) panel.classList.add('show');
+        };
+      }
+
+      const settingsOpenFixToolBtn = document.getElementById('settingsOpenFixToolBtn');
+      if(settingsOpenFixToolBtn) {
+        settingsOpenFixToolBtn.onclick = () => {
+          window.open("edge-fix.html", "_blank");
         };
       }
       
