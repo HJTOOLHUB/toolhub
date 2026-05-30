@@ -98,7 +98,7 @@
             </nav>
             <div class="md:hidden">
                 <button id="menu-toggle" class="text-gray-700 hover:text-primary">
-                    <i class="fa fa-bars text-2xl"></i>
+                    <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
@@ -119,11 +119,11 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div>
                     <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片美化工具</h1>
-                    <p class="text-gray-600 max-w-2xl">滤镜特效 | 亮度/对比?饱和度调?| 裁剪旋转 | 一键美化你的图</p>
+                    <p class="text-gray-600 max-w-2xl">滤镜特效 | 亮度/对比度/饱和度调整 | 裁剪旋转 | 一键美化你的图片</p>
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
-                        <i class="fa fa-home mr-2"></i> 返回首页
+                        <i class="fa-solid fa-home mr-2"></i> 返回首页
                     </a>
                 </div>
             </div>
@@ -135,17 +135,17 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- 左侧：工具栏 -->
                 <div class="lg:col-span-1 space-y-6">
-                    <!-- 上传?-->
-                    <div id="uploadZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-primary transition bg-gray-50">
-                        <i class="fa fa-cloud-upload text-3xl text-gray-600 mb-2"></i>
-                        <p class="text-gray-600 text-sm">点击或拖拽上传图</p>
-                        <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                    <!-- 上传区域 -->
+                    <label for="imageUpload" id="uploadZone" class="drop-zone block relative border-2 border-dashed border-gray-300 rounded-xl p-5 text-center cursor-pointer hover:border-primary transition bg-gray-50">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-600 mb-2"></i>
+                        <p class="text-gray-600 text-sm">点击或拖拽上传图片</p>
                         <p class="text-xs text-gray-600 mt-1">支持 JPG, PNG, WebP, BMP</p>
-                    </div>
+                        <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                    </label>
                     
                     <!-- 基础调整 -->
                     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-sliders text-primary mr-2"></i> 基础调整</h3>
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa-solid fa-sliders text-primary mr-2"></i> 基础调整</h3>
                         <div class="space-y-3">
                             <div><div class="flex justify-between text-xs"><span>亮度</span><span id="brightnessVal" class="text-primary">0</span><span class="reset-val text-gray-600" data-reset="brightness">重置</span></div><input type="range" id="brightness" min="-100" max="100" value="0" class="w-full h-1.5 rounded-lg"></div>
                             <div><div class="flex justify-between text-xs"><span>对比</span><span id="contrastVal" class="text-primary">0</span><span class="reset-val text-gray-600" data-reset="contrast">重置</span></div><input type="range" id="contrast" min="-100" max="100" value="0" class="w-full h-1.5 rounded-lg"></div>
@@ -156,7 +156,7 @@
                     
                     <!-- 滤镜特效 -->
                     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-magic text-primary mr-2"></i> 滤镜特效</h3>
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa-solid fa-wand-magic-sparkles text-primary mr-2"></i> 滤镜特效</h3>
                         <div class="grid grid-cols-3 gap-2">
                             <button data-filter="none" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100 active">原图</button>
                             <button data-filter="grayscale" class="filter-btn text-xs py-1.5 rounded border border-gray-300 hover:bg-gray-100">黑白</button>
@@ -172,29 +172,29 @@
                     
                     <!-- 几何变换 -->
                     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa fa-arrows-alt text-primary mr-2"></i> 几何变换</h3>
+                        <h3 class="font-semibold text-md flex items-center mb-3"><i class="fa-solid fa-up-right-and-down-left-center text-primary mr-2"></i> 几何变换</h3>
                         <div class="flex gap-2 mb-2">
-                            <button id="rotateLeftBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-rotate-left"></i> 左转90°</button>
-                            <button id="rotateRightBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-rotate-right"></i> 右转90°</button>
+                            <button id="rotateLeftBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa-solid fa-rotate-left"></i> 左转90°</button>
+                            <button id="rotateRightBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa-solid fa-rotate-right"></i> 右转90°</button>
                         </div>
                         <div class="flex gap-2">
-                            <button id="flipHorizontalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-arrows-h"></i> 水平翻转</button>
-                            <button id="flipVerticalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa fa-arrows-v"></i> 垂直翻转</button>
+                            <button id="flipHorizontalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa-solid fa-left-right"></i> 水平翻转</button>
+                            <button id="flipVerticalBtn" class="flex-1 bg-gray-100 py-1.5 rounded text-sm hover:bg-gray-200"><i class="fa-solid fa-up-down"></i> 垂直翻转</button>
                         </div>
                     </div>
                     
                     <!-- 操作按钮 -->
                     <div class="flex gap-3">
-                        <button id="applyBtn" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary/90 font-medium"><i class="fa fa-check"></i> 应用美化</button>
-                        <button id="resetAllBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"><i class="fa fa-refresh"></i> 重置</button>
+                        <button id="applyBtn" class="flex-1 bg-primary text-white py-2 rounded-lg hover:bg-primary/90 font-medium"><i class="fa-solid fa-check"></i> 应用美化</button>
+                        <button id="resetAllBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"><i class="fa-solid fa-rotate-right"></i> 重置</button>
                     </div>
                     <div class="flex gap-2">
-                        <button id="downloadBtn" class="flex-1 bg-green-600 text-gray-700 py-2 rounded-lg hover:bg-green-700 font-medium"><i class="fa fa-download"></i> 导出图片</button>
+                        <button id="downloadBtn" class="flex-1 bg-green-600 text-gray-700 py-2 rounded-lg hover:bg-green-700 font-medium"><i class="fa-solid fa-download"></i> 导出图片</button>
                     </div>
                     
-                    <!-- 历史记录简?-->
+                    <!-- 历史记录简报 -->
                     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                        <div class="flex justify-between items-center mb-2"><h3 class="font-semibold text-sm"><i class="fa fa-history"></i> 快照记录</h3><button id="clearHistoryBtn" class="text-xs text-gray-600 hover:text-red-500">清空</button></div>
+                        <div class="flex justify-between items-center mb-2"><h3 class="font-semibold text-sm"><i class="fa-solid fa-clock-rotate-left"></i> 快照记录</h3><button id="clearHistoryBtn" class="text-xs text-gray-600 hover:text-red-500">清空</button></div>
                         <div id="historyList" class="max-h-32 overflow-y-auto text-xs space-y-1"></div>
                     </div>
                 </div>
@@ -203,11 +203,11 @@
                 <div class="lg:col-span-2">
                     <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden">
                         <div class="bg-gray-100 px-4 py-2 text-gray-700 text-sm flex justify-between items-center">
-                            <span><i class="fa fa-paint-brush mr-2"></i> 美化效果实时预览</span>
-                            <span id="imgInfo" class="text-xs text-gray-300">未载入图</span>
+                            <span><i class="fa-solid fa-palette mr-2"></i> 美化效果实时预览</span>
+                            <span id="imgInfo" class="text-xs text-gray-300">未载入图片</span>
                         </div>
                         <div class="img-preview-container p-4">
-                            <img id="mainImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='18'%3E上传图片以开始美?3C/text%3E%3C/svg%3E" alt="美化图片">
+                            <img id="mainImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='18'%3E上传图片以开始美化%3C/text%3E%3C/svg%3E" alt="美化图片">
                         </div>
                     </div>
                     <div class="mt-3 text-xs text-gray-600 text-center">调整参数后点击“应用美化”生效，支持快照回溯</div>
@@ -217,7 +217,7 @@
     </section>
 </main>
 
-<footer class="bg-white/90 backdrop-blur-sm pt-16 pb-8">
+<footer class="bg-gray-100 pt-16 pb-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
@@ -295,8 +295,8 @@
 
 <script>
     // 全局变量
-    let originalImageData = null;      // 存储原始图片?base64 / blobURL 原始未处?
-    let currentWorkingImage = null;    // 当前显示的图片对?src)
+    let originalImageData = null; // 存储用户上传的原始图片
+    let currentImageData = null; // 存储当前经过变换的图片
     let canvas = document.createElement('canvas');
     let ctx = canvas.getContext('2d');
     let imgElement = new Image();
@@ -373,16 +373,16 @@
             historyListDiv.innerHTML = '<div class="text-gray-600 text-center py-2">暂无快照</div>';
             return;
         }
-        historyListDiv.innerHTML = historyStack.map((src, idx) => `<div class="history-item p-1 rounded cursor-pointer truncate" data-snapshot="${idx}"><i class="fa fa-camera"></i> 快照 ${idx+1}</div>`).join('');
+        historyListDiv.innerHTML = historyStack.map((src, idx) => `<div class="history-item p-1 rounded cursor-pointer truncate" data-snapshot="${idx}"><i class="fa-solid fa-camera"></i> 快照 ${idx+1}</div>`).join('');
         document.querySelectorAll('.history-item').forEach(el => {
             el.addEventListener('click', (e) => {
                 const idx = parseInt(el.getAttribute('data-snapshot'));
                 if (!isNaN(idx) && historyStack[idx]) {
-                    mainImage.src = historyStack[idx];
-                    // 同时更新originalImageData? 不允许改变原始基数据，放便后续重? 但是单独恢复快照会把当前工作图片改变
-                    // 保持一致性：用户点击快照直接显示，但调整参数基于当前图？为了体验: 点击快照后重置调整数值但使用该图作为新工作图
-                    originalImageData = historyStack[idx];
-                    imgElement.src = originalImageData;
+                    const snapshotSrc = historyStack[idx];
+                    // 直接显示快照内容，不应用滤镜（因为快照已经包含效果）
+                    mainImage.src = snapshotSrc;
+                    currentImageData = snapshotSrc;
+                    imgElement.src = currentImageData;
                     resetFilters();
                 }
             });
@@ -391,7 +391,7 @@
     
     // 核心函数：将当前参数应用到图?
     function applyFiltersAndRender() {
-        if (!originalImageData) return;
+        if (!currentImageData) return;
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.onload = () => {
@@ -409,7 +409,7 @@
             // 更新尺寸信息
             imgInfoSpan.innerText = `${img.width} x ${img.height}`;
         };
-        img.src = originalImageData;
+        img.src = currentImageData;
     }
     
     function buildAdvancedFilter() {
@@ -439,27 +439,36 @@
         const reader = new FileReader();
         reader.onload = (e) => {
             originalImageData = e.target.result;
+            currentImageData = e.target.result;
+            imgElement.onload = () => {
+                resetFilters();
+                applyFiltersAndRender();
+                pushHistory();
+            };
             imgElement.src = originalImageData;
-            resetFilters();
-            pushHistory();
         };
         reader.readAsDataURL(file);
     }
     
-    uploadZone.addEventListener('click', () => imageUpload.click());
     imageUpload.addEventListener('change', (e) => { if(e.target.files.length) loadImageFromFile(e.target.files[0]); });
-    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); uploadZone.classList.add('drag-over'); });
+    uploadZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadZone.classList.remove('drag-over');
+    });
     uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault(); uploadZone.classList.remove('drag-over');
+        e.preventDefault();
+        e.stopPropagation();
+        uploadZone.classList.remove('drag-over');
         if(e.dataTransfer.files.length) loadImageFromFile(e.dataTransfer.files[0]);
     });
     
-    // 实时监听滑块调整并非实时应用到图?节省性能)，点击应用才触发
-    brightnessSlider.addEventListener('input', (e) => { currentFilters.brightness = parseInt(e.target.value); updateSlidersDisplay(); });
-    contrastSlider.addEventListener('input', (e) => { currentFilters.contrast = parseInt(e.target.value); updateSlidersDisplay(); });
-    saturationSlider.addEventListener('input', (e) => { currentFilters.saturation = parseInt(e.target.value); updateSlidersDisplay(); });
-    blurSlider.addEventListener('input', (e) => { currentFilters.blur = parseFloat(e.target.value); updateSlidersDisplay(); });
+    // 实时监听滑块调整并应用到图片
+    brightnessSlider.addEventListener('input', (e) => { currentFilters.brightness = parseInt(e.target.value); updateSlidersDisplay(); applyFiltersAndRender(); });
+    contrastSlider.addEventListener('input', (e) => { currentFilters.contrast = parseInt(e.target.value); updateSlidersDisplay(); applyFiltersAndRender(); });
+    saturationSlider.addEventListener('input', (e) => { currentFilters.saturation = parseInt(e.target.value); updateSlidersDisplay(); applyFiltersAndRender(); });
+    blurSlider.addEventListener('input', (e) => { currentFilters.blur = parseFloat(e.target.value); updateSlidersDisplay(); applyFiltersAndRender(); });
     
     document.querySelectorAll('.reset-val').forEach(el => {
         el.addEventListener('click', (e) => {
@@ -475,7 +484,8 @@
     
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-primary text-white');
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
+            btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
             currentFilters.filterType = btn.getAttribute('data-filter');
             applyFiltersAndRender();
         });
@@ -497,9 +507,9 @@
         link.click();
     });
     
-    // 旋转翻转功能
+    // 旋转翻转功能 - 基于当前显示效果变换，保持滤镜设置
     function rotateImage(degrees) {
-        if (!originalImageData) return;
+        if (!mainImage.src || mainImage.src.includes('svg')) return;
         const img = new Image();
         img.onload = () => {
             canvas.width = img.height;
@@ -511,16 +521,18 @@
             ctx.drawImage(img, -img.width/2, -img.height/2);
             ctx.restore();
             const rotatedUrl = canvas.toDataURL('image/png');
-            originalImageData = rotatedUrl;
-            resetFilters();
-            applyFiltersAndRender();
+            mainImage.src = rotatedUrl;
+            currentImageData = rotatedUrl;
+            imgElement.src = currentImageData;
+            // 保持滤镜设置，但不立即应用（因为变换已经包含了效果）
+            // 用户继续调整滤镜时，会应用在变换后的图片上
             pushHistory();
         };
-        img.src = originalImageData;
+        img.src = mainImage.src;
     }
     
     function flipImage(direction) {
-        if (!originalImageData) return;
+        if (!mainImage.src || mainImage.src.includes('svg')) return;
         const img = new Image();
         img.onload = () => {
             canvas.width = img.width;
@@ -531,12 +543,14 @@
             ctx.drawImage(img, direction === 'horizontal' ? -img.width : 0, direction === 'vertical' ? -img.height : 0);
             ctx.restore();
             const flippedUrl = canvas.toDataURL('image/png');
-            originalImageData = flippedUrl;
-            resetFilters();
-            applyFiltersAndRender();
+            mainImage.src = flippedUrl;
+            currentImageData = flippedUrl;
+            imgElement.src = currentImageData;
+            // 保持滤镜设置，但不立即应用（因为变换已经包含了效果）
+            // 用户继续调整滤镜时，会应用在变换后的图片上
             pushHistory();
         };
-        img.src = originalImageData;
+        img.src = mainImage.src;
     }
     
     rotateLeftBtn.addEventListener('click', () => rotateImage(-90));

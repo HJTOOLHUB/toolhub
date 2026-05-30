@@ -7,7 +7,7 @@
     <title>图片裁剪工具 - HJ_TOOL HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- 引入 Cropper.js 专业裁剪�?-->
+    <!-- 引入 Cropper.js 专业裁剪工具 -->
     <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.1/dist/cropper.min.js"></script>
     <script>
@@ -102,7 +102,7 @@
             </nav>
             <div class="md:hidden">
                 <button id="menu-toggle" class="text-gray-700 hover:text-primary">
-                    <i class="fa fa-bars text-2xl"></i>
+                    <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
@@ -123,11 +123,11 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div>
                     <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">图片裁剪工具</h1>
-                    <p class="text-gray-600 max-w-2xl">自由裁剪图片 | 支持自定义比�?固定比例 | 实时预览裁剪效果 | 导出高质量图�</p>
+                    <p class="text-gray-600 max-w-2xl">自由裁剪图片 | 支持自定义比例固定比例 | 实时预览裁剪效果 | 导出高质量图片</p>
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
-                        <i class="fa fa-home mr-2"></i> 返回首页
+                        <i class="fa-solid fa-home mr-2"></i> 返回首页
                     </a>
                 </div>
             </div>
@@ -140,15 +140,15 @@
                 <!-- 左侧：控制面板 -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 sticky top-24">
-                        <h3 class="font-bold text-lg flex items-center mb-4"><i class="fa fa-crop text-primary mr-2"></i> 裁剪设置</h3>
+                        <h3 class="font-bold text-lg flex items-center mb-4"><i class="fa-solid fa-crop text-primary mr-2"></i> 裁剪设置</h3>
                         
-                        <!-- 图片上传�?-->
-                        <div id="uploadZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-4 text-center mb-5 cursor-pointer hover:border-primary transition bg-gray-50">
-                            <i class="fa fa-cloud-upload text-2xl text-gray-600 mb-1"></i>
-                            <p class="text-sm text-gray-600">点击或拖拽上传图�</p>
-                            <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                        <!-- 图片上传区域 -->
+                        <label for="imageUpload" id="uploadZone" class="drop-zone block relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center mb-5 cursor-pointer hover:border-primary transition bg-gray-50">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-gray-600 mb-1"></i>
+                            <p class="text-sm text-gray-600">点击或拖拽上传图片</p>
                             <p class="text-xs text-gray-600 mt-1">支持 JPG, PNG, WebP, BMP</p>
-                        </div>
+                            <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp" class="hidden">
+                        </label>
                         
                         <!-- 裁剪比例 -->
                         <div class="mb-5">
@@ -163,7 +163,7 @@
                             </div>
                         </div>
                         
-                        <!-- 导出格式与质�?-->
+                        <!-- 导出格式与质量-->
                         <div class="mb-5">
                             <label class="block text-sm font-medium text-gray-700 mb-2">导出格式</label>
                             <select id="exportFormat" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary">
@@ -173,28 +173,28 @@
                             </select>
                         </div>
                         <div class="mb-5">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">图片质量 (�?JPEG/WebP)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">图片质量 (仅JPEG/WebP)</label>
                             <input type="range" id="qualitySlider" min="0.6" max="1.0" step="0.01" value="0.92" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                            <div class="flex justify-between text-xs text-gray-600 mt-1"><span>小体�</span><span>高质�</span></div>
+                            <div class="flex justify-between text-xs text-gray-600 mt-1"><span>小体积</span><span>高质量</span></div>
                             <p id="qualityValue" class="text-xs text-primary mt-1 text-right">质量: 0.92</p>
                         </div>
                         
                         <!-- 操作按钮 -->
                         <div class="flex gap-2 mt-4">
-                            <button id="cropBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium transition disabled:opacity-50" disabled><i class="fa fa-scissors"></i> 应用裁剪</button>
-                            <button id="resetBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50" disabled><i class="fa fa-refresh"></i></button>
+                            <button id="cropBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium transition disabled:opacity-50" disabled><i class="fa-solid fa-scissors"></i> 应用裁剪</button>
+                            <button id="resetBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50" disabled><i class="fa-solid fa-rotate-right"></i></button>
                         </div>
                         <div class="mt-3">
-                            <button id="downloadBtn" class="w-full bg-green-600 text-gray-700 py-2.5 rounded-lg hover:bg-green-700 font-medium transition disabled:opacity-50" disabled><i class="fa fa-download"></i> 下载裁剪结果</button>
+                            <button id="downloadBtn" class="w-full bg-green-600 text-gray-700 py-2.5 rounded-lg hover:bg-green-700 font-medium transition disabled:opacity-50" disabled><i class="fa-solid fa-download"></i> 下载裁剪结果</button>
                         </div>
                         
                         <div class="bg-blue-50 p-3 rounded-lg text-sm mt-5">
-                            <div class="flex items-center gap-2 mb-2"><i class="fa fa-info-circle text-primary"></i> <span class="font-medium">使用说明</span></div>
+                            <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-info-circle text-primary"></i> <span class="font-medium">使用说明</span></div>
                             <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
-                                <li>点击图片或拖拽上�</li>
+                                <li>点击图片或拖拽上传</li>
                                 <li>拖动/缩放裁剪框选择区域</li>
-                                <li>可选择固定比例或自由裁�</li>
-                                <li>点击“应用裁剪”查看效�</li>
+                                <li>可选择固定比例或自由裁剪</li>
+                                <li>点击"应用裁剪"查看效果</li>
                                 <li>支持 JPG/PNG/WebP 导出</li>
                             </ul>
                         </div>
@@ -205,20 +205,20 @@
                 <div class="lg:col-span-2">
                     <!-- 裁剪区域 -->
                     <div class="bg-gray-900 rounded-2xl shadow-xl overflow-hidden mb-6">
-                        <div class="bg-gray-100 px-4 py-2 text-gray-700 text-sm"><i class="fa fa-crop mr-2"></i> 裁剪区域 (可拖�?缩放矩形�</div>
+                        <div class="bg-gray-100 px-4 py-2 text-gray-700 text-sm"><i class="fa-solid fa-crop mr-2"></i> 裁剪区域</div>
                         <div class="img-container p-4">
-                            <img id="cropImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='16'%3E等待上传图片%3C/text%3E%3C/svg%3E" alt="待裁剪图�?>
+                            <img id="cropImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='16'%3E等待上传图片%3C/text%3E%3C/svg%3E" alt="待裁剪图片">
                         </div>
                     </div>
                     
                     <!-- 预览区域 -->
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                         <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-                            <span class="text-sm font-medium"><i class="fa fa-eye text-primary mr-2"></i> 裁剪预览效果</span>
+                            <span class="text-sm font-medium"><i class="fa-solid fa-eye text-primary mr-2"></i> 裁剪预览效果</span>
                             <span id="previewSize" class="text-xs text-gray-600">尺寸: --x--</span>
                         </div>
                         <div class="preview-box p-4">
-                            <img id="previewImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='12'%3E预览�?3C/text%3E%3C/svg%3E" alt="预览�?>
+                            <img id="previewImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='12'%3E预览图%3C/text%3E%3C/svg%3E" alt="预览图片">
                         </div>
                     </div>
                 </div>
@@ -227,7 +227,7 @@
     </section>
 </main>
 
-<footer class="bg-white/90 backdrop-blur-sm pt-16 pb-8">
+<footer class="bg-gray-100 pt-16 pb-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
@@ -351,7 +351,7 @@
     // 加载图片文件
     function loadImage(file) {
         if (!file || !file.type.startsWith('image/')) {
-            alert('请选择有效的图片文�?);
+            alert('请选择有效的图片文件');
             return;
         }
         const reader = new FileReader();
@@ -362,7 +362,7 @@
             }
             originalImageSrc = imgUrl;
             cropImage.src = imgUrl;
-            // 重新初始化裁剪器，保留当前选中的比�?
+            // 重新初始化裁剪器，保留当前选中的比例
             const activeAspectBtn = document.querySelector('.aspect-btn.active');
             let aspectVal = NaN;
             if (activeAspectBtn && activeAspectBtn.getAttribute('data-aspect') !== 'free') {
@@ -376,14 +376,13 @@
             downloadBtn.disabled = true;
             currentImageBlob = file;
             // 重置预览
-            previewImage.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='12'%3E裁剪后预�?3C/text%3E%3C/svg%3E";
+            previewImage.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-size='12'%3E裁剪后预览%3C/text%3E%3C/svg%3E";
             previewSizeSpan.innerText = '尺寸: --x--';
         };
         reader.readAsDataURL(file);
     }
     
     // 上传区域点击/拖拽
-    uploadZone.addEventListener('click', () => imageUpload.click());
     imageUpload.addEventListener('change', (e) => {
         if (e.target.files.length) loadImage(e.target.files[0]);
         imageUpload.value = '';
@@ -392,19 +391,23 @@
     // 拖拽支持
     uploadZone.addEventListener('dragover', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         uploadZone.classList.add('drag-over');
     });
-    uploadZone.addEventListener('dragleave', () => {
+    uploadZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         uploadZone.classList.remove('drag-over');
     });
     uploadZone.addEventListener('drop', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         uploadZone.classList.remove('drag-over');
         const files = e.dataTransfer.files;
         if (files.length && files[0].type.startsWith('image/')) {
             loadImage(files[0]);
         } else {
-            alert('请拖拽图片文�?);
+            alert('请拖拽图片文件');
         }
     });
     
@@ -413,7 +416,7 @@
     aspectBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             if (!cropper) return;
-            aspectBtns.forEach(b => b.classList.remove('active', 'bg-primary text-white', 'border-primary');
+            aspectBtns.forEach(b => b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
             const ratioVal = btn.getAttribute('data-aspect');
             let aspect = NaN;
             if (ratioVal !== 'free') {
@@ -421,17 +424,18 @@
                 aspect = w / h;
             }
             cropper.setAspectRatio(aspect);
+            btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
         });
     });
-    // 默认激活自由裁�?
-    document.querySelector('.aspect-btn[data-aspect="free"]').classList.add('active', 'bg-primary text-white', 'border-primary');
+    // 默认激活自由裁剪
+    document.querySelector('.aspect-btn[data-aspect="free"]').classList.add('active', 'bg-primary', 'text-white', 'border-primary');
     
     // 应用裁剪
     cropBtn.addEventListener('click', () => {
         if (!cropper) return;
         const canvas = cropper.getCroppedCanvas();
         if (!canvas) {
-            alert('裁剪区域无效，请调整裁剪�?);
+            alert('裁剪区域无效，请调整裁剪区域');
             return;
         }
         const format = exportFormatSelect.value;

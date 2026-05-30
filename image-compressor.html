@@ -92,13 +92,9 @@
                 <a href="index.html#popular.html" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
                 <a href="index.html#features.html" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
             </nav>
-            <div class="hidden md:flex items-center relative">
-                <input type="text" placeholder="搜索工具..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary w-64">
-                <i class="fa fa-search absolute left-3 text-gray-600"></i>
-            </div>
             <div class="md:hidden">
                 <button id="menu-toggle" class="text-gray-700 hover:text-primary">
-                    <i class="fa fa-bars text-2xl"></i>
+                    <i class="fa-solid fa-bars text-2xl"></i>
                 </button>
             </div>
         </div>
@@ -109,9 +105,6 @@
             <a href="index.html#categories.html" class="block py-2 text-primary">工具分类</a>
             <a href="index.html#popular.html" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
             <a href="index.html#features.html" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
-            <div class="relative pt-2">
-                <input type="text" placeholder="搜索工具..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300">
-                <i class="fa fa-search absolute left-5 top-4 text-gray-600"></i>
             </div>
         </div>
     </div>
@@ -127,7 +120,7 @@
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
-                        <i class="fa fa-home mr-2"></i> 返回首页
+                        <i class="fa-solid fa-home mr-2"></i> 返回首页
                     </a>
                 </div>
             </div>
@@ -140,7 +133,7 @@
                 <!-- 左侧：控制面板 -->
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-5 sticky top-24">
-                        <h3 class="font-bold text-lg flex items-center mb-4"><i class="fa fa-sliders text-primary mr-2"></i> 压缩设置</h3>
+                        <h3 class="font-bold text-lg flex items-center mb-4"><i class="fa-solid fa-sliders text-primary mr-2"></i> 压缩设置</h3>
                         <div class="space-y-5">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">压缩质量 <span id="qualityValue" class="text-primary font-mono ml-1">0.8</span></label>
@@ -157,19 +150,19 @@
                                 </select>
                             </div>
                             <div class="bg-blue-50 p-3 rounded-lg text-sm">
-                                <div class="flex items-center gap-2 mb-2"><i class="fa fa-info-circle text-primary"></i> <span class="font-medium">压缩说明</span></div>
+                                <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-info-circle text-primary"></i> <span class="font-medium">压缩说明</span></div>
                                 <ul class="text-xs text-gray-600 space-y-1 list-disc pl-4">
                                     <li>支持 JPG、PNG、WebP、BMP、GIF 格式</li>
-                                    <li>批量上传最�?20 张图�</li>
-                                    <li>压缩在浏览器本地完成，不上传服务�</li>
+                                    <li>批量上传最多 20 张图片</li>
+                                    <li>压缩在浏览器本地完成，不上传服务器</li>
                                     <li>WebP 格式通常体积更小</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="mt-6 pt-4 border-t border-gray-200">
                             <div class="flex gap-2">
-                                <button id="compressAllBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium transition disabled:opacity-50"><i class="fa fa-compress"></i> 开始压缩全部</button>
-                                <button id="clearAllBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"><i class="fa fa-trash-o"></i></button>
+                                <button id="compressAllBtn" class="flex-1 bg-primary text-white py-2.5 rounded-lg hover:bg-primary/90 font-medium transition disabled:opacity-50"><i class="fa-solid fa-compress"></i> 开始压缩全部</button>
+                                <button id="clearAllBtn" class="px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"><i class="fa-solid fa-trash-can"></i></button>
                             </div>
                             <div id="batchProgress" class="mt-3 hidden">
                                 <div class="flex justify-between text-xs text-gray-600 mb-1"><span>批量进度</span><span id="progressText">0/0</span></div>
@@ -183,7 +176,7 @@
                 <div class="lg:col-span-2">
                     <!-- 上传�?-->
                     <div id="dropZone" class="drop-zone border-2 border-dashed border-gray-300 rounded-xl p-8 text-center mb-6 cursor-pointer hover:border-primary transition bg-gray-50">
-                        <i class="fa fa-cloud-upload text-4xl text-gray-600 mb-3"></i>
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-600 mb-3"></i>
                         <p class="text-gray-600 mb-2">拖拽图片至此区域，或点击选择文件</p>
                         <input type="file" id="fileInput" multiple accept="image/jpeg,image/jpg,image/png,image/webp,image/bmp,image/gif" class="hidden">
                         <button id="selectFilesBtn" class="bg-primary text-white px-5 py-2 rounded-lg text-sm hover:bg-primary/90">选择图片</button>
@@ -193,13 +186,13 @@
                     <!-- 任务列表 -->
                     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                         <div class="bg-gray-50 px-5 py-3 border-b border-gray-200 flex justify-between items-center">
-                            <div class="flex items-center gap-2"><i class="fa fa-image text-primary"></i><span class="font-semibold">图片列表</span><span id="taskCount" class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">0</span></div>
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-image text-primary"></i><span class="font-semibold">图片列表</span><span id="taskCount" class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">0</span></div>
                             <div class="flex gap-2 text-xs">
-                                <button id="downloadAllBtn" class="text-primary hover:underline disabled:opacity-40" disabled><i class="fa fa-download"></i> 下载全部(ZIP)</button>
+                                <button id="downloadAllBtn" class="text-primary hover:underline disabled:opacity-40" disabled><i class="fa-solid fa-download"></i> 下载全部(ZIP)</button>
                             </div>
                         </div>
                         <div id="imageList" class="divide-y divide-gray-100 max-h-[550px] overflow-y-auto scrollbar-thin">
-                            <div class="text-center text-gray-600 py-12">�?点击上方区域上传图片，开始压�</div>
+                            <div class="text-center text-gray-600 py-12"> 点击上方区域上传图片，开始压缩</div>
                         </div>
                     </div>
                 </div>
@@ -208,7 +201,7 @@
     </section>
 </main>
 
-<footer class="bg-white/90 backdrop-blur-sm pt-16 pb-8">
+<footer class="bg-gray-100 pt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div>
@@ -319,7 +312,7 @@
         if (validFiles.length === 0) return;
         const currentCount = imageItems.length;
         if (currentCount + validFiles.length > 20) {
-            alert(`最多同时处理 20 张图片，当前已有${currentCount}张，将只添加 {20 - currentCount}张`);
+            alert(`最多同时处理 20 张图片，当前已有${currentCount}张，将只添加 ${20 - currentCount}张`);
             validFiles.splice(0, 20 - currentCount);
         }
         for (let file of validFiles) {
@@ -345,7 +338,7 @@
     // 渲染任务列表
     function renderImageList() {
         if (imageItems.length === 0) {
-            imageListDiv.innerHTML = '<div class="text-center text-gray-600 py-12">📸 暂无图片，请上传需要压缩的图片</div>';
+            imageListDiv.innerHTML = '<div class="text-center text-gray-600 py-12"> 暂无图片，请上传需要压缩的图片</div>';
             taskCountSpan.innerText = '0';
             downloadAllBtn.disabled = true;
             return;
@@ -358,7 +351,7 @@
             const ratio = item.compressedSize && item.originalSize ? ((1 - item.compressedSize / item.originalSize) * 100).toFixed(0) : 0;
             let statusHtml = '';
             if (item.status === 'pending') statusHtml = '<span class="text-xs bg-gray-200 px-2 py-0.5 rounded-full">待压缩</span>';
-            else if (item.status === 'compressing') statusHtml = '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"><i class="fa fa-spinner fa-spin"></i> 压缩中</span>';
+            else if (item.status === 'compressing') statusHtml = '<span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"><i class="fa-solid fa-spinner fa-spin"></i> 压缩中</span>';
             else if (item.status === 'completed') statusHtml = `<span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">已压缩 -${ratio}%</span>`;
             else if (item.status === 'error') statusHtml = '<span class="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">失败</span>';
             
@@ -372,8 +365,8 @@
                         <div class="mt-1">${statusHtml}</div>
                     </div>
                     <div class="flex gap-2">
-                        ${item.status === 'completed' && item.compressedBlob ? `<button class="download-single text-primary text-sm hover:underline" data-id="${item.id}"><i class="fa fa-download"></i> 下载</button>` : ''}
-                        <button class="remove-item text-red-400 hover:text-red-600 text-sm" data-id="${item.id}"><i class="fa fa-trash-o"></i></button>
+                        ${item.status === 'completed' && item.compressedBlob ? `<button class="download-single text-primary text-sm hover:underline" data-id="${item.id}"><i class="fa-solid fa-download"></i> 下载</button>` : ''}
+                        <button class="remove-item text-red-400 hover:text-red-600 text-sm" data-id="${item.id}"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                 </div>
             `;
@@ -459,7 +452,7 @@
     async function compressAll() {
         const pendingItems = imageItems.filter(i => i.status !== 'completed' && i.status !== 'compressing');
         if (pendingItems.length === 0) {
-            alert('所有图片已压缩完成！);
+            alert('所有图片已压缩完成！');
             return;
         }
         if (isCompressing) return;
@@ -492,7 +485,7 @@
     async function downloadAllAsZip() {
         const completedItems = imageItems.filter(i => i.status === 'completed' && i.compressedBlob);
         if (completedItems.length === 0) {
-            alert('没有已压缩的图片可下载！);
+            alert('没有已压缩的图片可下载！');
             return;
         }
         const zip = new JSZip();
@@ -505,9 +498,9 @@
         saveAs(content, `compressed_images_${Date.now()}.zip`);
     }
     
-    // 清理所�?
+    // 清理所有
     function clearAll() {
-        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的压缩结果将丢失！)) {
+        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的压缩结果将丢失！')) {
             imageItems.forEach(item => {
                 if (item.originalUrl) URL.revokeObjectURL(item.originalUrl);
                 if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
