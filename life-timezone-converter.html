@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时区转换工具 - HJ_ToolHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover { transition: all 0.3s ease; }
+            .card-hover:hover { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="font-noto bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </a>
+                </div>
+                
+                <!-- 右侧导航与用户操作 -->
+                <div class="flex items-center space-x-6 ml-auto">
+                    <!-- 桌面端导航-->
+                    <nav class="hidden md:flex space-x-8 items-center">
+                        <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
+                        <a href="index.html#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
+                        <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
+                        <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
+                    </nav>
+
+                    <!-- 用户操作区 -->
+                    <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                        <!-- 已登录状态 -->
+                        <div id="logged-in-section" class="hidden items-center space-x-3">
+                            <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                                <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                                <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                            </a>
+                            <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                管理后台
+                            </a>
+                            <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+                                
+                <!-- 移动端菜单按钮-->
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单-->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="block py-2 text-gray-700 hover:text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary font-medium">特色介绍</a>
+                <div class="relative pt-2">
+                    <input type="text" placeholder="" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <i class="fa-solid fa-search absolute left-5 top-4 text-gray-600"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="pt-24 pb-12 bg-gradient-to-b from-teal-50 to-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">时区转换工具</h1>
+                        <p class="text-gray-600 max-w-2xl">查看世界各地当前时间，快速转换不同时区时间</p>
+                    </div>
+                    <div class="mt-6 md:mt-0">
+                        <a href="index.html" class="inline-flex items-center bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90">
+                            <i class="fa fa-home mr-2"></i> 返回首页
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100 mb-6">
+                    <div class="bg-gradient-to-r from-secondary/90 to-secondary p-6">
+                        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-globe mr-2"></i>世界时区时间</h3>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="worldClocks">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100 mb-6">
+                    <div class="bg-gradient-to-r from-accent/90 to-accent p-6">
+                        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-map mr-2"></i>实时世界地图</h3>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="relative rounded-lg overflow-hidden shadow-lg" style="height: 800px;">
+                            <svg id="worldMap" viewBox="0 0 800 400" class="w-full h-full" preserveAspectRatio="xMidYMid slice">
+                                <defs>
+                                    <radialGradient id="cityGlow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#10B981;stop-opacity:0" />
+                                    </radialGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                
+                                <rect width="800" height="400" fill="#0a1628"/>
+                                
+                                <defs>
+                                    <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#1a3a5c;stop-opacity:1" />
+                                        <stop offset="50%" style="stop-color:#0d2137;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#1a3a5c;stop-opacity:1" />
+                                    </linearGradient>
+                                    <linearGradient id="landGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#2d5a7b;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#1a3a5c;stop-opacity:1" />
+                                    </linearGradient>
+                                    <radialGradient id="cityGlow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" style="stop-color:#10B981;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#10B981;stop-opacity:0" />
+                                    </radialGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                
+                                <g id="fallbackMap" opacity="1">
+                                    <ellipse cx="400" cy="200" rx="395" ry="195" fill="url(#oceanGradient)" stroke="#3a6ea5" stroke-width="1"/>
+                                    
+                                    <g id="worldContinents" opacity="0.85">
+                                        <path d="M50,100 L80,80 L120,90 L150,70 L180,85 L200,100 L180,130 L150,150 L120,140 L80,160 L50,140 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M220,60 L260,50 L300,55 L340,45 L380,50 L420,40 L460,45 L500,50 L520,70 L500,90 L460,100 L420,110 L380,100 L340,120 L300,110 L260,130 L220,120 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M540,50 L580,45 L620,40 L660,45 L700,50 L720,70 L700,90 L660,100 L620,110 L580,120 L540,110 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M750,40 L780,50 L790,70 L780,90 L750,100 L740,80 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M100,180 L130,170 L160,175 L180,190 L160,210 L130,220 L100,210 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M250,200 L280,190 L310,195 L340,185 L370,190 L400,180 L430,185 L450,200 L430,220 L400,230 L370,240 L340,230 L310,240 L280,250 L250,240 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M500,220 L530,210 L560,215 L590,205 L620,210 L650,200 L680,205 L700,220 L680,240 L650,250 L620,260 L590,250 L560,260 L530,270 L500,260 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M720,250 L750,240 L780,250 L790,270 L780,290 L750,300 L720,290 L710,270 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M200,280 L230,270 L260,275 L290,265 L320,270 L350,260 L380,265 L400,280 L380,300 L350,310 L320,300 L290,310 L260,320 L230,310 L200,300 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M450,300 L480,290 L510,295 L540,285 L570,290 L600,280 L630,285 L650,300 L630,320 L600,330 L570,340 L540,330 L510,340 L480,350 L450,340 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M700,320 L730,310 L760,315 L780,330 L760,350 L730,360 L700,350 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                        
+                                        <path d="M150,320 L180,310 L210,315 L240,305 L270,310 L300,300 L330,305 L350,320 L330,340 L300,350 L270,360 L240,350 L210,360 L180,370 L150,360 Z" fill="url(#landGradient)" stroke="#4a7a9c" stroke-width="1"/>
+                                    </g>
+                                    
+                                    <g id="gridLines" opacity="0.15">
+                                        <line x1="0" y1="100" x2="800" y2="100" stroke="#5a8aac" stroke-width="0.5"/>
+                                        <line x1="0" y1="200" x2="800" y2="200" stroke="#5a8aac" stroke-width="0.5"/>
+                                        <line x1="0" y1="300" x2="800" y2="300" stroke="#5a8aac" stroke-width="0.5"/>
+                                        <line x1="200" y1="0" x2="200" y2="400" stroke="#5a8aac" stroke-width="0.5"/>
+                                        <line x1="400" y1="0" x2="400" y2="400" stroke="#5a8aac" stroke-width="0.5"/>
+                                        <line x1="600" y1="0" x2="600" y2="400" stroke="#5a8aac" stroke-width="0.5"/>
+                                    </g>
+                                </g>
+                                
+                                <image id="satelliteImage" 
+                                       href="https://img.cdn1.vip/i/6a1af758f2c50_1780152152.webp" 
+                                       x="0" y="0" width="800" height="400" 
+                                       preserveAspectRatio="xMidYMid slice" 
+                                       opacity="0"
+                                       onload="this.setAttribute('opacity','1'); document.getElementById('fallbackMap').setAttribute('opacity','0');"
+                                       onerror="this.setAttribute('opacity','0');">
+                                    <title>卫星地图</title>
+                                </image>
+                                
+                                <g id="mapCities"></g>
+                            </svg>
+                            
+                            <div id="cityTooltip" class="absolute hidden bg-white px-4 py-3 rounded-lg shadow-xl border-2 border-secondary z-20 pointer-events-none">
+                                <div class="font-semibold text-gray-800" id="tooltipCity"></div>
+                                <div class="text-lg font-bold text-secondary" id="tooltipTime"></div>
+                                <div class="text-sm text-gray-500" id="tooltipOffset"></div>
+                            </div>
+                            
+                            <div class="absolute bottom-4 right-4 bg-white/90 px-3 py-1 rounded-lg shadow text-xs text-gray-600">
+                                <i class="fa-solid fa-globe mr-1"></i>世界地图
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex flex-wrap gap-2 justify-center">
+                            <button onclick="highlightCity(0)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">北京</button>
+                            <button onclick="highlightCity(1)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">东京</button>
+                            <button onclick="highlightCity(2)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">纽约</button>
+                            <button onclick="highlightCity(3)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">洛杉矶</button>
+                            <button onclick="highlightCity(4)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">伦敦</button>
+                            <button onclick="highlightCity(5)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">巴黎</button>
+                            <button onclick="highlightCity(6)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">悉尼</button>
+                            <button onclick="highlightCity(7)" class="px-3 py-1 bg-gray-100 hover:bg-secondary/10 text-gray-700 hover:text-secondary rounded-full text-sm transition-colors">莫斯科</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="bg-gradient-to-r from-secondary/90 to-secondary p-6">
+                        <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-exchange-alt mr-2"></i>时区转换</h3>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">源时区：</label>
+                                <select id="fromZone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary">
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">时间：</label>
+                                <input type="time" id="timeInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary" value="12:00">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">目标时区：</label>
+                                <select id="toZone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:border-secondary">
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center mb-6">
+                            <button id="convertBtn" class="px-8 py-3 bg-secondary text-white font-medium rounded-lg hover:bg-secondary/90 transition-colors">
+                                <i class="fa-solid fa-exchange-alt mr-2"></i>转换时间
+                            </button>
+                        </div>
+                        
+                        <div id="result" class="p-6 bg-gray-50 rounded-lg text-center hidden">
+                            <div class="text-lg text-gray-600 mb-2" id="fromTimeDisplay"></div>
+                            <div class="text-3xl font-bold text-secondary mb-2" id="toTimeDisplay"></div>
+                            <div class="text-sm text-gray-500" id="timeDiff"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-100 pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷</p>
+                    <div class="flex space-x-4">
+                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-qq text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                            <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                            <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                        </a>
+                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github text-2xl text-gray-700"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html#home" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="index.html#categories" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                        <li><a href="index.html#popular" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                        <li><a href="index.html#features" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                        <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                        <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                        <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">3301976275@qq.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">广州市番禺区</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">联系电话：137 1019 0930</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                    <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                    <div class="flex space-x-6">
+                        <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                        <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                        <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        const timezones = [
+            { name: '北京 (中国)', offset: 8, code: 'Asia/Shanghai', lat: 39.9, lon: 116.4, mapX: 150, mapY: 115 },
+            { name: '东京 (日本)', offset: 9, code: 'Asia/Tokyo', lat: 35.7, lon: 139.7, mapX: 190, mapY: 110 },
+            { name: '纽约 (美国)', offset: -5, code: 'America/New_York', lat: 40.7, lon: -74.0, mapX: 850, mapY: 120 },
+            { name: '洛杉矶 (美国)', offset: -8, code: 'America/Los_Angeles', lat: 34.0, lon: -118.2, mapX: 780, mapY: 140 },
+            { name: '伦敦 (英国)', offset: 0, code: 'Europe/London', lat: 51.5, lon: -0.1, mapX: 480, mapY: 100 },
+            { name: '巴黎 (法国)', offset: 1, code: 'Europe/Paris', lat: 48.9, lon: 2.3, mapX: 490, mapY: 105 },
+            { name: '悉尼 (澳大利亚)', offset: 11, code: 'Australia/Sydney', lat: -33.9, lon: 151.2, mapX: 120, mapY: 280 },
+            { name: '莫斯科 (俄罗斯)', offset: 3, code: 'Europe/Moscow', lat: 55.8, lon: 37.6, mapX: 540, mapY: 90 },
+            { name: '迪拜 (阿联酋)', offset: 4, code: 'Asia/Dubai', lat: 25.3, lon: 55.3, mapX: 510, mapY: 160 },
+            { name: '新加坡', offset: 8, code: 'Asia/Singapore', lat: 1.3, lon: 103.8, mapX: 180, mapY: 210 },
+            { name: '首尔 (韩国)', offset: 9, code: 'Asia/Seoul', lat: 37.6, lon: 127.0, mapX: 165, mapY: 112 },
+            { name: '柏林 (德国)', offset: 1, code: 'Europe/Berlin', lat: 52.5, lon: 13.4, mapX: 500, mapY: 98 }
+        ];
+
+        function updateWorldClocks() {
+            const container = document.getElementById('worldClocks');
+            container.innerHTML = '';
+            
+            timezones.slice(0, 8).forEach(zone => {
+                const now = new Date();
+                const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+                const localTime = new Date(utc + zone.offset * 3600000);
+                const hours = localTime.getHours().toString().padStart(2, '0');
+                const minutes = localTime.getMinutes().toString().padStart(2, '0');
+                
+                container.innerHTML += `
+                    <div class="p-4 bg-gray-50 rounded-lg text-center">
+                        <div class="text-sm text-gray-600 mb-1">${zone.name}</div>
+                        <div class="text-xl font-bold text-secondary">${hours}:${minutes}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function populateSelects() {
+            const fromSelect = document.getElementById('fromZone');
+            const toSelect = document.getElementById('toZone');
+            
+            timezones.forEach((zone, index) => {
+                fromSelect.innerHTML += `<option value="${index}">${zone.name}</option>`;
+                toSelect.innerHTML += `<option value="${index}">${zone.name}</option>`;
+            });
+            
+            fromSelect.value = 0;
+            toSelect.value = 3;
+        }
+
+        document.getElementById('convertBtn').addEventListener('click', function() {
+            const fromIndex = parseInt(document.getElementById('fromZone').value);
+            const toIndex = parseInt(document.getElementById('toZone').value);
+            const timeInput = document.getElementById('timeInput').value;
+            
+            const [hours, minutes] = timeInput.split(':').map(Number);
+            const fromOffset = timezones[fromIndex].offset;
+            const toOffset = timezones[toIndex].offset;
+            
+            const diffHours = toOffset - fromOffset;
+            let newHours = hours + diffHours;
+            
+            if (newHours >= 24) newHours -= 24;
+            if (newHours < 0) newHours += 24;
+            
+            const newTime = `${newHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('fromTimeDisplay').textContent = `${timezones[fromIndex].name} ${timeInput}`;
+            document.getElementById('toTimeDisplay').textContent = `${timezones[toIndex].name} ${newTime}`;
+            document.getElementById('timeDiff').textContent = `时差: ${diffHours > 0 ? '+' : ''}${diffHours} 小时`;
+        });
+
+        function updateMapCities() {
+            const mapCities = document.getElementById('mapCities');
+            mapCities.innerHTML = '';
+            
+            timezones.slice(0, 8).forEach((zone, index) => {
+                const now = new Date();
+                const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+                const localTime = new Date(utc + zone.offset * 3600000);
+                const hours = localTime.getHours().toString().padStart(2, '0');
+                const minutes = localTime.getMinutes().toString().padStart(2, '0');
+                
+                const isNight = hours >= 19 || hours < 7;
+                const cityColor = isNight ? '#F59E0B' : '#10B981';
+                const glowColor = isNight ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)';
+                
+                const cityName = zone.name.split(' ')[0];
+                
+                mapCities.innerHTML += `
+                    <g class="city-point" data-index="${index}" style="cursor: pointer;">
+                        <circle cx="${zone.mapX}" cy="${zone.mapY}" r="25" fill="${glowColor}" class="city-glow" filter="url(#glow)"/>
+                        <circle cx="${zone.mapX}" cy="${zone.mapY}" r="10" fill="${cityColor}" stroke="white" stroke-width="3"/>
+                        <circle cx="${zone.mapX}" cy="${zone.mapY}" r="4" fill="white"/>
+                        <text x="${zone.mapX}" y="${zone.mapY - 20}" text-anchor="middle" font-size="12" fill="white" font-weight="600" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${cityName}</text>
+                        <text x="${zone.mapX}" y="${zone.mapY + 30}" text-anchor="middle" font-size="13" fill="white" font-weight="700" style="text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${hours}:${minutes}</text>
+                    </g>
+                `;
+            });
+            
+            document.querySelectorAll('.city-point').forEach(point => {
+                point.addEventListener('mouseenter', function(e) {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showTooltip(index, e);
+                });
+                point.addEventListener('mouseleave', hideTooltip);
+            });
+        }
+
+        function showTooltip(index, event) {
+            const tooltip = document.getElementById('cityTooltip');
+            const zone = timezones[index];
+            
+            const now = new Date();
+            const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+            const localTime = new Date(utc + zone.offset * 3600000);
+            const hours = localTime.getHours().toString().padStart(2, '0');
+            const minutes = localTime.getMinutes().toString().padStart(2, '0');
+            const seconds = localTime.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('tooltipCity').textContent = zone.name;
+            document.getElementById('tooltipTime').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('tooltipOffset').textContent = `UTC${zone.offset >= 0 ? '+' : ''}${zone.offset} | 经纬度: ${zone.lat}°, ${zone.lon}°`;
+            
+            const svg = document.getElementById('worldMap');
+            const rect = svg.getBoundingClientRect();
+            const scaleX = rect.width / 1200;
+            const scaleY = rect.height / 400;
+            
+            let x = zone.mapX * scaleX;
+            let y = zone.mapY * scaleY;
+            
+            const tooltipWidth = 200;
+            const tooltipHeight = 80;
+            
+            if (x + tooltipWidth > rect.width) {
+                x = x - tooltipWidth - 30;
+            } else {
+                x = x + 30;
+            }
+            
+            if (y + tooltipHeight > rect.height) {
+                y = rect.height - tooltipHeight - 10;
+            }
+            if (y < 10) {
+                y = 10;
+            }
+            
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y}px`;
+            tooltip.classList.remove('hidden');
+        }
+
+        function hideTooltip() {
+            document.getElementById('cityTooltip').classList.add('hidden');
+        }
+
+        function highlightCity(index) {
+            const mapCities = document.getElementById('mapCities');
+            const cities = mapCities.querySelectorAll('.city-point');
+            
+            cities.forEach((city, i) => {
+                const glow = city.querySelector('.city-glow');
+                const mainCircle = city.querySelectorAll('circle')[1];
+                
+                if (i === index) {
+                    glow.setAttribute('r', '35');
+                    glow.setAttribute('fill', 'rgba(59, 130, 246, 0.6)');
+                    mainCircle.setAttribute('r', '12');
+                    mainCircle.setAttribute('fill', '#3B82F6');
+                } else {
+                    glow.setAttribute('r', '25');
+                    const zone = timezones[i];
+                    const now = new Date();
+                    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+                    const localTime = new Date(utc + zone.offset * 3600000);
+                    const hours = localTime.getHours();
+                    const isNight = hours >= 19 || hours < 7;
+                    glow.setAttribute('fill', isNight ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)');
+                    mainCircle.setAttribute('r', '10');
+                    mainCircle.setAttribute('fill', isNight ? '#F59E0B' : '#10B981');
+                }
+            });
+            
+            const zone = timezones[index];
+            document.getElementById('fromZone').value = index;
+            
+            const fakeEvent = { target: mapCities.querySelector(`.city-point[data-index="${index}"]`) };
+            showTooltip(index, fakeEvent);
+        }
+
+        updateWorldClocks();
+        populateSelects();
+        updateMapCities();
+        
+        setInterval(updateWorldClocks, 1000);
+        setInterval(updateMapCities, 1000);
+    </script>
+</body>
+</html>

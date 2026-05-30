@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部工具 - HJ_ToolHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6',
+                        amber: '#F59E0B'
+                    },
+                    fontFamily: {
+                        noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+            }
+            img {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-user-drag: none;
+                user-drag: none;
+            }
+        }
+    </style>
+</head>
+<body class="font-noto bg-gray-50 text-gray-800">
+
+    <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
+                    <a href="index.html#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
+                    <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
+                    <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
+                </nav>
+                
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="block py-2 text-gray-700 hover:text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary font-medium">特色介绍</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="pt-24 pb-12 bg-gradient-to-b from-blue-50 to-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">
+                            合金工具库
+                        </h1>
+                        <p class="text-gray-600 max-w-2xl">合金实用工具集合，让您的工作和生活更高效便捷</p>
+                    </div>
+                    <div class="mt-6 md:mt-0">
+                        <a href="index.html#categories" class="inline-flex items-center text-gray-600 hover:text-primary transition-colors">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> 返回首页
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-10 bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <span class="text-gray-700 font-medium">筛选</span>
+                        <button onclick="filterTools('all')" class="filter-btn bg-primary text-white px-4 py-2 rounded-full text-sm transition-colors">全部工具</button>
+                        <button onclick="filterTools('office')" class="filter-btn bg-white hover:bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-700 transition-colors">办公效率</button>
+                        <button onclick="filterTools('image')" class="filter-btn bg-white hover:bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-700 transition-colors">图片处理</button>
+                        <button onclick="filterTools('dev')" class="filter-btn bg-white hover:bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-700 transition-colors">开发辅助</button>
+                        <button onclick="filterTools('life')" class="filter-btn bg-white hover:bg-gray-100 px-4 py-2 rounded-full text-sm text-gray-700 transition-colors">生活服务</button>
+                    </div>
+                </div>
+                
+                <div id="tools-grid" class="flex flex-col gap-12">
+                    
+                    <div class="tools-section" data-section="office">
+                        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
+                            <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-briefcase text-white"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">办公效率</h2>
+                            <span class="ml-3 text-sm text-gray-500">6 款工具</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-pdf text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">PDF 转换工具</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">将PDF文件转换为Word、Excel、图片等多种格式，保留原始排版</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-pdf-converter.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-word text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">文档对比工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">快速对比两个文档的差异，支持Word、PDF、TXT等多种格式</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-document-compare.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-calculator text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">数据计算工具</h3>
+                                        <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">复杂数据计算、公式编辑、图表生成，简化数据处理流程</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-data-calculator.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-font text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">文字排版工具</h3>
+                                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-0.5 rounded">新工具</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">快速调整文本格式、排版样式，一键美化文档外观</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-text-format.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-tasks text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">任务清单工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">创建和管理任务清单，设置提醒，提高工作效率和时间管理</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-task-list.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="office">
+                                <div class="h-40 bg-blue-50 flex items-center justify-center">
+                                    <i class="fa-regular fa-clock text-primary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">杂杂时钟|风华无界</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">让您有时间观念，清楚当前时间，并带有每日签到功能</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="office-time.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="tools-section" data-section="image">
+                        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
+                            <div class="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-image text-white"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">图片处理</h2>
+                            <span class="ml-3 text-sm text-gray-500">6 款工具</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-compress text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片压缩工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">智能压缩图片体积，保持清晰度，支持批量处理和多种格式</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-compressor.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-exchange-alt text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片格式转换</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">支持JPG、PNG、GIF、WebP等多种图片格式互转，保持高质量</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-converter.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-crop text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片裁剪工具</h3>
+                                        <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">精确裁剪图片尺寸，支持固定比例和自由裁剪，简单易用</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-cropper.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-magic text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片美化工具</h3>
+                                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-0.5 rounded">新工具</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">调整亮度、对比度、饱和度，添加滤镜，一键美化图片</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-editor.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-font text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片加水印工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">添加文字或图片水印，自定义位置、透明度和大小，保护版权</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-watermark.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="image">
+                                <div class="h-40 bg-green-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-object-group text-secondary text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">图片拼接工具</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">横向或纵向拼接多张图片，自定义间距和边框，简单高效</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="image-merger.html" class="bg-secondary/10 hover:bg-secondary/20 text-secondary font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="tools-section" data-section="dev">
+                        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
+                            <div class="w-10 h-10 rounded-lg bg-accent flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-code text-white"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">开发辅助</h2>
+                            <span class="ml-3 text-sm text-gray-500">6 款工具</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-code text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">代码格式化工具</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">支持多种编程语言的代码格式化、美化和语法检查</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-code-formatter.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-file-code text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">JSON处理工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">JSON格式化、验证、压缩、转换为其他格式，方便开发调试</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-json-processor.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-key text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">加密解密工具</h3>
+                                        <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">支持MD5、SHA、Base64等多种加密解密方式，简单易用</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-encrypt-decrypt.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-exchange-alt text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">数据格式转换</h3>
+                                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">XML、JSON、CSV等数据格式相互转换，保留数据结构</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-data-converter.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-plug text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">API测试工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">简单快速的API测试工具，支持GET、POST等多种请求方式</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-api-tester.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="dev">
+                                <div class="h-40 bg-purple-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-shuffle text-accent text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">随机数据生成</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">生成随机数、字符串、密码、测试数据等，支持自定义规则</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="dev-random-data.html" class="bg-accent/10 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="tools-section" data-section="life">
+                        <div class="flex items-center mb-6 pb-4 border-b border-gray-200">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-life-ring text-white"></i>
+                            </div>
+                            <h2 class="text-xl font-bold text-gray-800">生活服务</h2>
+                            <span class="ml-3 text-sm text-gray-500">6 款工具</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-exchange-alt text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">单位转换工具</h3>
+                                        <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">支持长度、重量、面积、体积等多种单位转换，精确便捷</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-unit-converter.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-regular fa-calendar text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">日期计算工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">计算两个日期之间的天数，未来日期推算，节假日查询</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-date-calculator.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-heart-pulse text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">BMI计算工具</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">计算身体质量指数(BMI)，评估健康状况，提供健康建议</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-bmi-calculator.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-coins text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">贷款计算工具</h3>
+                                        <span class="bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">计算房贷、车贷等各类贷款的月供、总利息，支持多种还款方式</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-loan-calculator.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-regular fa-clock text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">时区转换工具</h3>
+                                        <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">全球主要城市时区查询和转换，方便跨国沟通和旅行规划</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-timezone-converter.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-card bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100" data-category="life">
+                                <div class="h-40 bg-amber-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-calculator text-amber-500 text-6xl"></i>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h3 class="text-xl font-semibold">卡路里计算器</h3>
+                                        <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-4">估算食物卡路里，记录日常摄入，帮助控制饮食和体重管理</p>
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fa-solid fa-download mr-1"></i>
+                                            <span>0万+使用</span>
+                                        </div>
+                                        <a href="life-calorie-calculator.html" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 font-medium py-2 px-4 rounded-lg transition-colors">
+                                            立即使用
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-100 pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷</p>
+                    <div class="flex space-x-4">
+                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-qq text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                            <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                            <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                        </a>
+                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github text-2xl text-gray-700"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html#home" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="index.html#categories" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                        <li><a href="index.html#popular" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                        <li><a href="index.html#features" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                        <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                        <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                        <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">3301976275@qq.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">广州市番禺区</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">联系电话：137 1019 0930</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                    <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                    <div class="flex space-x-6">
+                        <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                        <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                        <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('bg-white/90');
+                navbar.classList.add('bg-white');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('bg-white/90');
+                navbar.classList.remove('bg-white');
+            }
+        });
+        
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        function filterTools(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            const sections = document.querySelectorAll('.tools-section');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-primary', 'bg-secondary', 'bg-accent', 'bg-amber-500', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+            
+            event.target.classList.remove('bg-white', 'text-gray-700');
+            
+            let activeColor = 'bg-primary';
+            if (category === 'office') activeColor = 'bg-primary';
+            else if (category === 'image') activeColor = 'bg-secondary';
+            else if (category === 'dev') activeColor = 'bg-accent';
+            else if (category === 'life') activeColor = 'bg-amber-500';
+            else activeColor = 'bg-primary';
+            
+            event.target.classList.add(activeColor, 'text-white');
+            
+            sections.forEach(section => {
+                if (category === 'all' || section.dataset.section === category) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

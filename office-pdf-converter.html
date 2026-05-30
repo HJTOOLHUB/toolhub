@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF转换工具 - HJ_TOOL HUB</title>
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+    <title></title>
+    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://unpkg.com/docx-html-renderer@1.0.1/lib/docx-html-renderer.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
@@ -59,7 +60,7 @@
             <div class="flex flex-col md:flex-row items-center justify-between">
                 <div>
                     <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">PDF 转换工具</h1>
-                    <p class="text-gray-600 max-w-2xl">支持PDF与Word、Excel、PPT、图片等格式互转，保留原格式，转换速度</p>
+                    <p class="text-gray-600 max-w-2xl">支持PDF与Word、Excel、PPT、图片等格式互转，保留原格式，转换速度快</p>
                 </div>
                 <div class="mt-6 md:mt-0">
                     <a href="index.html" class="inline-flex items-center bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
@@ -104,31 +105,31 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <div class="bg-gray-50 rounded-lg p-4 text-center">
                         <i class="fa fa-check-circle text-secondary text-xl mb-2"></i>
-                        <p class="text-gray-700 font-medium">无损转换</p>
+                        <p class="text-gray-700 font-medium">无损转换·保留原格式</p>
                         <p class="text-xs text-gray-500">保留原文件格式和样式</p>
                     </div>
                     <div class="bg-gray-50 rounded-lg p-4 text-center">
                         <i class="fa fa-lock text-secondary text-xl mb-2"></i>
-                        <p class="text-gray-700 font-medium">安全保障</p>
-                        <p class="text-xs text-gray-500">文件加密处理，自动删</p>
+                        <p class="text-gray-700 font-medium">安全保障·文件加密</p>
+                        <p class="text-xs text-gray-500">文件加密处理，自动删除原始文件</p>
                     </div>
                     <div class="bg-gray-50 rounded-lg p-4 text-center">
                         <i class="fa fa-bolt text-secondary text-xl mb-2"></i>
-                        <p class="text-gray-700 font-medium">极速转</p>
-                        <p class="text-xs text-gray-500">多线程处理，转换速度</p>
+                        <p class="text-gray-700 font-medium">最新框架·放心靠谱</p>
+                        <p class="text-xs text-gray-500">采用docx-html-renderer超级框架，确保转换质量</p>
                     </div>
                 </div>
 
                 <div id="convertStatus" class="text-center mb-6 hidden">
                     <div class="flex items-center justify-center">
                         <i class="fa fa-spinner fa-spin text-primary mr-2"></i>
-                        <span class="text-primary">转换中，请稍?..</span>
+                        <span class="text-primary">转换中，请稍候...</span>
                     </div>
                 </div>
 
                 <div class="flex justify-center">
                     <button id="convertBtn" class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-primary/90 text-lg font-medium">
-                        开始转<i class="fa fa-arrow-right ml-2"></i>
+                        开始转换<i class="fa fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
@@ -216,30 +217,41 @@
 <div id="printExportContent" style="position: fixed; top: -10000px; left: -10000px; white-space: pre-wrap; font-family: system-ui, 'Microsoft YaHei', sans-serif; font-size: 14px; line-height: 1.6; width: 100%; background: #fff; z-index: -1;"></div>
 
 <style>
-    /* 打印时只输出 #printExportContent 内的原始文档内容，隐藏网页所有其他元?*/
+    /* 打印时只输出文档内容，隐藏网页其他元素 */
     @media print {
-        body * {
+        body > *:not(#printExportContent) {
             display: none !important;
-        }
-        #printExportContent, #printExportContent * {
-            display: block !important;
         }
         #printExportContent {
             display: block !important;
             position: relative !important;
             top: 0 !important;
             left: 0 !important;
-            visibility: visible !important;
             width: 100% !important;
-            padding: 20px !important;
-            font-family: system-ui, 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif !important;
-            font-size: 14px !important;
-            line-height: 1.6 !important;
-            color: #000 !important;
+            padding: 0 !important;
+            margin: 0 !important;
             background: white !important;
-            white-space: pre-wrap !important;
-            word-wrap: break-word !important;
-            box-sizing: border-box !important;
+        }
+        .docx-wrapper {
+            display: block !important;
+            background: white !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .docx-wrapper > section.docx-content {
+            display: block !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+        }
+        .docx-content table {
+            display: table !important;
+            border-collapse: collapse !important;
+        }
+        .docx-content img {
+            max-width: 100% !important;
+            height: auto !important;
         }
     }
 </style>
@@ -268,7 +280,7 @@
     fileInput.addEventListener('change', (e) => {
         if(e.target.files.length > 0){
             selectedFile = e.target.files[0];
-            fileNameDisplay.textContent = `已选择?{selectedFile.name}`;
+            fileNameDisplay.textContent = `已选择: ${selectedFile.name}`;
             fileNameDisplay.classList.remove('hidden');
         } else {
             selectedFile = null;
@@ -304,7 +316,7 @@
         if (files.length > 0) {
             selectedFile = files[0];
             fileInput.files = files;
-            fileNameDisplay.textContent = `已选择?{selectedFile.name}`;
+            fileNameDisplay.textContent = `已选择: ${selectedFile.name}`;
             fileNameDisplay.classList.remove('hidden');
         }
     }
@@ -316,17 +328,18 @@
         
         // TXT 文件直接读取原始文本
         if (ext === '.txt') {
-            const text = await file.text();
-            // 如果文件为空，返回空字符串，让后续处理不添加额外提示
-            return text || "";
+            try {
+                const text = await file.text();
+                return text || "";
+            } catch (err) {
+                console.error('TXT reading error:', err);
+                return "";
+            }
         }
         
-        // DOCX 使用 mammoth 提取纯文?
+        // DOCX 使用 docx-html-renderer 提取内容（保留字体、图片、样式）
         if (ext === '.docx') {
-            const arrayBuffer = await file.arrayBuffer();
-            const result = await mammoth.extractRawText({ arrayBuffer });
-            let text = result.value;
-            return text || "";
+            return { type: 'docx', file: file };
         }
         
         // .doc 旧格式提示（但仍不加头尾信息，仅返回空字符串让用户知晓转换结果）
@@ -357,7 +370,7 @@
     // 转换按钮核心逻辑: 只输出文档原内容，没有任何时间戳、文件名、转换模式等额外文字
     convertBtn.addEventListener('click', async () => {
         if(!selectedFile){
-            alert('请先选择文件?);
+            alert('请先选择文件');
             return;
         }
         
@@ -365,29 +378,52 @@
         convertBtn.disabled = true;
         
         try {
-            // 提取原始文档内容（纯净版）
+            // 提取原始文档内容
             let originalContent = await extractFileOriginalContent(selectedFile);
             
-            // 确保内容不为 undefined/null，若是空内容则打印结果中不会有任何多余文?
+            // 处理 DOCX 文件 - 使用 docx-html-renderer 直接渲染（只保留文档主体内容）
+            if (originalContent && originalContent.type === 'docx') {
+                await docx.renderAsync(originalContent.file, printContentDiv, null, {
+                    className: 'docx-content',
+                    inWrapper: true,
+                    hideWrapperOnPrint: true,
+                    ignoreWidth: false,
+                    ignoreHeight: false,
+                    ignoreFonts: false,
+                    breakPages: true,
+                    useBase64URL: true,
+                    renderHeaders: false,
+                    renderFooters: false,
+                    renderFootnotes: false,
+                    renderEndnotes: false
+                });
+                
+                setTimeout(() => {
+                    window.print();
+                    convertStatusDiv.classList.add('hidden');
+                    convertBtn.disabled = false;
+                }, 800);
+                return;
+            }
+            
+            // 处理其他文件类型（TXT等）
             if (originalContent === undefined || originalContent === null) {
                 originalContent = "";
             }
             
-            // 最终展示的内容：仅用户文档原内容，不加任何额外的头部、尾部、元信息
             let finalContent = originalContent;
+            const isHtmlContent = /<[a-z][\s\S]*>/i.test(finalContent);
+
+            let displayContent;
+            if (isHtmlContent) {
+                displayContent = `<div style="line-height: 1.6;">${finalContent}</div>`;
+            } else {
+                const escapedContent = escapeHtmlPreserveWhitespace(finalContent);
+                displayContent = `<div style="font-family: system-ui, 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif; white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;">${escapedContent}</div>`;
+            }
+
+            printContentDiv.innerHTML = displayContent;
             
-            // 如果内容为空，也不加任何“无内容”提示，保持完全空白或原样（不添加多余文字）
-            // 将内容渲染到打印容器中，使用纯文本保留原始换行和格式
-            // 转义HTML但保留换行转?br>以保证在div中正确显示原文档换行
-            const escapedContent = escapeHtmlPreserveWhitespace(finalContent);
-            
-            // 将内容放入容器（不加任何额外包装文字?
-            printContentDiv.innerHTML = `<div style="font-family: system-ui, 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif; white-space: pre-wrap; word-wrap: break-word; line-height: 1.6;">${escapedContent}</div>`;
-            
-            // 极安全措? 如果内容为空字符串，保证容器内没有任何提示文字，但为了不空白PDF，浏览器打印时显示空白页是符合预期的（用户文档本身为空）?
-            // 但如果用户文档原本有文字却为空，说明提取失败，但仍不加额外说明?
-            
-            // 延迟后调用浏览器的打印功能，导出PDF（只包含用户原始内容?
             setTimeout(() => {
                 window.print();
                 convertStatusDiv.classList.add('hidden');
@@ -396,14 +432,13 @@
             
         } catch (error) {
             console.error("转换错误:", error);
-            // 出错时也不添加额外时间戳或提示，输出空内容，但为防止用户完全无反馈，只在控制台记录错误?
             printContentDiv.innerHTML = `<div style="font-family: system-ui, 'Microsoft YaHei', sans-serif; white-space: pre-wrap;"></div>`;
             setTimeout(() => {
                 window.print();
                 convertStatusDiv.classList.add('hidden');
                 convertBtn.disabled = false;
             }, 300);
-            alert("转换失败，请检查文件格式或重试?);
+            alert("转换失败，请检查文件格式或重试");
         }
     });
     

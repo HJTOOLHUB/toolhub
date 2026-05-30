@@ -38,63 +38,28 @@
     </style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         html {
             scroll-behavior: smooth;
         }
-        
+
         body {
             font-family: 'Inter', system-ui, sans-serif;
-        }
-        
-        .nav-shadow {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(22, 93, 255, 0.1);
         }
     </style>
 </head>
 <body class="bg-white text-dark">
     <!-- 导航栏 -->
-    <header class="fixed w-full bg-white/95 nav-shadow z-50 transition-all duration-300">
+    <header class="fixed w-full bg-white border-b border-gray-100 z-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center space-x-2">
                     <i class="fa fa-shield text-primary text-2xl"></i>
                     <span class="text-xl font-semibold text-dark">隐私保护中心</span>
                 </div>
-                
-                <nav class="hidden md:flex space-x-8">
-                    <a href="#overview" class="text-dark hover:text-primary transition-colors font-medium">概述</a>
-                    <a href="#information" class="text-dark hover:text-primary transition-colors font-medium">信息收集</a>
-                    <a href="#usage" class="text-dark hover:text-primary transition-colors font-medium">使用方式</a>
-                    <a href="#rights" class="text-dark hover:text-primary transition-colors font-medium">您的权利</a>
-                    <a href="#contact" class="text-dark hover:text-primary transition-colors font-medium">联系我们</a>
-                </nav>
-                
-                <button class="md:hidden text-dark text-xl" id="menu-toggle">
-                    <i class="fa fa-bars"></i>
-                </button>
             </div>
         </div>
         
-        <!-- 移动端菜单 -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
-            <div class="container mx-auto px-4 py-3 space-y-3">
-                <a href="#overview" class="block text-dark hover:text-primary transition-colors py-2">概述</a>
-                <a href="#information" class="block text-dark hover:text-primary transition-colors py-2">信息收集</a>
-                <a href="#usage" class="block text-dark hover:text-primary transition-colors py-2">使用方式</a>
-                <a href="#rights" class="block text-dark hover:text-primary transition-colors py-2">您的权利</a>
-                <a href="#contact" class="block text-dark hover:text-primary transition-colors py-2">联系我们</a>
-            </div>
-        </div>
     </header>
 
     <!-- 英雄区域 -->
@@ -108,12 +73,9 @@
                     我们尊重并保护所有使用服务用户的个人隐私权。为了给您提供更准确、更有个性化的服务，我们会按照本隐私权政策的规定使用和披露您的个人信息。
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#last-updated" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-all shadow-lg hover:shadow-primary/20">
+                    <span class="text-muted">
                         最后更新：2025年8月15日
-                    </a>
-                    <a href="#full-policy" class="bg-white hover:bg-neutral text-dark font-medium py-3 px-6 rounded-lg border border-gray-200 transition-all shadow-md hover:shadow-lg">
-                        查看完整政策 <i class="fa fa-arrow-right ml-2"></i>
-                    </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -155,7 +117,7 @@
                         </p>
                         
                         <div class="grid md:grid-cols-2 gap-6 mb-6">
-                            <div class="bg-neutral p-6 rounded-xl card-hover">
+                            <div class="bg-neutral p-6 rounded-xl border border-gray-100">
                                 <div class="flex items-center mb-4">
                                     <i class="fa fa-user-circle text-primary text-xl mr-3"></i>
                                     <h3 class="font-semibold text-lg">个人身份信息</h3>
@@ -165,7 +127,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-neutral p-6 rounded-xl card-hover">
+                            <div class="bg-neutral p-6 rounded-xl border border-gray-100">
                                 <div class="flex items-center mb-4">
                                     <i class="fa fa-laptop text-primary text-xl mr-3"></i>
                                     <h3 class="font-semibold text-lg">设备信息</h3>
@@ -175,7 +137,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-neutral p-6 rounded-xl card-hover">
+                            <div class="bg-neutral p-6 rounded-xl border border-gray-100">
                                 <div class="flex items-center mb-4">
                                     <i class="fa fa-history text-primary text-xl mr-3"></i>
                                     <h3 class="font-semibold text-lg">使用数据</h3>
@@ -185,7 +147,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-neutral p-6 rounded-xl card-hover">
+                            <div class="bg-neutral p-6 rounded-xl border border-gray-100">
                                 <div class="flex items-center mb-4">
                                     <i class="fa fa-map-marker text-primary text-xl mr-3"></i>
                                     <h3 class="font-semibold text-lg">位置信息</h3>
@@ -348,7 +310,7 @@
                         </p>
                         
                         <div class="space-y-6">
-                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-white border border-gray-100 rounded-xl p-5">
                                 <h3 class="font-semibold text-lg mb-2 flex items-center">
                                     <i class="fa fa-eye text-primary mr-2"></i> 访问权
                                 </h3>
@@ -357,7 +319,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-white border border-gray-100 rounded-xl p-5">
                                 <h3 class="font-semibold text-lg mb-2 flex items-center">
                                     <i class="fa fa-pencil text-primary mr-2"></i> 更正权
                                 </h3>
@@ -366,7 +328,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-white border border-gray-100 rounded-xl p-5">
                                 <h3 class="font-semibold text-lg mb-2 flex items-center">
                                     <i class="fa fa-trash text-primary mr-2"></i> 删除权
                                 </h3>
@@ -375,7 +337,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-white border border-gray-100 rounded-xl p-5">
                                 <h3 class="font-semibold text-lg mb-2 flex items-center">
                                     <i class="fa fa-pause text-primary mr-2"></i> 限制使用权
                                 </h3>
@@ -384,7 +346,7 @@
                                 </p>
                             </div>
                             
-                            <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                            <div class="bg-white border border-gray-100 rounded-xl p-5">
                                 <h3 class="font-semibold text-lg mb-2 flex items-center">
                                     <i class="fa fa-exchange text-primary mr-2"></i> 数据可携带权
                                 </h3>
@@ -447,7 +409,7 @@
                                         <li class="flex items-start">
                                             <i class="fa fa-map-marker text-primary mt-1 mr-3"></i>
                                             <span class="text-muted">广州市番禺区钟村</span>
-                                            <img src="https://s1.img-e.com/20250905/68baedf29c152.png" alt="HJ'_DEV" width="300" height="300">
+                                            <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
                                         </li>
                                     </ul>
                                 </div>
@@ -459,47 +421,11 @@
 
     
     <!-- 返回顶部按钮 -->
-    <button id="back-to-top" class="fixed bottom-6 right-6 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+    <button id="back-to-top" class="fixed bottom-6 right-6 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center opacity-0 invisible">
         <i class="fa fa-arrow-up"></i>
     </button>
 
     <script>
-        // 移动端菜单切换
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            const icon = menuToggle.querySelector('i');
-            if (icon.classList.contains('fa-bars')) {
-                icon.classList.replace('fa-bars', 'fa-times');
-            } else {
-                icon.classList.replace('fa-times', 'fa-bars');
-            }
-        });
-        
-        // 关闭移动菜单当点击菜单项
-        const mobileMenuItems = mobileMenu.querySelectorAll('a');
-        mobileMenuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                mobileMenu.classList.add('hidden');
-                const icon = menuToggle.querySelector('i');
-                icon.classList.replace('fa-times', 'fa-bars');
-            });
-        });
-        
-        // 滚动效果 - 导航栏变化
-        const header = document.querySelector('header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('py-2');
-                header.classList.remove('py-4');
-            } else {
-                header.classList.add('py-4');
-                header.classList.remove('py-2');
-            }
-        });
-        
         // 返回顶部按钮
         const backToTopButton = document.getElementById('back-to-top');
         

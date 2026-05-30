@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款计算工具 - HJ_ToolHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-hover { transition: all 0.3s ease; }
+            .card-hover:hover { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="font-noto bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </a>
+                </div>
+                
+                <!-- 右侧导航与用户操作 -->
+                <div class="flex items-center space-x-6 ml-auto">
+                    <!-- 桌面端导航-->
+                    <nav class="hidden md:flex space-x-8 items-center">
+                        <a href="index.html#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
+                        <a href="index.html#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
+                        <a href="index.html#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
+                        <a href="index.html#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
+                    </nav>
+
+                    <!-- 用户操作区 -->
+                    <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                        <!-- 已登录状态 -->
+                        <div id="logged-in-section" class="hidden items-center space-x-3">
+                            <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                                <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                                <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                            </a>
+                            <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                管理后台
+                            </a>
+                            <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+                                
+                <!-- 移动端菜单按钮-->
+                <div class="md:hidden">
+                    <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单-->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-3 space-y-3">
+                <a href="index.html#home" class="block py-2 text-gray-700 hover:text-primary font-medium">首页</a>
+                <a href="index.html#categories" class="block py-2 text-gray-700 hover:text-primary font-medium">工具分类</a>
+                <a href="index.html#popular" class="block py-2 text-gray-700 hover:text-primary font-medium">热门工具</a>
+                <a href="index.html#features" class="block py-2 text-gray-700 hover:text-primary font-medium">特色介绍</a>
+                <div class="relative pt-2">
+                    <input type="text" placeholder="" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                    <i class="fa-solid fa-search absolute left-5 top-4 text-gray-600"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="pt-24 pb-12 bg-gradient-to-b from-teal-50 to-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-3">贷款计算工具</h1>
+                        <p class="text-gray-600 max-w-2xl">计算房贷、车贷等贷款的月供、利息和总还款额</p>
+                    </div>
+                    <div class="mt-6 md:mt-0">
+                        <a href="index.html" class="inline-flex items-center bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90">
+                            <i class="fa fa-home mr-2"></i> 返回首页
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-xl shadow-md p-8 border border-gray-100 max-w-4xl mx-auto">
+                    <div class="flex flex-col items-center mb-8">
+                        <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-money-bill-wave text-secondary text-4xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-semibold mb-2">贷款计算</h2>
+                        <p class="text-gray-600 text-center">计算房贷、车贷等贷款的月供、利息和总还款额</p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="flex flex-wrap items-center gap-4">
+                            <select id="calcType" class="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-secondary/50">
+                                <option value="equal">等额本息</option>
+                                <option value="principal">等额本金</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">贷款金额（万元）：</label>
+                                <input type="number" id="loanAmount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50" placeholder="贷款金额" value="100">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">贷款期限（年）：</label>
+                                <input type="number" id="loanYears" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50" placeholder="贷款期限" value="30">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">年利率（%）：</label>
+                                <input type="number" id="interestRate" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/50" placeholder="年利率" value="4.9" step="0.01">
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button id="calcBtn" class="px-8 py-3 bg-secondary text-white font-medium rounded-lg hover:bg-secondary/90 transition-colors">
+                                <i class="fa-solid fa-calculator mr-2"></i>计算贷款
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="result" class="hidden">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="p-4 bg-blue-50 rounded-lg text-center">
+                                <div class="text-sm text-gray-600 mb-1">贷款总额</div>
+                                <div class="text-xl font-bold text-blue-600" id="totalLoan"></div>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg text-center">
+                                <div class="text-sm text-gray-600 mb-1">首月月供</div>
+                                <div class="text-xl font-bold text-green-600" id="monthlyPayment"></div>
+                            </div>
+                            <div class="p-4 bg-yellow-50 rounded-lg text-center">
+                                <div class="text-sm text-gray-600 mb-1">总利息</div>
+                                <div class="text-xl font-bold text-yellow-600" id="totalInterest"></div>
+                            </div>
+                            <div class="p-4 bg-purple-50 rounded-lg text-center">
+                                <div class="text-sm text-gray-600 mb-1">总还款额</div>
+                                <div class="text-xl font-bold text-purple-600" id="totalPayment"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <h4 class="font-bold text-gray-800 mb-3">还款明细（前12期）：</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="bg-gray-100">
+                                            <th class="px-4 py-2 text-left">期数</th>
+                                            <th class="px-4 py-2 text-left">月供</th>
+                                            <th class="px-4 py-2 text-left">本金</th>
+                                            <th class="px-4 py-2 text-left">利息</th>
+                                            <th class="px-4 py-2 text-left">剩余本金</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scheduleTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-100 pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷</p>
+                    <div class="flex space-x-4">
+                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-qq text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                            <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                            <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                        </a>
+                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github text-2xl text-gray-700"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html#home" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="index.html#categories" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                        <li><a href="index.html#popular" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                        <li><a href="index.html#features" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                        <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                        <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                        <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">3301976275@qq.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">广州市番禺区</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">联系电话：137 1019 0930</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                    <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                    <div class="flex space-x-6">
+                        <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                        <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                        <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <script>
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('calcBtn').addEventListener('click', function() {
+            const amount = parseFloat(document.getElementById('loanAmount').value) * 10000;
+            const years = parseInt(document.getElementById('loanYears').value);
+            const rate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+            const type = document.getElementById('calcType').value;
+            
+            if (!amount || !years || !rate) {
+                alert('请输入有效的贷款参数');
+                return;
+            }
+            
+            const months = years * 12;
+            let totalInterest, totalPayment, monthlyPayment, schedule = [];
+            
+            if (type === 'equal') {
+                monthlyPayment = amount * rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1);
+                totalPayment = monthlyPayment * months;
+                totalInterest = totalPayment - amount;
+                
+                let remaining = amount;
+                for (let i = 1; i <= Math.min(12, months); i++) {
+                    const interest = remaining * rate;
+                    const principal = monthlyPayment - interest;
+                    remaining -= principal;
+                    schedule.push({
+                        period: i,
+                        payment: monthlyPayment,
+                        principal: principal,
+                        interest: interest,
+                        remaining: remaining > 0 ? remaining : 0
+                    });
+                }
+            } else {
+                const principalPerMonth = amount / months;
+                let remaining = amount;
+                totalInterest = 0;
+                
+                for (let i = 1; i <= months; i++) {
+                    const interest = remaining * rate;
+                    const payment = principalPerMonth + interest;
+                    totalInterest += interest;
+                    remaining -= principalPerMonth;
+                    
+                    if (i <= 12) {
+                        schedule.push({
+                            period: i,
+                            payment: payment,
+                            principal: principalPerMonth,
+                            interest: interest,
+                            remaining: remaining > 0 ? remaining : 0
+                        });
+                    }
+                }
+                
+                monthlyPayment = schedule[0].payment;
+                totalPayment = amount + totalInterest;
+            }
+            
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('totalLoan').textContent = (amount / 10000).toFixed(2) + '万';
+            document.getElementById('monthlyPayment').textContent = monthlyPayment.toFixed(2) + '元';
+            document.getElementById('totalInterest').textContent = (totalInterest / 10000).toFixed(2) + '万';
+            document.getElementById('totalPayment').textContent = (totalPayment / 10000).toFixed(2) + '万';
+            
+            const tbody = document.getElementById('scheduleTable');
+            tbody.innerHTML = '';
+            schedule.forEach(row => {
+                tbody.innerHTML += `
+                    <tr class="border-b">
+                        <td class="px-4 py-2">${row.period}</td>
+                        <td class="px-4 py-2">${row.payment.toFixed(2)}</td>
+                        <td class="px-4 py-2">${row.principal.toFixed(2)}</td>
+                        <td class="px-4 py-2">${row.interest.toFixed(2)}</td>
+                        <td class="px-4 py-2">${row.remaining.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

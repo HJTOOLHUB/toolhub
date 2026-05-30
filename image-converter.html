@@ -190,7 +190,7 @@
                             </div>
                         </div>
                         <div id="imageList" class="divide-y divide-gray-100 max-h-[550px] overflow-y-auto scrollbar-thin">
-                            <div class="text-center text-gray-600 py-12">🖼�?点击上方区域上传图片，选择目标格式开始转�</div>
+                            <div class="text-center text-gray-600 py-12">🖼�?点击上方区域上传图片，选择目标格式开始转换</div>
                         </div>
                     </div>
                 </div>
@@ -355,13 +355,13 @@
                             item.status = 'completed';
                             resolve(true);
                         } else {
-                            reject(new Error('转换失败，无法生成图�?));
+                            reject(new Error('转换失败，无法生成图片'));
                         }
                     }, outputMime, qualityParam);
                 };
                 img.onerror = () => {
                     URL.revokeObjectURL(objectUrl);
-                    reject(new Error('图片加载失败，可能文件损�?));
+                    reject(new Error('图片加载失败，可能文件损坏'));
                 };
                 img.src = objectUrl;
             } catch (err) {
@@ -426,8 +426,8 @@
                     <img src="${item.originalUrl}" class="image-preview w-16 h-16 object-cover rounded-lg border">
                     <div class="flex-1 min-w-[150px]">
                         <div class="font-medium text-sm truncate max-w-[200px]" title="${escapeHtml(item.file.name)}">${escapeHtml(item.file.name)}</div>
-                        <div class="text-xs text-gray-500 mt-0.5">原大�? ${sizeKB} KB</div>
-                        <div class="text-xs text-gray-500">转换�? ${convertedKB} KB</div>
+                        <div class="text-xs text-gray-500 mt-0.5">原大小 ${sizeKB} KB</div>
+                        <div class="text-xs text-gray-500">转换大小 ${convertedKB} KB</div>
                         <div class="mt-1">${statusHtml}</div>
                     </div>
                     <div class="flex gap-2">
@@ -474,7 +474,7 @@
     async function convertAll() {
         const pendingItems = imageItems.filter(i => i.status !== 'completed' && i.status !== 'converting');
         if (pendingItems.length === 0) {
-            alert('所有图片已完成转换�?);
+            alert('所有图片已完成转换');
             return;
         }
         if (isConverting) return;
@@ -517,7 +517,7 @@
     async function downloadAllAsZip() {
         const completedItems = imageItems.filter(i => i.status === 'completed' && i.convertedBlob);
         if (completedItems.length === 0) {
-            alert('没有已转换的图片可下�?);
+            alert('没有已转换的图片可下载');
             return;
         }
         const zip = new JSZip();
@@ -534,7 +534,7 @@
     
     // 清空所�?
     function clearAll() {
-        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的转换结果将丢失�?)) {
+        if (imageItems.length > 0 && confirm('确定清空所有图片吗？未保存的转换结果将丢失。')) {
             imageItems.forEach(item => {
                 if (item.originalUrl) URL.revokeObjectURL(item.originalUrl);
                 if (item.convertedUrl) URL.revokeObjectURL(item.convertedUrl);
