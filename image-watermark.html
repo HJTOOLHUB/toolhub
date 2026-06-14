@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>图片加水印工具- HJ_TOOL HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -338,14 +338,15 @@
     const posBtns = document.querySelectorAll('.pos-btn');
     posBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            posBtns.forEach(b => b.classList.remove('active', 'bg-primary text-white', 'border-primary');
+            posBtns.forEach(b => b.classList.remove('active', 'bg-primary', 'text-white', 'border-primary'));
+            btn.classList.add('active', 'bg-primary', 'text-white', 'border-primary');
+            currentPosition = btn.dataset.pos;
+            // 如果已有图片，重新绘制当前水印
+            if(originalImage) {
+                drawWatermarkOnCanvas();
             }
         });
-        // 如果已有图片，重新绘制当前水?
-        if(originalImage) {
-            drawWatermarkOnCanvas();
-        }
-    }
+    });
     
     // 计算水印绘制坐标 (基于canvas尺寸, 水印块宽?
     function calculateWatermarkPosition(canvasW, canvasH, watermarkWidth, watermarkHeight, pos, offsetXVal, offsetYVal) {
@@ -492,7 +493,7 @@
     // 上传图片处理
     function loadImageFromFile(file) {
         if (!file || !file.type.startsWith('image')) {
-            alert('请选择有效的图片文?);
+            alert('请选择有效的图片文件');
             return;
         }
         const reader = new FileReader();
@@ -582,7 +583,7 @@
         ctx.font = '16px system-ui';
         ctx.textAlign = 'center';
         ctx.fillText('等待上传图片', 300, 200);
-        imgInfoSpan.innerText = '未载入图?;
+        imgInfoSpan.innerText = '未载入图片';
     }
     initPlaceholder();
     
@@ -596,6 +597,23 @@
     
     // 确保位置按钮初始高亮居中
     document.querySelector('.pos-btn[data-pos="center"]').classList.add('active', 'bg-primary text-white', 'border-primary');
+    
+    // 禁用双指缩放
+    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+    document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+    document.addEventListener('gestureend', function(e) { e.preventDefault(); });
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) { e.preventDefault(); }
+    }, { passive: false });
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+        lastTouchEnd = now;
+    }, false);
+    document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) { e.preventDefault(); }
+    }, { passive: false });
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>HJ_ToolHub-合金实用工具集合</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -30,6 +30,19 @@
         }
     </script>
     <style type="text/tailwindcss">
+        /* 禁用移动端缩放和拖动 */
+        html {
+            touch-action: pan-y;
+            overscroll-behavior: contain;
+        }
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
         @layer utilities {
             .content-auto {
                 content-visibility: auto;
@@ -347,7 +360,7 @@
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="flex flex-col md:flex-row items-center">
                     <div class="md:w-1/2 md:pr-12 mb-10 md:mb-0">
-                        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6">
+                        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6 min-h-[clamp(4rem,10vw,7rem)] overflow-hidden">
                             <span id="typing-effect" class="typing-cursor gradient-text"></span>
                         </h1>
                         <p class="text-lg text-gray-600 mb-8 max-w-lg">
@@ -765,7 +778,7 @@
         <!-- 移动端底部导航栏 -->
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-b from-gray-100 to-white border-t border-gray-200 z-50">
             <div class="container mx-auto px-4">
-                <div class="flex justify-around items-center h-14">
+                <div class="flex justify-around items-center h-16">
                     <a href="#home" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
                         <i class="fa-solid fa-home text-lg"></i>
                         <span class="text-xs mt-1">首页</span>
@@ -940,6 +953,17 @@
         
         // 页面加载时检查登录状态
         document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        
+        // 页面刷新后保持滚动位置
+        const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+        if (savedScrollPosition !== null) {
+            window.scrollTo(0, parseInt(savedScrollPosition));
+        }
+        
+        // 页面卸载前保存滚动位置
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
+        });
         
         // 导航栏滚动效果
         const navbar = document.getElementById('navbar');
@@ -1208,6 +1232,43 @@
                 return false;
             }
         });
+        
+        // 禁用双指缩放
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function(e) {
+            e.preventDefault();
+        });
+        
+        // 禁用触摸缩放
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // 禁用双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // 禁用鼠标滚轮缩放
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html>
