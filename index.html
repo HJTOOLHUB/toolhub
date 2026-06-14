@@ -310,49 +310,28 @@
                     </nav>
 
                     <!-- 用户操作区 -->
-                    <div class="hidden md:flex items-center space-x-4" id="auth-section">
-                        <!-- 已登录状态 -->
-                        <div id="logged-in-section" class="hidden items-center space-x-3">
-                            <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                                <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
-                                <span id="nav-user-name" class="text-gray-700 font-medium"></span>
-                            </a>
-                            <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
-                                管理后台
-                            </a>
-                            <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
+                        <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                            <!-- 已登录状态 -->
+                            <div id="logged-in-section" class="hidden items-center space-x-3">
+                                <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                                    <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                                    <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                                </a>
+                                <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                    管理后台
+                                </a>
+                                <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            </div>
+                            
                         </div>
-                        
                     </div>
                 </div>
-                                
-                <!-- 移动端菜单按钮-->
-                <div class="md:hidden">
-                    <button id="menu-toggle" class="text-gray-700 hover:text-primary focus:outline-none">
-                        <i class="fa-solid fa-bars text-2xl"></i>
-                    </button>
-                </div>
             </div>
-        </div>
-        
-        <!-- 移动端菜单-->
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-            <div class="container mx-auto px-4 py-3 space-y-3">
-                <a href="#home" class="block py-2 text-gray-700 hover:text-primary font-medium">首页</a>
-                <a href="#categories" class="block py-2 text-gray-700 hover:text-primary font-medium">工具分类</a>
-                <a href="#popular" class="block py-2 text-gray-700 hover:text-primary font-medium">热门工具</a>
-                <a href="#features" class="block py-2 text-gray-700 hover:text-primary font-medium">特色介绍</a>
-                <div class="relative pt-2">
-                    <input type="text" placeholder="" class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
-                    <i class="fa-solid fa-search absolute left-5 top-4 text-gray-600"></i>
-                </div>
-            </div>
-        </div>
-    </header>
+        </header>
 
-    <main>
+    <main class="pb-16 md:pb-0">
         <!-- 开头区域-->
         <section id="home" class="pt-16 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white relative overflow-hidden">
             <!-- 背景动画容器 -->
@@ -783,8 +762,35 @@
             </div>
         </section>
 
+        <!-- 移动端底部导航栏 -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-b from-gray-100 to-white border-t border-gray-200 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-around items-center h-14">
+                    <a href="#home" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-home text-lg"></i>
+                        <span class="text-xs mt-1">首页</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#categories" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-th-large text-lg"></i>
+                        <span class="text-xs mt-1">工具分类</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#popular" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-star text-lg"></i>
+                        <span class="text-xs mt-1">热门工具</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#features" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-feather text-lg"></i>
+                        <span class="text-xs mt-1">特色介绍</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
 <!-- 页脚 -->
-    <footer class="bg-gray-100 pt-16 pb-8">
+    <footer class="bg-gray-100 pt-16 pb-8 md:pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                 <div>
@@ -935,14 +941,6 @@
         // 页面加载时检查登录状态
         document.addEventListener('DOMContentLoaded', checkLoginStatus);
         
-        // 移动端菜单切换
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        
-        menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-        
         // 导航栏滚动效果
         const navbar = document.getElementById('navbar');
         
@@ -986,9 +984,6 @@
                 
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
-                    // 关闭移动菜单（如果打开）
-                    mobileMenu.classList.add('hidden');
-                    
                     // 滚动到目标位置
                     targetElement.scrollIntoView({
                         behavior: 'smooth'

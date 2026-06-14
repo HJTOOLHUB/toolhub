@@ -89,24 +89,11 @@
                 <a href="index.html#popular.html" class="text-gray-700 hover:text-primary font-medium">热门工具</a>
                 <a href="index.html#features.html" class="text-gray-700 hover:text-primary font-medium">特色介绍</a>
             </nav>
-            <div class="md:hidden">
-                <button id="menu-toggle" class="text-gray-700 hover:text-primary">
-                    <i class="fa-solid fa-bars text-2xl"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-        <div class="container mx-auto px-4 py-3 space-y-3">
-            <a href="index.html#home.html" class="block py-2 text-gray-700 hover:text-primary">首页</a>
-            <a href="index.html#categories.html" class="block py-2 text-primary">工具分类</a>
-            <a href="index.html#popular.html" class="block py-2 text-gray-700 hover:text-primary">热门工具</a>
-            <a href="index.html#features.html" class="block py-2 text-gray-700 hover:text-primary">特色介绍</a>
         </div>
     </div>
 </header>
 
-<main>
+<main class="pb-16 md:pb-0">
     <section class="pt-24 pb-6 bg-gradient-to-b from-blue-50 to-white">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row items-center justify-between">
@@ -197,9 +184,36 @@
             </div>
         </div>
     </section>
+
+        <!-- 移动端底部导航栏 -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-b from-gray-100 to-white border-t border-gray-200 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-around items-center h-14">
+                    <a href="index.html#home" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-home text-lg"></i>
+                        <span class="text-xs mt-1">首页</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="index.html#categories" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-th-large text-lg"></i>
+                        <span class="text-xs mt-1">工具分类</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="index.html#popular" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-star text-lg"></i>
+                        <span class="text-xs mt-1">热门工具</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="index.html#features" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-feather text-lg"></i>
+                        <span class="text-xs mt-1">特色介绍</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
 </main>
 
-<footer class="bg-gray-100 pt-16 pb-8">
+<footer class="bg-gray-100 pt-16 pb-8 md:pb-8">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div>
