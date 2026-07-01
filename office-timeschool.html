@@ -206,53 +206,6 @@
         to { opacity: 1; }
       }
 
-      /* 官方背景预览区域 */
-      .official-bg-section {
-        margin: 1rem 0;
-        border-top: 1px solid #e5e7eb8f;
-        padding-top: 1rem;
-      }
-      .official-bg-title {
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        @apply text-neutral-700 dark:text-neutral-200;
-      }
-      .bg-thumbnails {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      .bg-thumb-item {
-        width: 80px;
-        height: 60px;
-        border-radius: 10px;
-        overflow: hidden;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      }
-      .bg-thumb-item:hover {
-        transform: scale(1.02);
-        border-color: #83f512;
-        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
-      }
-      .bg-thumb-item.active-bg {
-        border-color: #34C759;
-        box-shadow: 0 0 0 2px rgba(52,199,89,0.5);
-      }
-      .bg-thumb-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-      }
-
       /* 日历卡片 */
       .calendar-card {
         width: 80%;
@@ -411,36 +364,6 @@
         border-color: rgba(0,0,0,0.1);
       }
 
-      .local-upload-area {
-        margin: 1rem 0;
-        border-top: 1px solid #e5e7eb;
-        padding-top: 1rem;  
-      }
-      .local-upload-label {
-        background-color: #f3f4f6;
-        padding: 8px 12px;
-        border-radius: 9999px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s;
-        @apply dark:bg-neutral-700 dark:text-white;
-      }
-      .local-upload-label:hover {
-        background-color: #e5e7eb8a;
-        @apply dark:bg-neutral-600;
-      }
-      .bg-preview-img {
-        max-width: 100%;
-        max-height: 100px;
-        border-radius: 8px;
-        margin-top: 10px;
-        border: 1px solid #ddd;
-        display: none;
-      }
-
       /* 重要提示卡片  */
       .important-card {
         position: fixed;
@@ -449,6 +372,8 @@
         transform: translate(-50%, -50%);
         width: 90%;
         max-width: 680px;
+        max-height: 90vh;
+        overflow-y: auto;
         background-color: #ff000054;
         border-radius: 20px;
         padding: 1.2rem 1.5rem 1.5rem 1.5rem;
@@ -467,13 +392,13 @@
         animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       }
       .important-card .important-icon {
-        font-size: 3.5rem;
+        font-size: clamp(2rem, 8vw, 3.5rem);
         color: #FFE484;
         margin-bottom: 0.5rem;
         text-shadow: 0 2px 5px rgba(0,0,0,0.2);
       }
       .important-card .important-title {
-        font-size: 2rem;
+        font-size: clamp(1.2rem, 5vw, 2rem);
         font-weight: 900;
         letter-spacing: -0.5px;
         color: white;
@@ -488,13 +413,17 @@
         width: 100%;
         margin: 0.8rem 0 1.2rem;
         color: #fff8e7;
-        font-size: 1.1rem;
+        font-size: clamp(0.9rem, 3vw, 1.1rem);
         line-height: 1.5;
         font-weight: 500;
         border: 1px solid rgba(255,245,180,0.4);
-        text-align: left;
+        text-align: center;
         word-break: break-word;
         white-space: pre-wrap;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
       .important-close-btn {
         background-color: white;
@@ -503,7 +432,7 @@
         border-radius: 60px;
         padding: 0.7rem 1.6rem;
         font-weight: 800;
-        font-size: 1.1rem;
+        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
@@ -544,128 +473,6 @@
           opacity: 1;
           transform: translate(-50%, -50%);
         }
-      }
-
-      .apology-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 520px;
-        background: linear-gradient(145deg, rgba(60, 60, 60, 0.95), rgba(40, 40, 40, 0.98));
-        border-radius: 20px;
-        padding: 1.8rem 2rem 2rem 2rem;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.15);
-        z-index: 10004;
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 215, 0, 0.4);
-      }
-      .apology-card.show {
-        display: flex;
-        animation: fadeInUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      }
-      .apology-card .apology-icon {
-        font-size: 3.5rem;
-        color: #FFD700;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      }
-      .apology-card .apology-title {
-        font-size: 2rem;
-        font-weight: 900;
-        letter-spacing: -0.5px;
-        color: #fff;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        margin-bottom: 0.75rem;
-      }
-      .apology-card .apology-content {
-        background-color: rgba(255,255,255,0.1);
-        backdrop-filter: blur(4px);
-        border-radius: 16px;
-        padding: 1rem 1.2rem;
-        width: 100%;
-        margin: 0.8rem 0 1.2rem;
-        color: #f0f0f0;
-        font-size: 1rem;
-        line-height: 1.6;
-        font-weight: 500;
-        border: 1px solid rgba(255,255,255,0.2);
-        text-align: left;
-        word-break: break-word;
-        white-space: pre-wrap;
-      }
-      .apology-card .apology-content-placeholder {
-        color: rgba(255,255,255,0.5);
-        font-style: italic;
-      }
-      .apology-close-btn {
-        background-color: #FFD700;
-        color: #1a1a1a;
-        border: none;
-        border-radius: 60px;
-        padding: 0.7rem 1.6rem;
-        font-weight: 800;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        margin-top: 0.2rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .apology-close-btn:hover {
-        background-color: #FFC000;
-        transform: scale(1.02);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-      }
-      .apology-close-btn:active {
-        transform: scale(0.98);
-      }
-      .apology-fix-btn {
-        background-color: #12B7F5;
-        color: white;
-        border: none;
-        border-radius: 60px;
-        padding: 0.7rem 1.6rem;
-        font-weight: 700;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
-        margin-top: 0.6rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .apology-fix-btn:hover {
-        background-color: #0ea5e9;
-        transform: scale(1.02);
-        box-shadow: 0 6px 16px rgba(18,183,245,0.4);
-      }
-      .apology-fix-btn:active {
-        transform: scale(0.98);
-      }
-      .apology-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 10003;
-        display: none;
-        backdrop-filter: blur(5px);
-      }
-      .apology-overlay.show {
-        display: block;
-        animation: fadeBg 0.3s ease;
       }
 
       /* 设置卡片内小组件 */
@@ -745,24 +552,8 @@
         <div class="settings-label-icon"><i class="fa fa-moon-o text-black dark:text-white"></i><span>黑夜模式</span></div>
         <label class="toggle-switch"><input type="checkbox" id="darkModeTogglePanel"><span class="toggle-slider"></span></label>
       </div>
-      <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
-        <div class="settings-label-icon"><i class="fa fa-wrench text-black dark:text-white"></i><span>修复工具</span></div>
-        <i class="fa fa-external-link text-black dark:text-white"></i>
-      </div>
     </div>
   </div>
-
-  <!-- 更新公告 -->
-  <div id="importantOverlay" class="important-overlay"></div>
-  <div id="importantCard" class="important-card">
-    <div class="important-icon"><i class="fa fa-refresh"></i></div>
-    <div class="important-title">error</div>
-    <div class="important-content" id="importantMessageContent">
-     error
-    </div>
-    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> ？</button>
-  </div>
-
 
   <!-- 考试倒计时紧急提醒卡片 -->
   <div id="examCountdownOverlay" class="important-overlay"></div>
@@ -770,10 +561,10 @@
     <div class="important-icon"><i class="fa fa-alarm-clock"></i></div>
     <div class="important-title">期末考试倒计时</div>
     <div class="important-content" style="text-align: center;">
-      <div style="font-size: 1.2rem;">距离期末考试还有</div>
-      <div style="font-size: 15rem; font-weight: 900; color: #FFD700; text-shadow: 0 4px 30px rgba(255,215,0,0.8); margin: 0.5rem 0; line-height: 0.8;" id="countdownCardDays">0</div>
-      <div style="font-size: 1.2rem;">天</div>
-      <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-top: 1rem;">考试日期：2026年7月6日</div>
+      <div style="font-size: clamp(0.8rem, 3vw, 1.2rem);">距离期末考试还有</div>
+      <div style="font-size: clamp(6rem, 25vw, 15rem); font-weight: 900; color: #FFD700; text-shadow: 0 4px 30px rgba(255,215,0,0.8); margin: 0.5rem 0; line-height: 0.8;" id="countdownCardDays">0</div>
+      <div style="font-size: clamp(0.8rem, 3vw, 1.2rem);">天</div>
+      <div style="font-size: clamp(0.7rem, 2.5vw, 0.9rem); color: rgba(255,255,255,0.8); margin-top: 1rem;">考试日期：2026年7月6日</div>
     </div>
     <button id="closeExamCountdownBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我知道了</button>
   </div>
@@ -811,7 +602,7 @@
         <div id="countdownBadge" class="hidden bg-red-500 text-white px-4 py-3 rounded-full font-bold text-xl animate-pulse flex items-center justify-center gap-2 min-w-[200px]">
           距期末考还剩 <span id="countdownDays" class="text-4xl font-extrabold text-yellow-300">0</span> 天
         </div>
-        <nav><ul class="flex space-x-4"><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i>
+        <nav><ul class="flex space-x-4"><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i></button></li></ul></nav>
       </div>
     </div>
   </header>
@@ -825,7 +616,7 @@
   </main>
 
   <script>
-    // ===== 核心逻辑 (完全保留原有功能，仅增强动画效果) =====
+    // ===== 核心逻辑 =====
     const holidaysData = {"2025-01-01":{name:"元旦"},"2025-01-29":{name:"春节"},"2025-01-30":{name:"春节"},"2025-01-31":{name:"春节"},"2025-02-01":{name:"春节"},"2025-02-02":{name:"春节"},"2025-04-04":{name:"清明节"},"2025-05-01":{name:"劳动节"},"2025-05-02":{name:"劳动节"},"2025-05-03":{name:"劳动节"},"2025-05-31":{name:"端午节"},"2025-10-01":{name:"国庆节"},"2025-10-02":{name:"国庆节"},"2025-10-03":{name:"国庆节"},"2025-10-04":{name:"国庆节"},"2025-10-05":{name:"国庆节"},"2025-10-06":{name:"国庆节"},"2025-10-07":{name:"国庆节"},"2025-10-08":{name:"中秋节"},"2026-01-01":{name:"元旦"},"2026-02-17":{name:"春节"},"2026-02-18":{name:"春节"},"2026-02-19":{name:"春节"},"2026-02-20":{name:"春节"},"2026-02-21":{name:"春节"},"2026-02-22":{name:"春节"},"2026-04-05":{name:"清明节"},"2026-05-01":{name:"劳动节"},"2026-06-19":{name:"端午节"},"2026-10-01":{name:"国庆节"},"2026-10-02":{name:"国庆节"},"2026-10-03":{name:"国庆节"},"2026-10-04":{name:"国庆节"},"2026-10-05":{name:"国庆节"},"2026-10-06":{name:"国庆节"},"2026-10-07":{name:"国庆节"},"2026-10-08":{name:"中秋节"}};
     const workdayData = {"2025-04-27":true,"2025-05-10":true,"2025-09-28":true,"2025-10-11":true,"2026-02-14":true,"2026-02-28":true,"2026-09-27":true,"2026-10-10":true};
     function getHolidayInfo(dateStr){ if(holidaysData[dateStr]) return {name:holidaysData[dateStr].name, type:"holiday"}; if(workdayData[dateStr]) return {name:"调休工作日", type:"workday"}; return null; }
@@ -881,7 +672,7 @@
       const examDate = new Date('2026-07-06');
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diffTime = examDate - today;
-      const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       
       const badge = document.getElementById('countdownBadge');
       const daysSpan = document.getElementById('countdownDays');
@@ -1162,22 +953,17 @@
       });
     }
     document.addEventListener('DOMContentLoaded', () => {
-      // 初始化UI组件
       initSloganUI();
       initDarkMode();
       
-      // 全屏按钮事件
       fullscreenBtn.addEventListener('click', toggleFull);
       
-      // 时钟更新
       setInterval(updateClock, 1000);
       updateClock();
       
-      // 渲染日历和提醒列表
       renderCalendar();
       renderRemindersList();
       
-      // 设置面板控制
       let openSet = document.getElementById('openSettingsBtn');
       let panel = document.getElementById('settingsPanelCard');
       let overlay = document.getElementById('settingsPanelOverlay');
@@ -1203,7 +989,6 @@
         overlay.onclick = closeSettingsPanel;
       }
       
-      // 快速设置按钮
       const quickReminderBtn = document.getElementById('quickReminderSettingBtn');
       if(quickReminderBtn) {
         quickReminderBtn.onclick = () => {
@@ -1226,7 +1011,6 @@
         };
       }
       
-      // 返回按钮
       const backFromReminderBtn = document.getElementById('backFromReminderSettings');
       if(backFromReminderBtn) {
         backFromReminderBtn.onclick = () => {
@@ -1250,15 +1034,7 @@
           if(panel) panel.classList.add('show');
         };
       }
-
-      const settingsOpenFixToolBtn = document.getElementById('settingsOpenFixToolBtn');
-      if(settingsOpenFixToolBtn) {
-        settingsOpenFixToolBtn.onclick = () => {
-          window.open("edge-fix.html", "_blank");
-        };
-      }
       
-      // 遮罩层点击关闭
       const reminderOverlay = document.getElementById('reminderOverlay');
       if(reminderOverlay) {
         reminderOverlay.onclick = () => {
@@ -1277,7 +1053,6 @@
         };
       }
       
-      // 添加提醒
       const addReminderBtn = document.getElementById('addReminder');
       if(addReminderBtn) {
         addReminderBtn.onclick = () => {
@@ -1314,7 +1089,6 @@
         };
       }
       
-      // 清空提醒
       const clearRemindersBtn = document.getElementById('clearReminders');
       if(clearRemindersBtn) {
         clearRemindersBtn.onclick = () => {
@@ -1328,7 +1102,6 @@
         };
       }
       
-      // 日历导航
       const prevMonthBtn = document.getElementById('prevMonth');
       if(prevMonthBtn) {
         prevMonthBtn.addEventListener('click', () => {
@@ -1344,79 +1117,6 @@
           renderCalendar();
         });
       }
-      
-      // 更新公告弹窗
-      const UPDATE_KEY_31 = 'hasViewedUpdate31';
-      const FORCE_SHOW_UPDATE_31 = 'forceShowUpdate31';
-      const importantCardDom = document.getElementById('importantCard');
-      const importantOverlayDom = document.getElementById('importantOverlay');
-      const closeImportantBtnDom = document.getElementById('closeImportantBtn');
-      
-      if(!importantCardDom || !importantOverlayDom || !closeImportantBtnDom) {
-        console.warn('Update announcement elements not found');
-      } else {
-        if(!localStorage.getItem(UPDATE_KEY_31)) {
-          importantCardDom.classList.add('show');
-          importantOverlayDom.classList.add('show');
-          localStorage.setItem(FORCE_SHOW_UPDATE_31, 'true');
-        }
-        closeImportantBtnDom.addEventListener('click', function() {
-          importantCardDom.classList.remove('show');
-          importantOverlayDom.classList.remove('show');
-          localStorage.setItem(UPDATE_KEY_31, 'true');
-        });
-      }
-
-      let apologyCard = document.getElementById("apologyCard");
-      let apologyOverlay = document.getElementById("apologyOverlay");
-      let closeApologyBtn = document.getElementById("closeApologyBtn");
-      let openFixToolBtn = document.getElementById("openFixToolBtn");
-      const APOLOGY_CONFIRMED_KEY = "apologyCardConfirmed_school_v1";
-      if (apologyCard && apologyOverlay && localStorage.getItem(APOLOGY_CONFIRMED_KEY) !== "true") {
-        apologyOverlay.classList.add("show");
-        apologyCard.classList.add("show");
-      }
-      if (closeApologyBtn) {
-        closeApologyBtn.onclick = () => {
-          if (apologyCard) {
-            apologyCard.classList.remove("show");
-            apologyOverlay.classList.remove("show");
-            localStorage.setItem(APOLOGY_CONFIRMED_KEY, "true");
-            location.reload();
-          }
-        };
-      }
-      if (apologyOverlay) {
-        apologyOverlay.onclick = () => {
-          if (apologyCard && apologyCard.classList.contains("show")) {
-            apologyCard.classList.remove("show");
-            apologyOverlay.classList.remove("show");
-            localStorage.setItem(APOLOGY_CONFIRMED_KEY, "true");
-          }
-        };
-      }
-      if (openFixToolBtn) {
-        openFixToolBtn.onclick = () => {
-          window.open("edge-fix.html", "_blank");
-        };
-      }
-      
-      // 禁用双指缩放
-      document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
-      document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
-      document.addEventListener('gestureend', function(e) { e.preventDefault(); });
-      document.addEventListener('touchmove', function(e) {
-          if (e.touches.length > 1) { e.preventDefault(); }
-      }, { passive: false });
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function(e) {
-          const now = Date.now();
-          if (now - lastTouchEnd <= 300) { e.preventDefault(); }
-          lastTouchEnd = now;
-      }, false);
-      document.addEventListener('wheel', function(e) {
-          if (e.ctrlKey) { e.preventDefault(); }
-      }, { passive: false });
     });
   </script>
 </body>
