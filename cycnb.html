@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <title>定制时钟</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#12B7F5',
+            secondary: '#FF9500',
+            neutral: {
+              100: '#F5F5F5',
+              200: '#E5E5E5',
+              300: '#D4D4D4',
+              800: '#1F2937',
+              900: '#111827',
+            },
+            toastBorder: '#0F766E',
+            appleGreen: '#34C759',
+            glass: {
+              100: 'rgba(255, 255, 255, 0.8)',
+              200: 'rgba(255, 255, 255, 0.6)',
+              800: 'rgba(31, 41, 55, 0.8)',
+              900: 'rgba(17, 24, 39, 0.6)',
+            },
+            holiday: '#EF4444',
+            restday: '#3B82F6',
+            reminder: '#F59E0B'
+          },
+          fontFamily: {
+            noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto { content-visibility: auto; }
+      .clock-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03); }
+      .btn-glow { box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); }
+      .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+      .card-hover { transition: all 0.3s ease; }
+      .card-hover:hover { transform: translateY(-5px); }
+      .glass-effect {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      }
+      .glass-light { background-color: rgba(255, 255, 255, 0.8); }
+      .glass-dark { background-color: rgba(31, 41, 55, 0.8); }
+
+      /* 公告栏样式 */
+      .announcement-board {
+        width: 100%;
+        max-width: 7xl;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        background-color: white;
+      }
+      .dark .announcement-board {
+        background-color: #1f2937;
+        box-shadow: none;
+        border: 1px solid #374151;
+      }
+      .announcement { display: none; }
+      .announcement.active { display: block; }
+      .announcement img { max-width: 100%; height: auto; margin-bottom: 0.5rem; border-radius: 4px; }
+      
+      /* 方形翻页按钮 */
+      .announcement-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.55);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.9rem;
+        cursor: pointer;
+        border-radius: 8px;
+        z-index: 10;
+        transition: all 0.2s ease;
+        font-size: 1.2rem;
+        backdrop-filter: blur(4px);
+      }
+      .dark .announcement-btn {
+        background-color: rgba(55,65,81,0.8);
+      }
+      .dark .announcement-btn:hover {
+        background-color: #4b5563;
+      }
+      .announcement-btn.prev { left: 1rem; }
+      .announcement-btn.next { right: 1rem; }
+      .announcement-btn:hover { background-color: rgba(0,0,0,0.8); transform: translateY(-50%) scale(1.02); }
+
+      /* 提示框 - 设置更高的z-index确保在遮罩层之上 */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #FFFFFF;
+        color: #1F2937;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s ease;
+        font-size: 18px;
+        font-weight: 500;
+        max-width: 320px;
+        border-left: 4px solid #0F766E;
+      }
+      .dark .toast {
+        background-color: #1f2937;
+        color: white;
+        border-left-color: #374151;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      }
+      .toast.reminder { border-left: 4px solid #EF4444; background-color: #FEF2F2; }
+      .dark .toast.reminder {
+        background-color: rgba(185,28,28,0.3);
+        color: #fca5a5;
+      }
+      .toast.show { opacity: 1; transform: translateX(0); }
+
+      /* 黑夜开关优化 + 液态玻璃开关优化 */
+      .toggle-switch, .glass-toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 52px;
+        height: 28px;
+      }
+      .toggle-switch input, .glass-toggle-switch input { opacity: 0; width: 0; height: 0; }
+      .toggle-slider, .glass-toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 34px;
+      }
+      .dark .toggle-slider, .dark .glass-toggle-slider {
+        background-color: #4b5563;
+      }
+      .toggle-slider:before, .glass-toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .toggle-switch input:checked + .toggle-slider,
+      .glass-toggle-switch input:checked + .glass-toggle-slider {
+        background-color: #30b551 !important;
+      }
+      .toggle-switch input:checked + .toggle-slider:before,
+      .glass-toggle-switch input:checked + .glass-toggle-slider:before {
+        transform: translateX(24px) !important;
+        left: unset !important;
+      }
+
+      /* ========= 卡片动画增强 ========= */
+      /* 设置中心卡片动画 (弹性划入) */
+      .settings-panel-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.92);
+        width: min(90%, 560px);
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        background-color: rgba(255,255,255,0.98);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 30px 50px rgba(0,0,0,0.25);
+        z-index: 10010;
+        display: none;
+        opacity: 0;
+        backdrop-filter: blur(6px);
+        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+      .dark .settings-panel-card {
+        background-color: rgba(31,41,55,0.95);
+        border-color: #374151;
+      }
+      .settings-panel-card.show {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: cardFloatIn 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+      }
+      @keyframes cardFloatIn {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.92);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+
+      /* 背景/提醒/标语子卡片同样添加动画 */
+      .bg-settings-card, .reminder-settings-card, .slogan-settings-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.92);
+        width: min(90%, 540px);
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        background-color: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+        z-index: 10000;
+        display: none;
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+      .dark .bg-settings-card, .dark .reminder-settings-card, .dark .slogan-settings-card {
+        background-color: rgba(31,41,55,0.95);
+        border-color: #374151;
+      }
+      .bg-settings-card.show, .reminder-settings-card.show, .slogan-settings-card.show {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        animation: cardFloatIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+      }
+      .slogan-settings-card { width: min(90%, 560px); }
+      .reminder-settings-card { width: min(90%, 640px); }
+      
+      /* 遮罩层淡入 */
+      .bg-overlay, .reminder-overlay, .slogan-overlay, .settings-panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: none;
+        backdrop-filter: blur(2px);
+      }
+      .dark .bg-overlay, .dark .reminder-overlay, .dark .slogan-overlay, .dark .settings-panel-overlay {
+        background-color: rgba(0,0,0,0.7);
+      }
+      .bg-overlay.show, .reminder-overlay.show, .slogan-overlay.show, .settings-panel-overlay.show { 
+        display: block; 
+        animation: fadeBg 0.2s ease; 
+      }
+      @keyframes fadeBg {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      /* 官方背景预览区域 */
+      .official-bg-section {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb8f;
+        padding-top: 1rem;
+      }
+      .official-bg-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #374151;
+      }
+      .dark .official-bg-title {
+        color: #e5e7eb;
+      }
+      .bg-thumbnails {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .bg-thumb-item {
+        width: 80px;
+        height: 60px;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .bg-thumb-item:hover {
+        transform: scale(1.02);
+        border-color: #83f512;
+        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
+      }
+      .bg-thumb-item.active-bg {
+        border-color: #34C759;
+        box-shadow: 0 0 0 2px rgba(52,199,89,0.5);
+      }
+      .bg-thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* 日历卡片 */
+      .calendar-card {
+        width: 80%;
+        max-width: 28rem;
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem 0.75rem 1rem 0.75rem;
+        margin: 2.5rem auto 1.2rem auto;
+        background-color: white;
+      }
+      .dark .calendar-card {
+        background-color: #1f2937;
+        box-shadow: none;
+        border: 1px solid #374151;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .calendar-nav-btn {
+        background-color: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        padding: 0.35rem 0.9rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: color 0.2s, background-color 0.2s;
+      }
+      .calendar-nav-btn:hover {
+        background-color: #e5e7eb;
+      }
+      .dark .calendar-nav-btn {
+        background-color: #4b5563;
+        color: white;
+      }
+      .dark .calendar-nav-btn:hover {
+        background-color: #374151;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.3rem;
+      }
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 800;
+        padding: 0.3rem 0;
+        color: #191919;
+        font-size: 0.75rem;
+      }
+      .dark .calendar-day-header {
+        color: #d1d5db;
+      }
+      .calendar-day {
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 1000;
+        font-size: 1rem;
+        transition: all 0.15s;
+        position: relative;
+        background-color: transparent;
+      }
+      .calendar-day:hover {
+        background-color: #f3f4f6;
+      }
+      .dark .calendar-day:hover {
+        background-color: rgba(55,65,81,0.7);
+      }
+      .calendar-day.restday {
+        background-color: #EFF6FF;
+        color: #3B82F6;
+        font-weight: 800;
+      }
+      .dark .calendar-day.restday {
+        background-color: rgba(30,58,138,0.2);
+        color: #93c5fd;
+      }
+      .calendar-day.today {
+        border: 2px solid #12f54b;
+        font-weight: 900;
+        background-color: rgba(17, 55, 69, 0.08);
+      }
+      .calendar-day.reminder::after {
+        content: '●';
+        position: absolute;
+        bottom: 5px;
+        font-size: 12px;
+        color: #F59E0B;
+      }
+      .calendar-day.holiday-badge::before {
+        content: '休';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 9px;
+        background: #EF4444;
+        color: white;
+        border-radius: 10px;
+        padding: 0px 4px;
+        font-weight: bold;
+      }
+      .calendar-day.workday-badge::before {
+        content: '班';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 9px;
+        background: #F97316;
+        color: white;
+        border-radius: 10px;
+        padding: 0px 4px;
+        font-weight: bold;
+      }
+      .calendar-day.other-month {
+        color: #5e5e5e;
+        font-weight: 470;
+      }
+      .dark .calendar-day.other-month {
+        color: #6b7280;
+      }
+      
+      /* 日历详细信息卡片 - 增大尺寸 + 划入动画 */
+      .detail-popup {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(40px);
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(8px);
+        border-radius: 16px;
+        padding: 1rem 1.4rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.4);
+        z-index: 10030;
+        max-width: 85%;
+        width: min(380px, 90vw);
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.5);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+        pointer-events: auto;
+      }
+      .dark .detail-popup {
+        background: rgba(31,41,55,0.95);
+        color: #ffffff;
+        border-color: #374151;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      }
+      .detail-popup.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .detail-popup button {
+        margin-top: 12px;
+        background: #1c1c1e;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 18px;
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+      }
+      .dark .detail-popup button {
+        background: #ffffff;
+        color: #000000;
+      }
+      .detail-popup button:hover {
+        transform: scale(1.02);
+        background: #2c2c2e;
+      }
+      .dark .detail-popup button:hover {
+        background: #f0f0f0;
+      }
+      .detail-popup strong {
+        font-size: 1.1rem;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .detail-popup hr {
+        margin: 8px 0;
+        border-color: rgba(0,0,0,0.1);
+      }
+
+      /* 玻璃模式全局样式 */
+      .glass-mode .announcement-board,
+      .glass-mode .calendar-card,
+      .glass-mode #clockCard {
+        background-color: transparent;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+      .glass-mode .announcement-board,
+      .glass-mode .calendar-card,
+      .glass-mode #clockCard {
+        background-color: rgba(255,255,255,0.15);
+      }
+      .dark .glass-mode .announcement-board,
+      .dark .glass-mode .calendar-card,
+      .dark .glass-mode #clockCard {
+        background-color: rgba(0,0,0,0.2);
+      }
+      .local-upload-area {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;  
+      }
+      .local-upload-label {
+        background-color: #f3f4f6;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+      .dark .local-upload-label {
+        background-color: #4b5563;
+        color: white;
+      }
+      .local-upload-label:hover {
+        background-color: rgba(229,231,235,0.54);
+      }
+      .dark .local-upload-label:hover {
+        background-color: #374151;
+      }
+      .bg-preview-img {
+        max-width: 100%;
+        max-height: 100px;
+        border-radius: 8px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        display: none;
+      }
+
+      /* 重要提示卡片  */
+      .important-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(90%, 520px);
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        background-color: #ff000054;
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.2);
+        z-index: 10002;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(2px);
+        border: 1px solid rgba(255,215,0,0.5);
+      }
+      .important-card.show {
+        display: flex;
+        animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .important-card .important-icon {
+        font-size: 3.5rem;
+        color: #FFE484;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      .important-card .important-title {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-bottom: 0.75rem;
+      }
+      .important-card .important-content {
+        background-color: rgba(255,255,255,0.15);
+        backdrop-filter: blur(2px);
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        width: 100%;
+        margin: 0.8rem 0 1.2rem;
+        color: #fff8e7;
+        font-size: 1.1rem;
+        line-height: 1.5;
+        font-weight: 500;
+        border: 1px solid rgba(255,245,180,0.4);
+        text-align: left;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      .important-close-btn {
+        background-color: white;
+        color: #B91C1C;
+        border: none;
+        border-radius: 60px;
+        padding: 0.7rem 1.6rem;
+        font-weight: 800;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        margin-top: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .important-close-btn:hover {
+        background-color: #FFF3BF;
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      }
+      .important-close-btn:active {
+        transform: scale(0.98);
+      }
+      .important-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 10001;
+        display: none;
+        backdrop-filter: blur(5px);
+      }
+      .important-overlay.show {
+        display: block;
+        animation: fadeBg 0.25s ease;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -40%);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%);
+        }
+      }
+
+      
+
+      /* 设置卡片内小组件 */
+      .settings-group-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+      }
+      .dark .settings-group-item {
+        border-bottom-color: #374151;
+      }
+      .settings-group-item:last-child { border-bottom: none; }
+      .settings-label-icon {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      .back-to-settings-btn {
+        background: none;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 1rem;
+        padding: 6px 12px;
+        border-radius: 40px;
+        transition: all 0.2s;
+        color: #1f2937;
+      }
+      .dark .back-to-settings-btn {
+        color: white;
+      }
+      .back-to-settings-btn:hover { 
+        opacity: 0.75; 
+        background-color: rgba(0,0,0,0.05); 
+      }
+      .dark .back-to-settings-btn:hover {
+        background-color: rgba(255,255,255,0.1);
+      }
+      .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.2rem;
+      }
+
+      /* 倒计时样式 - 像素风 */
+      .countdown-pixel {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 14px;
+        color: #34C759;
+        text-shadow: 
+          2px 2px 0 #000,
+          -1px -1px 0 #000,  
+          1px -1px 0 #000,
+          -1px 1px 0 #000,
+          1px 1px 0 #000;
+        background: #1a1a1a;
+        padding: 8px 16px;
+        border: 4px solid #333;
+        border-radius: 4px;
+        box-shadow: 
+          inset 0 0 0 2px #000,
+          4px 4px 0 #000;
+      }
+      .countdown-pixel.dark {
+        color: #34C759;
+        background: #0a0a0a;
+        border-color: #222;
+      }
+
+      /* 倒计时样式 - 简约风 */
+      .countdown-minimal {
+        font-family: 'Noto Sans SC', sans-serif;
+        font-size: 16px;
+        color: #374151;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        background: rgba(255,255,255,0.8);
+        padding: 6px 14px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(0,0,0,0.1);
+      }
+      .dark .countdown-minimal {
+        color: #d4d4d4;
+        background: rgba(31,41,55,0.8);
+        border-color: #374151;
+      }
+
+      /* 倒计时样式 - 科技风 */
+      .countdown-tech {
+        font-family: 'Orbitron', 'Courier New', monospace;
+        font-size: 18px;
+        color: #00d4ff;
+        text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff;
+        background: linear-gradient(135deg, rgba(0,20,40,0.9), rgba(0,40,60,0.9));
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(0,212,255,0.3);
+        box-shadow: 
+          0 0 20px rgba(0,212,255,0.2),
+          inset 0 0 20px rgba(0,212,255,0.05);
+      }
+      .countdown-tech.dark {
+        background: linear-gradient(135deg, rgba(0,10,20,0.95), rgba(0,20,40,0.95));
+      }
+
+      /* 倒计时数字高亮 */
+      .countdown-value {
+        font-weight: bold;
+        margin: 0 2px;
+      }
+
+      /* 节日动画画布 */
+      #festivalCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 9998;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #festivalCanvas.active {
+        opacity: 1;
+      }
+
+      /* 倒计时详情弹窗 */
+      .countdown-detail-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: rgba(255,255,255,0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.2rem 1.5rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        z-index: 10040;
+        max-width: 85%;
+        width: min(360px, 85vw);
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.5);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+      }
+      .dark .countdown-detail-popup {
+        background: rgba(31,41,55,0.98);
+        border-color: #374151;
+      }
+      .countdown-detail-popup.show {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .countdown-detail-popup .detail-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #1f2937;
+      }
+      .dark .countdown-detail-popup .detail-title {
+        color: #ffffff;
+      }
+      .countdown-detail-popup .detail-timer {
+        font-family: 'Orbitron', monospace;
+        font-size: min(1.8rem, 8vw);
+        color: #12B7F5;
+        text-shadow: 0 0 15px rgba(18,183,245,0.5);
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+      }
+      .countdown-detail-popup .detail-info {
+        font-size: 0.85rem;
+        color: #6B7280;
+        margin-bottom: 1rem;
+      }
+      .dark .countdown-detail-popup .detail-info {
+        color: #9ca3af;
+      }
+      .countdown-detail-popup button {
+        background: #12B7F5;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem 1.4rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .countdown-detail-popup button:hover {
+        background: #0ea5e9;
+        transform: scale(1.02);
+      }
+      
+      /* 红色按钮重置/清空 */
+      .btn-danger {
+        background-color: #EF4444 !important;
+        color: white !important;
+      }
+      .btn-danger:hover {
+        background-color: #DC2626 !important;
+      }
+    }
+    
+    /* Element 1: HJ_ToolHub logo */
+    footer.bg-dark > div.container > div.grid > div:nth-child(1) > div.flex:nth-child(1) > span.text-xl {
+      font-family: "Times New Roman", Times, serif;
+    }
+    
+    /* Element 2: Footer description */
+    footer.bg-dark > div.container > div.grid > div:nth-child(1) > p.text-gray-400 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* Element 3: Clock display */
+    div#clockDisplay {
+      font-family: "Lucida Console", Monaco, monospace;
+    }
+  </style>
+</head>
+<body class="bg-neutral-100 font-noto text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300" style="background-size: cover; background-position: center; background-attachment: fixed; will-change: auto;">
+
+  <div id="toast" class="toast"></div>
+  <div id="bgOverlay" class="bg-overlay"></div>
+  <div id="reminderOverlay" class="reminder-overlay"></div>
+  <div id="sloganOverlay" class="slogan-overlay"></div>
+  <canvas id="festivalCanvas"></canvas>
+
+  <!-- 设置中心面板 -->
+  <div id="settingsPanelOverlay" class="settings-panel-overlay"></div>
+  <div id="settingsPanelCard" class="settings-panel-card">
+    <div class="flex justify-between items-center mb-5">
+      <h2 class="text-3xl font-bold flex items-center gap-2"><i class="fa fa-cog text-black dark:text-white"></i> 设置中心 </h2>
+      <button id="closeSettingsPanel" class="text-black dark:text-white text-3xl leading-5">&times;</button>
+    </div>
+    <div class="space-y-1">
+      <div class="settings-group-item cursor-pointer" id="quickBgSettingBtn">
+        <div class="settings-label-icon"><i class="fa fa-picture-o text-black dark:text-white w-6"></i><span>背景图片设置</span></div>
+        <i class="fa fa-chevron-right text-black dark:text-white"></i>
+      </div>
+      <div class="settings-group-item cursor-pointer" id="quickReminderSettingBtn">
+        <div class="settings-label-icon"><i class="fa fa-bell text-black dark:text-white"></i><span>事件提醒设置</span></div>
+        <i class="fa fa-chevron-right text-black dark:text-white"></i>
+      </div>
+      <div class="settings-group-item cursor-pointer" id="quickSloganSettingBtn">
+        <div class="settings-label-icon"><i class="fa fa-pencil-square-o text-black dark:text-white"></i><span>自定义标语/样式</span></div>
+        <i class="fa fa-chevron-right text-black dark:text-white"></i>
+      </div>
+      <div class="settings-group-item">
+        <div class="settings-label-icon"><i class="fa fa-moon-o text-black dark:text-white"></i><span>黑夜模式</span></div>
+        <label class="toggle-switch"><input type="checkbox" id="darkModeTogglePanel"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="settings-group-item">
+        <div class="settings-label-icon"><i class="fa fa-eyedropper text-black dark:text-white"></i><span>液态玻璃</span></div>
+        <label class="glass-toggle-switch"><input type="checkbox" id="glassModeTogglePanel"><span class="glass-toggle-slider"></span></label>
+      </div>
+      <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
+        <div class="settings-label-icon"><i class="fa fa-wrench text-black dark:text-white"></i><span>修复工具</span></div>
+        <i class="fa fa-external-link text-black dark:text-white"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- 更新公告 -->
+  <div id="importantOverlay" class="important-overlay"></div>
+  <div id="importantCard" class="important-card">
+    <div class="important-icon"><i class="fa fa-refresh"></i></div>
+    <div class="important-title">杂杂时钟3.2更新公告</div>
+    <div class="important-content" id="importantMessageContent">
+      1. 移除致歉通知弹窗<br>
+      2. 优化页面加载性能<br>
+      3. 清理冗余代码<br>
+      4. 更新公告内容<br>
+    </div>
+    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 确认并使用</button>
+  </div>
+
+  
+
+  <!-- 标语自定义卡片 -->
+  <div id="sloganSettingsCard" class="slogan-settings-card">
+    <div class="card-header-flex">
+      <h2 class="text-2xl font-bold">自定义标语区域</h2>
+      <button id="backFromSlogan" class="back-to-settings-btn">
+        <i class="fa fa-arrow-left"></i> 返回
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block font-medium">标语文字（支持换行）</label>
+        <textarea id="sloganText" rows="4" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea>
+      </div>
+      <div>
+        <label class="block font-medium">文字颜色</label>
+        <input type="color" id="sloganColor" class="w-full h-10 rounded border: none">
+      </div>
+      <div>
+        <label class="block font-medium">文字大小 (px)</label>
+        <input type="number" id="sloganFontSize" min="12" max="96" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+      </div>
+      <div>
+        <label class="block font-medium">每行文字间距</label>
+        <input type="number" id="sloganLineHeight" step="0.1" min="0.8" max="3" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+      </div>
+      <button id="applySloganBtn" class="w-full bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">
+        <i class="fa fa-save"></i> 应用标语设置
+      </button>
+      <button id="resetSloganBtn" class="w-full btn-danger py-3 rounded-lg">恢复默认</button>
+    </div>
+  </div>
+
+  <!-- 背景设置卡片 -->
+  <div id="bgSettingsCard" class="bg-settings-card">
+    <div class="card-header-flex">
+      <h2 class="text-2xl font-bold">背景图片设置</h2>
+      <button id="backFromBgSettings" class="back-to-settings-btn">
+        <i class="fa fa-arrow-left"></i> 返回
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div class="official-bg-section">
+        <div class="official-bg-title">
+          <i class="fa fa-image text-black dark:text-white"></i> 精选背景
+        </div>
+        <div class="bg-thumbnails" id="officialBgThumbs"></div>
+      </div>
+      <div>
+        <i class="fa fa-image text-black dark:text-white"></i> 网络图片上传
+        <input type="text" id="bgImageUrl" placeholder="图片URL" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+      </div>
+      <div class="local-upload-area">
+        <label class="local-upload-label"><i class="fa fa-upload"></i> 本地上传</label>
+        <input type="file" id="localBgUpload" accept="image/*" style="display:none">
+        <div id="localBgPreview" class="bg-preview-img"></div>
+      </div>
+      <div class="flex space-x-3">
+        <button id="applyBgImage" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">应用</button>
+        <button id="resetBgImage" class="flex-1 btn-danger py-3 rounded-lg">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提醒设置卡片 -->
+  <div id="reminderSettingsCard" class="reminder-settings-card">
+    <div class="card-header-flex">
+      <h2 class="text-2xl font-bold">事件提醒设置</h2>
+      <button id="backFromReminderSettings" class="back-to-settings-btn">
+        <i class="fa fa-arrow-left"></i> 返回
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <input type="text" id="reminderName" placeholder="提醒名称" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+      </div>
+      <div>
+        <label class="block font-medium mb-2">提醒类型</label>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm text-gray-500 mb-1">考试类型</label>
+            <select id="reminderExamType" class="w-full px-4 py-2 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+              <option value="">无</option>
+              <option value="final">期末考试</option>
+              <option value="mid">期中考试</option>
+              <option value="monthly">月考</option>
+              <option value="other_exam">其他考试</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-500 mb-1">节假日活动</label>
+            <select id="reminderHolidayType" class="w-full px-4 py-2 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+              <option value="">无</option>
+              <option value="new_year">跨年</option>
+              <option value="dragon_boat">端午节看龙舟</option>
+              <option value="mid_autumn">中秋节赏月吃月饼</option>
+              <option value="anniversary">纪念日</option>
+              <option value="birthday">生日</option>
+              <option value="other_holiday">其他节日</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">提醒日期和时间</label>
+        <input type="datetime-local" id="reminderDateTime" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+      </div>
+      <div>
+        <textarea id="reminderDesc" rows="2" placeholder="描述" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">倒计时显示位置</label>
+        <select id="countdownPosition" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+          <option value="none">不显示倒计时</option>
+          <option value="header">标题栏</option>
+          <option value="above_time">时间上方</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-medium mb-2">倒计时样式</label>
+        <select id="countdownStyle" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
+          <option value="pixel">像素风</option>
+          <option value="minimal">简约风</option>
+          <option value="tech">科技风</option>
+        </select>
+      </div>
+      <div class="flex space-x-3">
+        <button id="addReminder" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">添加</button>
+        <button id="clearReminders" class="flex-1 btn-danger py-3 rounded-lg">清空</button>
+      </div>
+      <div>
+        <div id="remindersList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 顶部导航 -->
+  <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <i class="fa fa-clock-o text-2xl text-black dark:text-white"></i>
+        <h1 class="text-xl font-bold text-black dark:text-white">cyc定制时钟</h1>
+      </div>
+      <nav>
+        <ul class="flex space-x-4">
+          <li>
+            <a href="index.html" id="homeLink" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white inline-flex items-center gap-1">
+              <i class="fa fa-home mr-1"></i>返回首页
+            </a>
+          </li>
+          <li>
+            <button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white">
+              <i class="fa fa-cog mr-1"></i>设置
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-6 flex flex-col items-center justify-center">
+    <div id="clockCard" class="w-full max-w-8xl bg-white rounded-2xl clock-shadow p-8 md:p-10 card-hover dark:bg-neutral-800">
+      <div id="sloganContainer" class="text-center mb-5 font-bold"></div>
+      <div class="flex flex-col items-center">
+      <div id="clockDisplay" class="text-[clamp(2.5rem,10vw,7rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div>
+      <p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p>
+      <br>
+      <button id="fullscreenBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-10 rounded-full mt-3 transition-all flex items-center shadow-md text-lg">
+        <i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>
+      </button>
+    </div>
+    </div>
+    <div class="calendar-card mt-5 card-hover">
+      <div class="calendar-header">
+        <button id="prevMonth" class="calendar-nav-btn">
+          <i class="fa fa-chevron-left mr-1"></i> 上月
+        </button>
+        <h2 id="calendarMonth" class="font-extrabold dark:text-white"></h2>
+        <button id="nextMonth" class="calendar-nav-btn">
+          下月 <i class="fa fa-chevron-right ml-1"></i>
+        </button>
+      </div>
+      <div class="calendar-grid mt-2">
+        <div class="calendar-day-header">日</div>
+        <div class="calendar-day-header">一</div>
+        <div class="calendar-day-header">二</div>
+        <div class="calendar-day-header">三</div>
+        <div class="calendar-day-header">四</div>
+        <div class="calendar-day-header">五</div>
+        <div class="calendar-day-header">六</div>
+        <div id="calendarDays" style="display: contents;"></div>
+      </div>
+    </div>
+    <div id="announcementBoard" class="announcement-board mt-6">
+      <div class="announcement active">
+        <p class="text-center font-bold text-2xl md:text-3xl">广告位招租</p>
+        <p class="text-center text-xl md:text-2xl"></p>
+        <p class="text-center text-xl md:text-2xl"></p>
+        <p class="text-center text-xl md:text-2xl"></p>
+      </div>
+      <div class="announcement">
+        <p class="text-center font-bold text-2xl md:text-3xl">暂无内容显示</p>
+        <p class="text-center text-base md:text-lg"></p>
+        <p class="text-center text-base md:text-lg"></p>
+        <p class="text-center text-base md:text-lg"></p>
+        <p class="text-center text-base md:text-lg"></p>
+        <p class="text-center text-base md:text-lg"></p>
+        <p class="text-center text-base md:text-lg"></p>
+      </div>
+      <button class="announcement-btn prev" id="prevAnnounceBtn">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <button class="announcement-btn next" id="nextAnnounceBtn">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white pt-16 pb-8" style="background-color: #22262f;">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        <div>
+          <div class="flex items-center space-x-2 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center" style="background: linear-gradient(135deg, #2e54ffe4, #9e44dfe9);">
+              <i class="fa fa-wrench text-white text-xl"></i>
+            </div>
+            <span class="text-xl font-bold">HJ_ToolHub</span>
+          </div>
+          <p class="text-gray-400 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p>
+          <div class="flex space-x-4">
+            <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition-colors">
+              <i class="fab fa-qq text-2xl text-white"></i>
+            </a>
+            <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 transition-colors">
+              <i class="fab fa-weixin text-2xl text-white"></i>
+            </a>
+            <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-purple-500 transition-colors">
+              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </a>
+            <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-600 transition-colors">
+              <i class="fab fa-github text-2xl"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-6">快速链接</h3>
+          <ul class="space-y-3">
+            <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+            <li><a href="#categories" class="text-gray-400 hover:text-white transition-colors">工具分类</a></li>
+            <li><a href="#popular" class="text-gray-400 hover:text-white transition-colors">热门工具</a></li>
+            <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">特色介绍</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-6">工具分类</h3>
+          <ul class="space-y-3">
+            <li><a href="index (2).html" class="text-gray-400 hover:text-white transition-colors">办公效率</a></li>
+            <li><a href="index (3).html" class="text-gray-400 hover:text-white transition-colors">图片处理</a></li>
+            <li><a href="index (4).html" class="text-gray-400 hover:text-white transition-colors">开发辅助</a></li>
+            <li><a href="index (5).html" class="text-gray-400 hover:text-white transition-colors">生活服务</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold mb-6">联系我们</h3>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <i class="fa fa-envelope mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">3301976275@qq.com</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fa fa-map-marker mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">广州市番禺区</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fa fa-phone mt-1 mr-3 text-gray-400"></i>
+              <span class="text-gray-400">联系电话：137 1019 0930</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 copyright HJ'_DEV(合金). 杂杂时钟 v3.2 cyc定制时钟</p>
+          <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300" class="mb-4 md:mb-0">
+          <div class="flex space-x-6">
+            <a href="yszc.html" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a>
+            <a href="sytk.html" class="text-gray-500 hover:text-gray-300 text-sm">使用条款</a>
+            <a href="date.html" class="text-gray-500 hover:text-gray-300 text-sm">更新日志</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== 核心逻辑 (完全保留原有功能，仅增强动画效果) =====
+    const holidaysData = {
+      "2025-01-01": {name: "元旦"},
+      "2025-01-29": {name: "春节"},
+      "2025-01-30": {name: "春节"},
+      "2025-01-31": {name: "春节"},
+      "2025-02-01": {name: "春节"},
+      "2025-02-02": {name: "春节"},
+      "2025-04-04": {name: "清明节"},
+      "2025-05-01": {name: "劳动节"},
+      "2025-05-02": {name: "劳动节"},
+      "2025-05-03": {name: "劳动节"},
+      "2025-05-31": {name: "端午节"},
+      "2025-10-01": {name: "国庆节"},
+      "2025-10-02": {name: "国庆节"},
+      "2025-10-03": {name: "国庆节"},
+      "2025-10-04": {name: "国庆节"},
+      "2025-10-05": {name: "国庆节"},
+      "2025-10-06": {name: "国庆节"},
+      "2025-10-07": {name: "国庆节"},
+      "2025-10-08": {name: "中秋节"},
+      "2026-01-01": {name: "元旦"},
+      "2026-02-17": {name: "春节"},
+      "2026-02-18": {name: "春节"},
+      "2026-02-19": {name: "春节"},
+      "2026-02-20": {name: "春节"},
+      "2026-02-21": {name: "春节"},
+      "2026-02-22": {name: "春节"},
+      "2026-04-05": {name: "清明节"},
+      "2026-05-01": {name: "劳动节"},
+      "2026-06-19": {name: "端午节"},
+      "2026-10-01": {name: "国庆节"},
+      "2026-10-02": {name: "国庆节"},
+      "2026-10-03": {name: "国庆节"},
+      "2026-10-04": {name: "国庆节"},
+      "2026-10-05": {name: "国庆节"},
+      "2026-10-06": {name: "国庆节"},
+      "2026-10-07": {name: "国庆节"},
+      "2026-10-08": {name: "中秋节"}
+    };
+    const workdayData = {
+      "2025-04-27": true,
+      "2025-05-10": true,
+      "2025-09-28": true,
+      "2025-10-11": true,
+      "2026-02-14": true,
+      "2026-02-28": true,
+      "2026-09-27": true,
+      "2026-10-10": true
+    };
+    function getHolidayInfo(dateStr) {
+      if (holidaysData[dateStr]) return {name: holidaysData[dateStr].name, type: "holiday"};
+      if (workdayData[dateStr]) return {name: "调休工作日", type: "workday"};
+      return null;
+    }
+    let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
+    let calendarCurrentDate = new Date();
+    let activePopup = null;
+    let activePopupTimeout = null;
+    let toastTimeout = null;
+    function cleanupPopup() {
+      if(activePopupTimeout) {
+        clearTimeout(activePopupTimeout);
+        activePopupTimeout = null;
+      }
+      if(activePopup && activePopup.parentNode) {
+        activePopup.remove();
+        activePopup = null;
+      }
+    }
+    function showToast(msg, duration=3000, isReminder=false) {
+      let t = document.getElementById('toast');
+      if(!t) return;
+      if(toastTimeout) {
+        clearTimeout(toastTimeout);
+      }
+      t.textContent = msg;
+      t.classList.add('show');
+      if(isReminder) {
+        t.classList.add('reminder');
+      } else {
+        t.classList.remove('reminder');
+      }
+      toastTimeout = setTimeout(() => {
+        t.classList.remove('show');
+        if(isReminder) t.classList.remove('reminder');
+        toastTimeout = null;
+      }, duration);
+    }
+    function updateClock() {
+      let n = new Date();
+      let clockDisplay = document.getElementById('clockDisplay');
+      let dateDisplay = document.getElementById('dateDisplay');
+      if(!clockDisplay || !dateDisplay) return;
+      
+      clockDisplay.innerText = 
+        `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`;
+      let week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+      dateDisplay.textContent = 
+        `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`;
+      checkReminders(n);
+    }
+    function checkReminders(now) {
+      let update = false;
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      reminderList.forEach(r => {
+        const targetDate = r.dateTime ? new Date(r.dateTime) : (r.date ? new Date(r.date) : null);
+        if(!targetDate) return;
+        const targetDateStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth()+1).padStart(2,'0')}-${String(targetDate.getDate()).padStart(2,'0')}`;
+        if(targetDateStr === todayStr && !r.shown) {
+          const targetTime = targetDate.getTime();
+          const nowTime = now.getTime();
+          if(targetTime <= nowTime && nowTime < targetTime + 60000) {
+            showToast(` 今日提醒：${r.name} - ${r.desc||'无描述'}`, 5000, true);
+            r.shown = true;
+            update = true;
+            if(r.holidayType) {
+              triggerHolidayAnimation(r.holidayType, r.name);
+            }
+          }
+        }
+      });
+      if(update) {
+        localStorage.setItem('reminders', JSON.stringify(reminderList));
+        renderRemindersList();
+        renderCalendar();
+      }
+    }
+    let fullscreenBtn = document.getElementById('fullscreenBtn');
+    function toggleFull() {
+      if(!fullscreenBtn) return;
+      if(!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error('Fullscreen request failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>';
+      } else {
+        document.exitFullscreen().catch(err => {
+          console.error('Fullscreen exit failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>';
+      }
+    }
+    function setBackgroundImage(src) {
+      document.body.style.backgroundImage = `url(${src})`;
+      localStorage.setItem('backgroundImage', src);
+      localStorage.setItem('backgroundIsLocal', src.startsWith('data:') ? 'true' : 'false');
+    }
+    function resetBackground() {
+      document.body.style.backgroundImage = '';
+      localStorage.removeItem('backgroundImage');
+      localStorage.removeItem('backgroundIsLocal');
+      document.getElementById('bgImageUrl').value = '';
+      document.getElementById('localBgPreview').style.display = 'none';
+      showToast('背景已重置');
+    }
+    function renderRemindersList() {
+      let c = document.getElementById('remindersList');
+      if(!c) return;
+      if(reminderList.length === 0) {
+        c.innerHTML = '<div class="text-center text-neutral-500">暂无提醒</div>';
+        return;
+      }
+      c.innerHTML = '';
+      const examTypeMap = { 'final': '期末考试', 'mid': '期中考试', 'monthly': '月考', 'other_exam': '其他考试' };
+      const holidayTypeMap = { 'new_year': '跨年', 'dragon_boat': '端午节', 'mid_autumn': '中秋节', 'anniversary': '纪念日', 'birthday': '生日', 'other_holiday': '其他节日' };
+      const posMap = { 'none': '不显示', 'header': '标题栏', 'above_time': '时间上方' };
+      const styleMap = { 'pixel': '像素风', 'minimal': '简约风', 'tech': '科技风' };
+      
+      reminderList.forEach(r => {
+        let div = document.createElement('div');
+        div.className = 'p-3 bg-neutral-100 dark:bg-neutral-600 rounded-lg';
+        let typeInfo = '';
+        if(r.examType) typeInfo += `<span class="inline-block px-2 py-0.5 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded text-xs mr-2">${examTypeMap[r.examType]}</span>`;
+        if(r.holidayType) typeInfo += `<span class="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded text-xs">${holidayTypeMap[r.holidayType]}</span>`;
+        div.innerHTML = `<div class="flex justify-between items-start mb-2">
+          <div class="font-bold">${escapeHtml(r.name)}</div>
+          <button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>
+        </div>
+        ${typeInfo ? `<div class="mb-1">${typeInfo}</div>` : ''}
+        <div class="text-sm text-neutral-600 dark:text-neutral-400">${r.dateTime} - ${escapeHtml(r.desc||'无描述')}</div>
+        ${r.countdownPosition !== 'none' ? `<div class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">倒计时: ${posMap[r.countdownPosition]} / ${styleMap[r.countdownStyle]}</div>` : ''}`;
+        c.appendChild(div);
+      });
+      document.querySelectorAll('.delete-reminder-btn').forEach(btn => btn.addEventListener('click', e => {
+        let id = parseInt(btn.dataset.id);
+        reminderList = reminderList.filter(i => i.id !== id);
+        localStorage.setItem('reminders', JSON.stringify(reminderList));
+        renderRemindersList();
+        renderCalendar();
+        updateCountdowns();
+        showToast('提醒已删除');
+      }));
+    }
+    function renderCalendar() {
+      let y = calendarCurrentDate.getFullYear();
+      let m = calendarCurrentDate.getMonth();
+      document.getElementById('calendarMonth').innerHTML = `${y}年${m+1}月`;
+      
+      let firstDay = new Date(y, m, 1).getDay();
+      let daysInMonth = new Date(y, m+1, 0).getDate();
+      let prevLastDay = new Date(y, m, 0).getDate();
+      let container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+      
+      for(let i = firstDay; i > 0; i--) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = prevLastDay - i + 1;
+        container.appendChild(cell);
+      }
+      
+      let today = new Date();
+      for(let i = 1; i <= daysInMonth; i++) {
+        let cell = document.createElement('div');
+        let dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        let isToday = (y === today.getFullYear() && m === today.getMonth() && i === today.getDate());
+        let weekDay = new Date(y, m, i).getDay();
+        let holiday = getHolidayInfo(dateStr);
+        
+        cell.className = 'calendar-day';
+        if(weekDay === 0 || weekDay === 6) cell.classList.add('restday');
+        if(holiday && holiday.type === 'holiday') cell.classList.add('holiday-badge');
+        if(holiday && holiday.type === 'workday') cell.classList.add('workday-badge');
+        if(isToday) cell.classList.add('today');
+        if(reminderList.some(r => {
+          const rDate = r.dateTime ? new Date(r.dateTime) : (r.date ? new Date(r.date) : null);
+          if(!rDate) return false;
+          const rDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth()+1).padStart(2,'0')}-${String(rDate.getDate()).padStart(2,'0')}`;
+          return rDateStr === dateStr;
+        })) cell.classList.add('reminder');
+        cell.textContent = i;
+        
+        cell.addEventListener('click', () => {
+          cleanupPopup();
+          let details = [];
+          if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`);
+          let dayReminders = reminderList.filter(r => {
+            const rDate = r.dateTime ? new Date(r.dateTime) : (r.date ? new Date(r.date) : null);
+            if(!rDate) return false;
+            const rDateStr = `${rDate.getFullYear()}-${String(rDate.getMonth()+1).padStart(2,'0')}-${String(rDate.getDate()).padStart(2,'0')}`;
+            return rDateStr === dateStr;
+          });
+          dayReminders.forEach(rem => details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`));
+          if(details.length === 0) details.push('  暂无内容显示');
+          
+          let pop = document.createElement('div');
+          pop.className = 'detail-popup';
+          pop.innerHTML = `<strong> ${dateStr}</strong><hr>
+            <div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div>
+            <button>关闭</button>`;
+          document.body.appendChild(pop);
+          activePopup = pop;
+          
+          requestAnimationFrame(() => pop.classList.add('show'));
+          let closeHandler = () => {
+            pop.classList.remove('show');
+            setTimeout(() => pop.remove(), 300);
+            if(activePopup === pop) {
+              activePopup = null;
+              activePopupTimeout = null;
+            }
+          };
+          pop.querySelector('button').addEventListener('click', closeHandler);
+          activePopupTimeout = setTimeout(closeHandler, 6000);
+        });
+        
+        container.appendChild(cell);
+      }
+      
+      let total = firstDay + daysInMonth;
+      let next = 42 - total;
+      for(let i = 1; i <= next; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = i;
+        container.appendChild(cell);
+      }
+    }
+    function escapeHtml(str) {
+      if(!str) return '';
+      return str.replace(/[&<>]/g, m => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[m]));
+    }
+    function initSloganUI() {
+      let container = document.getElementById('sloganContainer');
+      let savedText = localStorage.getItem('sloganText');
+      let savedColor = localStorage.getItem('sloganColor');
+      let savedSize = localStorage.getItem('sloganFontSize');
+      let savedLineHeight = localStorage.getItem('sloganLineHeight');
+      
+      if(savedText) {
+        container.innerHTML = savedText.replace(/\n/g, '<br>');
+      } else {
+        container.innerHTML = "cycnb";
+      }
+      
+      if(savedColor) {
+        container.style.color = savedColor;
+      } else {
+        container.style.color = "#dc2626";
+      }
+      
+      if(savedSize) {
+        container.style.fontSize = savedSize + 'px';
+      } else {
+        container.style.fontSize = '48px';
+      }
+      
+      let lineH = savedLineHeight ? parseFloat(savedLineHeight) : 1.4;
+      container.style.lineHeight = lineH;
+      
+      document.getElementById('sloganText').value = localStorage.getItem('sloganText') || 
+        "cycnb";
+      document.getElementById('sloganColor').value = savedColor || "#dc2626";
+      document.getElementById('sloganFontSize').value = parseInt(savedSize || 48);
+      document.getElementById('sloganLineHeight').value = lineH;
+      
+      document.getElementById('applySloganBtn').onclick = () => {
+        let txt = document.getElementById('sloganText').value;
+        let col = document.getElementById('sloganColor').value;
+        let sz = document.getElementById('sloganFontSize').value;
+        let lh = document.getElementById('sloganLineHeight').value;
+        
+        container.innerHTML = txt.replace(/\n/g, '<br>');
+        container.style.color = col;
+        container.style.fontSize = sz + 'px';
+        container.style.lineHeight = lh;
+        
+        localStorage.setItem('sloganText', txt);
+        localStorage.setItem('sloganColor', col);
+        localStorage.setItem('sloganFontSize', sz);
+        localStorage.setItem('sloganLineHeight', lh);
+        
+        showToast('标语已更新');
+        document.getElementById('sloganOverlay').classList.remove('show');
+        document.getElementById('sloganSettingsCard').classList.remove('show');
+      };
+      
+      document.getElementById('resetSloganBtn').onclick = () => {
+        let def = "cycnb";
+        container.innerHTML = def.replace(/\n/g, '<br>');
+        container.style.color = "#dc2626";
+        container.style.fontSize = "48px";
+        container.style.lineHeight = "1.4";
+        
+        localStorage.setItem('sloganText', def);
+        localStorage.setItem('sloganColor', '#dc2626');
+        localStorage.setItem('sloganFontSize', '48');
+        localStorage.setItem('sloganLineHeight', '1.4');
+        
+        document.getElementById('sloganText').value = def;
+        document.getElementById('sloganColor').value = "#dc2626";
+        document.getElementById('sloganFontSize').value = 48;
+        document.getElementById('sloganLineHeight').value = 1.4;
+        
+        showToast('恢复默认');
+        document.getElementById('sloganOverlay').classList.remove('show');
+        document.getElementById('sloganSettingsCard').classList.remove('show');
+      };
+    }
+    function initDarkMode() {
+      let cb = document.getElementById('darkModeTogglePanel');
+      let isDark = localStorage.getItem('darkMode') === 'true';
+      if(isDark) {
+        document.documentElement.classList.add('dark');
+        cb.checked = true;
+      }
+      cb.addEventListener('change', () => {
+        if(cb.checked) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('darkMode', 'true');
+          showToast('已开启黑夜模式');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('darkMode', 'false');
+          showToast('已关闭黑夜模式');
+        }
+        renderCalendar();
+      });
+    }
+    function initGlassMode() {
+      let cb = document.getElementById('glassModeTogglePanel');
+      let isGlass = localStorage.getItem('glassMode') === 'true';
+      if(isGlass) {
+        document.body.classList.add('glass-mode');
+        cb.checked = true;
+      }
+      cb.addEventListener('change', () => {
+        if(cb.checked) {
+          document.body.classList.add('glass-mode');
+          localStorage.setItem('glassMode', 'true');
+          showToast('液态玻璃已开启');
+        } else {
+          document.body.classList.remove('glass-mode');
+          localStorage.setItem('glassMode', 'false');
+          showToast('液态玻璃已关闭');
+        }
+      });
+    }
+
+    // ===== 倒计时功能 =====
+    function formatCountdown(ms) {
+      if(ms <= 0) return '已到达';
+      const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+      return { days, hours, minutes, seconds };
+    }
+
+    function getCountdownText(ms, showFull=false) {
+      if(ms <= 0) return '已到达';
+      const { days, hours, minutes, seconds } = formatCountdown(ms);
+      if(days > 0 && !showFull) {
+        return `${days}天`;
+      }
+      return `${days}天 ${String(hours).padStart(2,'0')}:${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+    }
+
+    function updateCountdowns() {
+      document.querySelectorAll('.countdown-display').forEach(el => el.remove());
+      
+      const now = new Date();
+      const headerReminders = [];
+      const timeReminders = [];
+      
+      reminderList.forEach(r => {
+        if(!r.countdownPosition || r.countdownPosition === 'none') return;
+        const targetDate = new Date(r.dateTime || r.date);
+        const diff = targetDate.getTime() - now.getTime();
+        if(diff <= 0) return;
+        
+        const styleClass = `countdown-${r.countdownStyle || 'pixel'}`;
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        const html = `<div class="countdown-display ${styleClass} ${isDark ? 'dark' : ''} cursor-pointer" data-reminder-id="${r.id}" onclick="showCountdownDetail(${r.id})">
+          <span class="countdown-label">${escapeHtml(r.name)}</span>
+          <span class="countdown-value">${getCountdownText(diff)}</span>
+        </div>`;
+        
+        if(r.countdownPosition === 'header') {
+          headerReminders.push(html);
+        } else {
+          timeReminders.push(html);
+        }
+      });
+      
+      if(headerReminders.length > 0) {
+        let container = document.getElementById('headerCountdown');
+        if(!container) {
+          container = document.createElement('div');
+          container.id = 'headerCountdown';
+          container.className = 'flex flex-col gap-2 mr-4';
+          const headerNav = document.querySelector('header nav');
+          if(headerNav) headerNav.insertAdjacentElement('beforebegin', container);
+        }
+        container.innerHTML = headerReminders.join('');
+      } else {
+        const container = document.getElementById('headerCountdown');
+        if(container) container.remove();
+      }
+      
+      if(timeReminders.length > 0) {
+        let container = document.getElementById('timeAboveCountdown');
+        if(!container) {
+          container = document.createElement('div');
+          container.id = 'timeAboveCountdown';
+          container.className = 'flex flex-col gap-2 mb-4';
+          const clockDisplay = document.getElementById('clockDisplay');
+          if(clockDisplay) clockDisplay.insertAdjacentElement('beforebegin', container);
+        }
+        container.innerHTML = timeReminders.join('');
+      } else {
+        const container = document.getElementById('timeAboveCountdown');
+        if(container) container.remove();
+      }
+    }
+
+    // ===== 节日动画特效 =====
+    let festivalAnimationId = null;
+    let particles = [];
+    let animationStartTime = 0;
+    let animationDuration = 60000;
+    let animationText = '';
+    
+    function triggerHolidayAnimation(type, text = '') {
+      const canvas = document.getElementById('festivalCanvas');
+      if(!canvas) return;
+      
+      canvas.classList.add('active');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      particles = [];
+      animationStartTime = Date.now();
+      animationText = text || (type === 'new_year' ? '跨年了' : '节日快乐');
+      
+      const ctx = canvas.getContext('2d');
+      
+      if(type === 'new_year') {
+        for(let i = 0; i < 200; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 200,
+            vx: (Math.random() - 0.5) * 12,
+            vy: -Math.random() * 25 - 10,
+            color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+            size: Math.random() * 8 + 4,
+            life: 1,
+            decay: Math.random() * 0.003 + 0.0015,
+            type: 'firework',
+            trail: []
+          });
+        }
+        for(let i = 0; i < 50; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 100,
+            vx: 0,
+            vy: -Math.random() * 8 - 3,
+            color: `hsl(${Math.random() * 60 + 10}, 100%, 70%)`,
+            size: Math.random() * 4 + 2,
+            life: 1,
+            decay: Math.random() * 0.002 + 0.001,
+            type: 'rocket'
+          });
+        }
+      } else if(type === 'mid_autumn') {
+        for(let i = 0; i < 80; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height * 0.5,
+            vx: (Math.random() - 0.5) * 2,
+            vy: Math.sin(Math.random() * Math.PI * 2) * 0.5,
+            color: 'rgba(255, 223, 100, 0.9)',
+            size: Math.random() * 4 + 2,
+            life: 1,
+            decay: 0.0015,
+            type: 'moon'
+          });
+        }
+      } else if(type === 'dragon_boat') {
+        for(let i = 0; i < 80; i++) {
+          particles.push({
+            x: -50 - Math.random() * 100,
+            y: canvas.height * 0.3 + Math.random() * canvas.height * 0.4,
+            vx: Math.random() * 6 + 4,
+            vy: Math.sin(Math.random() * Math.PI * 2) * 0.5,
+            color: ['#FF6B6B', '#FFE66D', '#4ECDC4'][Math.floor(Math.random() * 3)],
+            size: Math.random() * 6 + 3,
+            life: 1,
+            decay: 0.003,
+            type: 'dragon'
+          });
+        }
+      } else if(type === 'birthday') {
+        for(let i = 0; i < 100; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 100,
+            vx: (Math.random() - 0.5) * 8,
+            vy: -Math.random() * 12 - 4,
+            color: ['#FF69B4', '#FF1493', '#C71585', '#FFB6C1', '#FFD700'][Math.floor(Math.random() * 5)],
+            size: Math.random() * 8 + 4,
+            life: 1,
+            decay: Math.random() * 0.006 + 0.002,
+            type: 'balloon'
+          });
+        }
+      } else if(type === 'anniversary') {
+        for(let i = 0; i < 80; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 100,
+            vx: (Math.random() - 0.5) * 6,
+            vy: -Math.random() * 10 - 3,
+            color: ['#E91E63', '#9C27B0', '#673AB7', '#FF4081'][Math.floor(Math.random() * 4)],
+            size: Math.random() * 6 + 3,
+            life: 1,
+            decay: Math.random() * 0.004 + 0.002,
+            type: 'heart'
+          });
+        }
+      } else if(type === 'other_holiday') {
+        for(let i = 0; i < 150; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 100,
+            vx: (Math.random() - 0.5) * 8,
+            vy: -Math.random() * 15 - 5,
+            color: `hsl(${Math.random() * 360}, 80%, 65%)`,
+            size: Math.random() * 6 + 3,
+            life: 1,
+            decay: Math.random() * 0.004 + 0.002,
+            type: 'confetti'
+          });
+        }
+      }
+      
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const elapsed = Date.now() - animationStartTime;
+        const progress = Math.min(elapsed / animationDuration, 1);
+        
+        particles = particles.filter(p => p.life > 0);
+        
+        if(type === 'new_year' && progress < 0.95 && Math.random() < 0.03) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 50,
+            vx: (Math.random() - 0.5) * 12,
+            vy: -Math.random() * 25 - 10,
+            color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+            size: Math.random() * 8 + 4,
+            life: 1,
+            decay: Math.random() * 0.003 + 0.0015,
+            type: 'firework',
+            trail: []
+          });
+        }
+        
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= p.decay;
+          
+          if(p.life <= 0) return;
+          
+          const alpha = Math.max(0, p.life);
+          const radius = Math.max(0, p.size * p.life);
+          
+          if(p.type === 'firework') {
+            p.vy += 0.35;
+            
+            if(p.trail) {
+              p.trail.push({x: p.x, y: p.y, life: p.life});
+              if(p.trail.length > 15) p.trail.shift();
+              
+              p.trail.forEach((t, i) => {
+                const tAlpha = (i / p.trail.length) * alpha * 0.5;
+                const tRadius = (i / p.trail.length) * radius * 0.5;
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, tRadius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = tAlpha;
+                ctx.fill();
+              });
+            }
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius * 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha * 0.3;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            
+            if(Math.random() < 0.15 && p.life < 0.8) {
+              for(let k = 0; k < 8; k++) {
+                particles.push({
+                  x: p.x,
+                  y: p.y,
+                  vx: Math.cos(k * Math.PI / 4) * (Math.random() * 4 + 2),
+                  vy: Math.sin(k * Math.PI / 4) * (Math.random() * 4 + 2),
+                  color: p.color,
+                  size: Math.random() * 3 + 1,
+                  life: Math.max(0, p.life * 0.6),
+                  decay: Math.random() * 0.01 + 0.005,
+                  type: 'spark'
+                });
+              }
+            }
+          } else if(p.type === 'rocket') {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            
+            for(let k = 0; k < 3; k++) {
+              particles.push({
+                x: p.x + (Math.random() - 0.5) * 4,
+                y: p.y + 10,
+                vx: (Math.random() - 0.5) * 2,
+                vy: Math.random() * 3 + 1,
+                color: '#FFA500',
+                size: Math.random() * 2 + 1,
+                life: 0.3,
+                decay: 0.03,
+                type: 'spark'
+              });
+            }
+            
+            if(Math.random() < 0.1 || p.life < 0.3) {
+              for(let k = 0; k < 30; k++) {
+                particles.push({
+                  x: p.x,
+                  y: p.y,
+                  vx: (Math.random() - 0.5) * 15,
+                  vy: (Math.random() - 0.5) * 15,
+                  color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                  size: Math.random() * 5 + 2,
+                  life: 1,
+                  decay: Math.random() * 0.005 + 0.002,
+                  type: 'burst'
+                });
+              }
+              p.life = 0;
+            }
+          } else if(p.type === 'burst') {
+            p.vy += 0.2;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius * 2, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha * 0.2;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          } else if(p.type === 'spark') {
+            p.vy += 0.15;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          } else if(p.type === 'moon') {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size + Math.sin(Date.now() * 0.002) * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha * 0.7;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          } else if(p.type === 'dragon') {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(Math.sin(Date.now() * 0.003 + p.x * 0.01) * 0.5);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.moveTo(0, -p.size);
+            ctx.lineTo(p.size, p.size);
+            ctx.lineTo(-p.size, p.size);
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.restore();
+          } else if(p.type === 'balloon') {
+            p.vy += 0.05;
+            p.vx += Math.sin(Date.now() * 0.002 + p.x * 0.01) * 0.15;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.scale(1, 1.5);
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.restore();
+            
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y + p.size * 1.5);
+            ctx.lineTo(p.x + Math.sin(Date.now() * 0.005) * 2, p.y + p.size * 2);
+            ctx.strokeStyle = p.color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          } else if(p.type === 'heart') {
+            p.vy += 0.1;
+            p.x += Math.sin(Date.now() * 0.003 + p.y * 0.01) * 0.2;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.scale(Math.max(0, p.size * p.life * 0.15), Math.max(0, p.size * p.life * 0.15));
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.bezierCurveTo(50, -50, 100, 0, 0, 100);
+            ctx.bezierCurveTo(-100, 0, -50, -50, 0, 0);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.restore();
+          } else if(p.type === 'confetti') {
+            p.vy += 0.15;
+            p.x += Math.sin(Date.now() * 0.005 + p.y * 0.01) * 0.3;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(Date.now() * 0.005 + p.x * 0.01);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+            ctx.globalAlpha = 1;
+            ctx.restore();
+          } else {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
+        });
+        
+        if(type === 'new_year' && animationText) {
+          const textAlpha = Math.min(1, Math.max(0, (elapsed - 1000) / 1000));
+          const textScale = 1 + Math.sin(elapsed * 0.002) * 0.05;
+          
+          ctx.save();
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.scale(textScale, textScale);
+          
+          const fontSize = Math.min(canvas.width * 0.15, 120);
+          ctx.font = `bold ${fontSize}px "Times New Roman", "Noto Sans SC", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          ctx.shadowColor = '#FFD700';
+          ctx.shadowBlur = 30;
+          ctx.fillStyle = `rgba(255, 215, 0, ${textAlpha})`;
+          ctx.fillText(animationText, 0, 0);
+          
+          ctx.shadowColor = '#FF4500';
+          ctx.shadowBlur = 20;
+          ctx.fillStyle = `rgba(255, 69, 0, ${textAlpha * 0.8})`;
+          ctx.fillText(animationText, 0, 0);
+          
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${textAlpha})`;
+          ctx.lineWidth = 3;
+          ctx.strokeText(animationText, 0, 0);
+          
+          ctx.font = `bold ${fontSize * 0.4}px "Times New Roman", "Noto Sans SC", sans-serif`;
+          ctx.shadowColor = '#00CED1';
+          ctx.shadowBlur = 15;
+          ctx.fillStyle = `rgba(0, 206, 209, ${textAlpha})`;
+          ctx.fillText('Happy New Year!', 0, fontSize * 0.8);
+          
+          ctx.restore();
+        } else if(animationText && (type === 'birthday' || type === 'anniversary')) {
+          const textAlpha = Math.min(1, Math.max(0, (elapsed - 1000) / 1000));
+          const textScale = 1 + Math.sin(elapsed * 0.003) * 0.05;
+          
+          ctx.save();
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.scale(textScale, textScale);
+          
+          const fontSize = Math.min(canvas.width * 0.12, 100);
+          ctx.font = `bold ${fontSize}px "Times New Roman", "Noto Sans SC", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          
+          const gradient = ctx.createLinearGradient(-canvas.width/2, 0, canvas.width/2, 0);
+          gradient.addColorStop(0, '#FF69B4');
+          gradient.addColorStop(0.5, '#FF1493');
+          gradient.addColorStop(1, '#9C27B0');
+          
+          ctx.shadowColor = '#FF69B4';
+          ctx.shadowBlur = 20;
+          ctx.fillStyle = gradient;
+          ctx.globalAlpha = textAlpha;
+          ctx.fillText(animationText, 0, 0);
+          ctx.globalAlpha = 1;
+          
+          ctx.restore();
+        }
+        
+        if(particles.length > 0 && progress < 1) {
+          festivalAnimationId = requestAnimationFrame(animate);
+        } else {
+          canvas.classList.remove('active');
+        }
+      }
+      
+      if(festivalAnimationId) cancelAnimationFrame(festivalAnimationId);
+      animate();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 初始化UI组件
+      initSloganUI();
+      initDarkMode();
+      initGlassMode();
+      
+      // 全屏按钮事件
+      fullscreenBtn.addEventListener('click', toggleFull);
+      
+      // 时钟更新
+      setInterval(updateClock, 1000);
+      updateClock();
+      
+      // 渲染日历和提醒列表
+      renderCalendar();
+      renderRemindersList();
+      
+      // 公告轮播
+      let ann = Array.from(document.querySelectorAll('.announcement'));
+      let idx = 0;
+      let announcementInterval = null;
+      
+      const updateAnnouncement = () => {
+        ann.forEach((a, i) => {
+          if(i === idx) {
+            a.classList.add('active');
+          } else {
+            a.classList.remove('active');
+          }
+        });
+      };
+      
+      const prevBtn = document.getElementById('prevAnnounceBtn');
+      const nextBtn = document.getElementById('nextAnnounceBtn');
+      
+      if(prevBtn) {
+        prevBtn.onclick = () => {
+          idx = (idx - 1 + ann.length) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      if(nextBtn) {
+        nextBtn.onclick = () => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      // 设置定时器
+      if(ann.length > 1) {
+        announcementInterval = setInterval(() => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        }, 5000);
+      } 
+      // 设置面板控制
+      let openSet = document.getElementById('openSettingsBtn');
+      let panel = document.getElementById('settingsPanelCard');
+      let overlay = document.getElementById('settingsPanelOverlay');
+      let closePanel = document.getElementById('closeSettingsPanel');
+      
+      const closeSettingsPanel = () => {
+        if(overlay) overlay.classList.remove('show');
+        if(panel) panel.classList.remove('show');
+      };
+      
+      if(openSet && overlay && panel) {
+        openSet.onclick = () => {
+          overlay.classList.add('show');
+          panel.classList.add('show');
+        };
+      }
+      
+      if(closePanel) {
+        closePanel.onclick = closeSettingsPanel;
+      }
+      
+      if(overlay) {
+        overlay.onclick = closeSettingsPanel;
+      }
+      
+      // 快速设置按钮
+      const quickBgBtn = document.getElementById('quickBgSettingBtn');
+      if(quickBgBtn) {
+        quickBgBtn.onclick = () => {
+          closeSettingsPanel();
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.add('show');
+          if(bgCard) bgCard.classList.add('show');
+        };
+      }
+      
+      const quickReminderBtn = document.getElementById('quickReminderSettingBtn');
+      if(quickReminderBtn) {
+        quickReminderBtn.onclick = () => {
+          closeSettingsPanel();
+          const reminderOverlay = document.getElementById('reminderOverlay');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderOverlay) reminderOverlay.classList.add('show');
+          if(reminderCard) reminderCard.classList.add('show');
+        };
+      }
+      
+      const quickSloganBtn = document.getElementById('quickSloganSettingBtn');
+      if(quickSloganBtn) {
+        quickSloganBtn.onclick = () => {
+          closeSettingsPanel();
+          const sloganOverlay = document.getElementById('sloganOverlay');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganOverlay) sloganOverlay.classList.add('show');
+          if(sloganCard) sloganCard.classList.add('show');
+        };
+      }
+      
+      // 返回按钮
+      const backFromBgBtn = document.getElementById('backFromBgSettings');
+      if(backFromBgBtn) {
+        backFromBgBtn.onclick = () => {
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.remove('show');
+          if(bgCard) bgCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+      
+      const backFromReminderBtn = document.getElementById('backFromReminderSettings');
+      if(backFromReminderBtn) {
+        backFromReminderBtn.onclick = () => {
+          const reminderOverlay = document.getElementById('reminderOverlay');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderOverlay) reminderOverlay.classList.remove('show');
+          if(reminderCard) reminderCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+      
+      const backFromSloganBtn = document.getElementById('backFromSlogan');
+      if(backFromSloganBtn) {
+        backFromSloganBtn.onclick = () => {
+          const sloganOverlay = document.getElementById('sloganOverlay');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganOverlay) sloganOverlay.classList.remove('show');
+          if(sloganCard) sloganCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
+        };
+      }
+
+      const settingsOpenFixToolBtn = document.getElementById('settingsOpenFixToolBtn');
+      if(settingsOpenFixToolBtn) {
+        settingsOpenFixToolBtn.onclick = () => {
+          window.open("edge-fix.html", "_blank");
+        };
+      }
+      
+      // 遮罩层点击关闭
+      const bgOverlay = document.getElementById('bgOverlay');
+      if(bgOverlay) {
+        bgOverlay.onclick = () => {
+          bgOverlay.classList.remove('show');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgCard) bgCard.classList.remove('show');
+        };
+      }
+      
+      const reminderOverlay = document.getElementById('reminderOverlay');
+      if(reminderOverlay) {
+        reminderOverlay.onclick = () => {
+          reminderOverlay.classList.remove('show');
+          const reminderCard = document.getElementById('reminderSettingsCard');
+          if(reminderCard) reminderCard.classList.remove('show');
+        };
+      }
+      
+      const sloganOverlay = document.getElementById('sloganOverlay');
+      if(sloganOverlay) {
+        sloganOverlay.onclick = () => {
+          sloganOverlay.classList.remove('show');
+          const sloganCard = document.getElementById('sloganSettingsCard');
+          if(sloganCard) sloganCard.classList.remove('show');
+        };
+      }
+      
+      // 官方背景图片
+      const OFFICIAL_BG = [
+        "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp",
+        "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp",
+        "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp",
+        "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp",
+        "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp",
+        "https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp",
+        "https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp",
+        "https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp",
+        "https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp"
+      ];
+      
+      let thumbContainer = document.getElementById('officialBgThumbs');
+      OFFICIAL_BG.forEach(url => {
+        let div = document.createElement('div');
+        div.className = 'bg-thumb-item';
+        let img = document.createElement('img');
+        img.src = url;
+        div.appendChild(img);
+        div.addEventListener('click', () => {
+          setBackgroundImage(url);
+          showToast('已应用官方背景');
+          document.getElementById('bgOverlay').classList.remove('show');
+          document.getElementById('bgSettingsCard').classList.remove('show');
+        });
+        thumbContainer.appendChild(div);
+      });
+      
+      // 背景设置按钮
+      document.getElementById('applyBgImage').onclick = () => {
+        let url = document.getElementById('bgImageUrl').value.trim();
+        if(url) {
+          setBackgroundImage(url);
+        } else {
+          showToast('请输入URL', 2000, true);
+        }
+      };
+      
+      document.getElementById('resetBgImage').onclick = () => {
+        resetBackground();
+      };
+      
+      // 本地上传背景
+      document.getElementById('localBgUpload').addEventListener('change', e => {
+        let f = e.target.files[0];
+        if(f) {
+          let reader = new FileReader();
+          reader.onload = ev => {
+            setBackgroundImage(ev.target.result);
+            document.getElementById('localBgPreview').src = ev.target.result;
+            document.getElementById('localBgPreview').style.display = 'block';
+            showToast('本地背景已应用');
+            document.getElementById('bgOverlay').classList.remove('show');
+            document.getElementById('bgSettingsCard').classList.remove('show');
+          };
+          reader.readAsDataURL(f);
+        }
+      });
+      
+      document.querySelector('.local-upload-label').addEventListener('click', () => {
+        document.getElementById('localBgUpload').click();
+      });
+      
+      // 添加提醒
+      const addReminderBtn = document.getElementById('addReminder');
+      if(addReminderBtn) {
+        addReminderBtn.onclick = () => {
+          const nameInput = document.getElementById('reminderName');
+          const dateTimeInput = document.getElementById('reminderDateTime');
+          const descInput = document.getElementById('reminderDesc');
+          const examTypeInput = document.getElementById('reminderExamType');
+          const holidayTypeInput = document.getElementById('reminderHolidayType');
+          const countdownPosInput = document.getElementById('countdownPosition');
+          const countdownStyleInput = document.getElementById('countdownStyle');
+          
+          if(!nameInput || !dateTimeInput) return;
+          
+          let name = nameInput.value.trim();
+          let dateTime = dateTimeInput.value;
+          
+          if(!name || !dateTime) {
+            showToast('请填写名称和日期时间', 2000, true);
+            return;
+          }
+          
+          reminderList.push({
+            id: Date.now(),
+            name: name,
+            dateTime: dateTime,
+            desc: descInput ? descInput.value : '',
+            examType: examTypeInput ? examTypeInput.value : '',
+            holidayType: holidayTypeInput ? holidayTypeInput.value : '',
+            countdownPosition: countdownPosInput ? countdownPosInput.value : 'none',
+            countdownStyle: countdownStyleInput ? countdownStyleInput.value : 'pixel',
+            shown: false
+          });
+          
+          localStorage.setItem('reminders', JSON.stringify(reminderList));
+          renderRemindersList();
+          renderCalendar();
+          updateCountdowns();
+          showToast('提醒已添加');
+          
+          nameInput.value = '';
+          dateTimeInput.value = '';
+          if(descInput) descInput.value = '';
+          if(examTypeInput) examTypeInput.value = '';
+          if(holidayTypeInput) holidayTypeInput.value = '';
+          if(countdownPosInput) countdownPosInput.value = 'none';
+          if(countdownStyleInput) countdownStyleInput.value = 'pixel';
+        };
+      }
+      
+      // 清空提醒
+      const clearRemindersBtn = document.getElementById('clearReminders');
+      if(clearRemindersBtn) {
+        clearRemindersBtn.onclick = () => {
+          if(confirm('清空所有提醒？')) {
+            reminderList = [];
+            localStorage.setItem('reminders', '[]');
+            renderRemindersList();
+            renderCalendar();
+            showToast('已清空');
+          }
+        };
+      }
+      
+      // 加载保存的背景
+      let savedBg = localStorage.getItem('backgroundImage');
+      if(savedBg) {
+        document.body.style.backgroundImage = `url(${savedBg})`;
+      }
+      
+      // 日历导航
+      const prevMonthBtn = document.getElementById('prevMonth');
+      if(prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+          renderCalendar();
+        });
+      }
+      
+      const nextMonthBtn = document.getElementById('nextMonth');
+      if(nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+          renderCalendar();
+        });
+      }
+      
+      // 更新公告弹窗
+      const UPDATE_KEY_32 = 'hasViewedUpdate32';
+      const FORCE_SHOW_UPDATE_32 = 'forceShowUpdate32';
+      const importantCardDom = document.getElementById('importantCard');
+      const importantOverlayDom = document.getElementById('importantOverlay');
+      const closeImportantBtnDom = document.getElementById('closeImportantBtn');
+      
+      if(!importantCardDom || !importantOverlayDom || !closeImportantBtnDom) {
+        console.warn('Update announcement elements not found');
+      } else {
+        if(!localStorage.getItem(UPDATE_KEY_32)) {
+          importantCardDom.classList.add('show');
+          importantOverlayDom.classList.add('show');
+          localStorage.setItem(FORCE_SHOW_UPDATE_32, 'true');
+        }
+        closeImportantBtnDom.addEventListener('click', function() {
+          importantCardDom.classList.remove('show');
+          importantOverlayDom.classList.remove('show');
+          localStorage.setItem(UPDATE_KEY_32, 'true');
+        });
+      }
+
+      window.showCountdownDetail = function(reminderId) {
+        const r = reminderList.find(item => item.id === reminderId);
+        if(!r) return;
+        
+        cleanupPopup();
+        const targetDate = new Date(r.dateTime || r.date);
+        
+        const pop = document.createElement('div');
+        pop.className = 'countdown-detail-popup';
+        pop.innerHTML = `<div class="detail-title">${escapeHtml(r.name)}</div>
+          <div class="detail-timer" id="detailTimer-${r.id}"></div>
+          <div class="detail-info">目标时间: ${r.dateTime || r.date}</div>
+          <div class="detail-info">${escapeHtml(r.desc || '')}</div>
+          <button onclick="this.closest('.countdown-detail-popup').remove()">关闭</button>`;
+        
+        document.body.appendChild(pop);
+        requestAnimationFrame(() => pop.classList.add('show'));
+        
+        const timerEl = document.getElementById(`detailTimer-${r.id}`);
+        const updateTimer = () => {
+          const now = new Date();
+          const diff = targetDate.getTime() - now.getTime();
+          timerEl.textContent = getCountdownText(diff, true);
+          if(diff > 0) {
+            requestAnimationFrame(updateTimer);
+          }
+        };
+        updateTimer();
+      };
+
+      // 初始化倒计时
+      updateCountdowns();
+      setInterval(updateCountdowns, 1000);
+
+      // 禁用双指缩放
+      document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+      document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+      document.addEventListener('gestureend', function(e) { e.preventDefault(); });
+      document.addEventListener('touchmove', function(e) {
+          if (e.touches.length > 1) { e.preventDefault(); }
+      }, { passive: false });
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(e) {
+          const now = Date.now();
+          if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+          lastTouchEnd = now;
+      }, false);
+      document.addEventListener('wheel', function(e) {
+          if (e.ctrlKey) { e.preventDefault(); }
+      }, { passive: false });
+    });
+  </script>
+</body>
+</html>
