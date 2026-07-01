@@ -1,1123 +1,1274 @@
 <!DOCTYPE html>
+<link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-  <title>考试时钟</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" type="image/x-icon">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            primary: '#12B7F5',
-            secondary: '#FF9500',
-            neutral: {
-              100: '#F5F5F5',
-              200: '#E5E5E5',
-              300: '#D4D4D4',
-              800: '#1F2937',
-              900: '#111827',
-            },
-            toastBorder: '#0F766E',
-            appleGreen: '#34C759',
-            glass: {
-              100: 'rgba(255, 255, 255, 0.8)',
-              200: 'rgba(255, 255, 255, 0.6)',
-              800: 'rgba(31, 41, 55, 0.8)',
-              900: 'rgba(17, 24, 39, 0.6)',
-            },
-            holiday: '#EF4444',
-            restday: '#3B82F6',
-            reminder: '#F59E0B'
-          },
-          fontFamily: {
-            noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
-          },
-        },
-      }
-    }
-  </script>
-  <style type="text/tailwindcss">
-    @layer utilities {
-      .content-auto { content-visibility: auto; }
-      .clock-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03); }
-      .btn-glow { box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); }
-      .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
-      .card-hover { transition: all 0.3s ease; }
-      .card-hover:hover { transform: translateY(-5px); }
-
-      /* 提示框 - 设置更高的z-index确保在遮罩层之上 */
-      .toast {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #FFFFFF;
-        color: #1F2937;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        z-index: 10000;
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.3s ease;
-        font-size: 18px;
-        font-weight: 500;
-        max-width: 320px;
-        border-left: 4px solid #0F766E;
-        @apply dark:bg-neutral-800 dark:text-white dark:border-neutral-600 dark:shadow-lg dark:shadow-black/20;
-      }
-      .toast.reminder { border-left: 4px solid #EF4444; background-color: #FEF2F2; @apply dark:bg-red-900/30 dark:text-red-300; }
-      .toast.show { opacity: 1; transform: translateX(0); }
-
-      /* 黑夜开关优化 */
-      .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 52px;
-        height: 28px;
-      }
-      .toggle-switch input { opacity: 0; width: 0; height: 0; }
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #cbd5e1;
-        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 34px;
-        @apply dark:bg-neutral-600;
-      }
-      .toggle-slider:before {
-        position: absolute;
-        content: "";
-        height: 22px;
-        width: 22px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 50%;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      }
-      .toggle-switch input:checked + .toggle-slider {
-        background-color: #30b551 !important;
-      }
-      .toggle-switch input:checked + .toggle-slider:before {
-        transform: translateX(24px) !important;
-        left: unset !important;
-      }
-
-      /* ========= 卡片动画增强 ========= */
-      /* 设置中心卡片动画 (弹性划入) */
-      .settings-panel-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.92);
-        width: 90%;
-        max-width: 560px;
-        background-color: rgba(255,255,255,0.98);
-        border-radius: 32px;
-        padding: 2rem 2rem;
-        box-shadow: 0 30px 50px rgba(0,0,0,0.25);
-        z-index: 10010;
-        display: none;
-        opacity: 0;
-        backdrop-filter: blur(6px);
-        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-        border: 1px solid rgba(255,255,255,0.3);
-        @apply dark:bg-neutral-800/95 dark:border dark:border-neutral-700;
-      }
-      .settings-panel-card.show {
-        display: block;
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-        animation: cardFloatIn 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-      }
-      @keyframes cardFloatIn {
-        0% {
-          opacity: 0;
-          transform: translate(-50%, -50%) scale(0.92);
-        }
-        100% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1);
-        }
-      }
-
-      /* 背景/提醒/标语子卡片同样添加动画 */
-      .bg-settings-card, .reminder-settings-card, .slogan-settings-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.92);
-        width: 90%;
-        max-width: 540px;
-        background-color: rgba(255, 255, 255, 0.98);
-        border-radius: 32px;
-        padding: 2rem;
-        box-shadow: 0 25px 45px rgba(0,0,0,0.2);
-        z-index: 10000;
-        display: none;
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
-        backdrop-filter: blur(6px);
-        border: 1px solid rgba(255,255,255,0.3);
-        @apply dark:bg-neutral-800/95 dark:border dark:border-neutral-700;
-      }
-      .bg-settings-card.show, .reminder-settings-card.show, .slogan-settings-card.show {
-        display: block;
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-        animation: cardFloatIn 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-      }
-      .slogan-settings-card { max-width: 560px; }
-      .reminder-settings-card { max-width: 640px; }
-      
-      /* 遮罩层淡入 */
-      .bg-overlay, .reminder-overlay, .slogan-overlay, .settings-panel-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-        display: none;
-        backdrop-filter: blur(2px);
-        @apply dark:bg-black/70;
-      }
-      .bg-overlay.show, .reminder-overlay.show, .slogan-overlay.show, .settings-panel-overlay.show { 
-        display: block; 
-        animation: fadeBg 0.2s ease; 
-      }
-      @keyframes fadeBg {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-
-      /* 日历卡片 */
-      .calendar-card {
-        width: 80%;
-        max-width: 28rem;
-        border-radius: 10px;
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-        padding: 0.75rem 0.75rem 1rem 0.75rem;
-        margin: 2.5rem auto 1.2rem auto;
-        background-color: transparent;
-        @apply bg-white;
-        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
-        transition: all 0.2s;
-      }
-      .calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.75rem;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .calendar-nav-btn {
-        background-color: #f3f4f6;
-        border: none;
-        border-radius: 8px;
-        padding: 0.35rem 0.9rem;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 0.85rem;
-        @apply dark:bg-neutral-700 dark:text-white hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors;
-      }
-      .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 0.3rem;
-      }
-      .calendar-day-header {
-        text-align: center;
-        font-weight: 800;
-        padding: 0.3rem 0;
-        color: #191919;
-        font-size: 0.75rem;
-        @apply dark:text-neutral-300;
-      }
-      .calendar-day {
-        aspect-ratio: 1/1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 1000;
-        font-size: 1rem;
-        transition: all 0.15s;
-        position: relative;
-        background-color: transparent;
-        @apply hover:bg-neutral-100 dark:hover:bg-neutral-700/70;
-      }
-      .calendar-day.restday {
-        background-color: #EFF6FF;
-        color: #3B82F6;
-        @apply dark:bg-blue-900/20 dark:text-blue-300 font-extrabold;
-      }
-      .calendar-day.today {
-        border: 2px solid #12f54b;
-        font-weight: 900;
-        background-color: rgba(17, 55, 69, 0.08);
-      }
-      .calendar-day.reminder::after {
-        content: '●';
-        position: absolute;
-        bottom: 5px;
-        font-size: 12px;
-        color: #F59E0B;
-      }
-      .calendar-day.holiday-badge::before {
-        content: '休';
-        position: absolute;
-        top: 2px;
-        right: 4px;
-        font-size: 9px;
-        background: #EF4444;
-        color: white;
-        border-radius: 10px;
-        padding: 0px 4px;
-        font-weight: bold;
-      }
-      .calendar-day.workday-badge::before {
-        content: '班';
-        position: absolute;
-        top: 2px;
-        right: 4px;
-        font-size: 9px;
-        background: #F97316;
-        color: white;
-        border-radius: 10px;
-        padding: 0px 4px;
-        font-weight: bold;
-      }
-      .calendar-day.other-month {
-        color: #5e5e5e;
-        font-weight: 470;
-        @apply dark:text-neutral-500;
-      }
-      
-      /* 日历详细信息卡片 - 增大尺寸 + 划入动画 */
-      .detail-popup {
-        position: fixed;
-        bottom: 40px;
-        left: 50%;
-        transform: translateX(-50%) translateY(40px);
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(8px);
-        border-radius: 36px;
-        padding: 1.8rem 2.2rem;
-        box-shadow: 0 25px 45px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.4);
-        z-index: 10030;
-        max-width: 92%;
-        width: 460px;
-        text-align: center;
-        border: 1px solid rgba(255,255,255,0.5);
-        opacity: 0;
-        transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-        pointer-events: auto;
-        @apply dark:bg-neutral-800/95 dark:text-white dark:border-neutral-600 dark:shadow-2xl;
-      }
-      .detail-popup.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-      .detail-popup button {
-        margin-top: 20px;
-        background: #1c1c1e;
-        border: none;
-        border-radius: 40px;
-        padding: 10px 28px;
-        color: white;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.2s;
-        @apply dark:bg-white dark:text-black;
-      }
-      .detail-popup button:hover {
-        transform: scale(1.02);
-        background: #2c2c2e;
-      }
-      .detail-popup strong {
-        font-size: 1.4rem;
-        display: block;
-        margin-bottom: 8px;
-      }
-      .detail-popup hr {
-        margin: 12px 0;
-        border-color: rgba(0,0,0,0.1);
-      }
-
-      /* 重要提示卡片  */
-      .important-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 680px;
-        max-height: 90vh;
-        overflow-y: auto;
-        background-color: #ff000054;
-        border-radius: 20px;
-        padding: 1.2rem 1.5rem 1.5rem 1.5rem;
-        box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2);
-        z-index: 10002;
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        transition: all 0.2s ease;
-        backdrop-filter: blur(2px);
-        border: 1px solid rgba(255,215,0,0.5);
-      }
-      .important-card.show {
-        display: flex;
-        animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-      }
-      .important-card .important-icon {
-        font-size: clamp(2rem, 8vw, 3.5rem);
-        color: #FFE484;
-        margin-bottom: 0.5rem;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      }
-      .important-card .important-title {
-        font-size: clamp(1.2rem, 5vw, 2rem);
-        font-weight: 900;
-        letter-spacing: -0.5px;
-        color: white;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        margin-bottom: 0.75rem;
-      }
-      .important-card .important-content {
-        background-color: rgba(255,255,255,0.15);
-        backdrop-filter: blur(2px);
-        border-radius: 16px;
-        padding: 1rem 1.2rem;
-        width: 100%;
-        margin: 0.8rem 0 1.2rem;
-        color: #fff8e7;
-        font-size: clamp(0.9rem, 3vw, 1.1rem);
-        line-height: 1.5;
-        font-weight: 500;
-        border: 1px solid rgba(255,245,180,0.4);
-        text-align: center;
-        word-break: break-word;
-        white-space: pre-wrap;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .important-close-btn {
-        background-color: white;
-        color: #B91C1C;
-        border: none;
-        border-radius: 60px;
-        padding: 0.7rem 1.6rem;
-        font-weight: 800;
-        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        margin-top: 0.2rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .important-close-btn:hover {
-        background-color: #FFF3BF;
-        transform: scale(1.02);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      }
-      .important-close-btn:active {
-        transform: scale(0.98);
-      }
-      .important-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.75);
-        z-index: 10001;
-        display: none;
-        backdrop-filter: blur(5px);
-      }
-      .important-overlay.show {
-        display: block;
-        animation: fadeBg 0.25s ease;
-      }
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translate(-50%, -40%);
-        }
-        to {
-          opacity: 1;
-          transform: translate(-50%, -50%);
-        }
-      }
-
-      /* 设置卡片内小组件 */
-      .settings-group-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem 0.5rem;
-        border-bottom: 1px solid rgba(0,0,0,0.08);
-        @apply dark:border-neutral-700;
-      }
-      .settings-group-item:last-child { border-bottom: none; }
-      .settings-label-icon {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        font-weight: 600;
-        font-size: 1.1rem;
-      }
-      .back-to-settings-btn {
-        background: none;
-        border: none;
-        font-weight: 700;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 1rem;
-        padding: 6px 12px;
-        border-radius: 40px;
-        transition: all 0.2s;
-        color: #1f2937;
-        @apply dark:text-white;
-      }
-      .back-to-settings-btn:hover { opacity: 0.75; background-color: rgba(0,0,0,0.05); @apply dark:bg-white/10; }
-      .card-header-flex {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.2rem;
-      }
-      
-      /* 红色按钮重置/清空 */
-      .btn-danger {
-        background-color: #EF4444 !important;
-        color: white !important;
-      }
-      .btn-danger:hover {
-        background-color: #DC2626 !important;
-      }
-    }
-  </style>
-</head>
-<body class="bg-neutral-100 font-noto text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300" style="background-size: cover; background-position: center; background-attachment: fixed; will-change: auto;">
-
-  <div id="toast" class="toast"></div>
-  <div id="reminderOverlay" class="reminder-overlay"></div>
-  <div id="sloganOverlay" class="slogan-overlay"></div>
-
-  <!-- 设置中心面板 -->
-  <div id="settingsPanelOverlay" class="settings-panel-overlay"></div>
-  <div id="settingsPanelCard" class="settings-panel-card">
-    <div class="flex justify-between items-center mb-5">
-      <h2 class="text-3xl font-bold flex items-center gap-2"><i class="fa fa-cog text-black dark:text-white"></i> 设置中心 </h2>
-      <button id="closeSettingsPanel" class="text-black dark:text-white text-3xl leading-5">&times;</button>
-    </div>
-    <div class="space-y-1">
-      <div class="settings-group-item cursor-pointer" id="quickReminderSettingBtn">
-        <div class="settings-label-icon"><i class="fa fa-bell text-black dark:text-white"></i><span>考试时间设置</span></div>
-        <i class="fa fa-chevron-right text-black dark:text-white"></i>
-      </div>
-      <div class="settings-group-item cursor-pointer" id="quickSloganSettingBtn">
-        <div class="settings-label-icon"><i class="fa fa-pencil-square-o text-black dark:text-white"></i><span>自定义标语/样式</span></div>
-        <i class="fa fa-chevron-right text-black dark:text-white"></i>
-      </div>
-      <div class="settings-group-item">
-        <div class="settings-label-icon"><i class="fa fa-moon-o text-black dark:text-white"></i><span>黑夜模式</span></div>
-        <label class="toggle-switch"><input type="checkbox" id="darkModeTogglePanel"><span class="toggle-slider"></span></label>
-      </div>
-    </div>
-  </div>
-
-  <!-- 考试倒计时紧急提醒卡片 -->
-  <div id="examCountdownOverlay" class="important-overlay"></div>
-  <div id="examCountdownCard" class="important-card">
-    <div class="important-icon"><i class="fa fa-alarm-clock"></i></div>
-    <div class="important-title">期末考试倒计时</div>
-    <div class="important-content" style="text-align: center;">
-      <div style="font-size: clamp(0.8rem, 3vw, 1.2rem);">距离期末考试还有</div>
-      <div style="font-size: clamp(6rem, 25vw, 15rem); font-weight: 900; color: #FFD700; text-shadow: 0 4px 30px rgba(255,215,0,0.8); margin: 0.5rem 0; line-height: 0.8;" id="countdownCardDays">0</div>
-      <div style="font-size: clamp(0.8rem, 3vw, 1.2rem);">天</div>
-      <div style="font-size: clamp(0.7rem, 2.5vw, 0.9rem); color: rgba(255,255,255,0.8); margin-top: 1rem;">考试日期：2026年7月6日</div>
-    </div>
-    <button id="closeExamCountdownBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我知道了</button>
-  </div>
-
-  <!-- 标语自定义卡片 -->
-  <div id="sloganSettingsCard" class="slogan-settings-card">
-    <div class="card-header-flex"><h2 class="text-2xl font-bold">自定义标语区域</h2><button id="backFromSlogan" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
-    <div class="space-y-4">
-      <div><label class="block font-medium">标语文字（支持换行）</label><textarea id="sloganText" rows="4" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
-      <div><label class="block font-medium">文字颜色</label><input type="color" id="sloganColor" class="w-full h-10 rounded border: none"></div>
-      <div><label class="block font-medium">文字大小 (px)</label><input type="number" id="sloganFontSize" min="12" max="96" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><label class="block font-medium">每行文字间距</label><input type="number" id="sloganLineHeight" step="0.1" min="0.8" max="3" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <button id="applySloganBtn" class="w-full bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black"><i class="fa fa-save"></i> 应用标语设置</button>
-      <button id="resetSloganBtn" class="w-full btn-danger py-3 rounded-lg">恢复默认</button>
-    </div>
-  </div>
-
-  <!-- 提醒设置卡片 -->
-  <div id="reminderSettingsCard" class="reminder-settings-card">
-    <div class="card-header-flex"><h2 class="text-2xl font-bold">考试时间设置</h2><button id="backFromReminderSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
-    <div class="space-y-4">
-      <div><input type="text" id="reminderName" placeholder="提醒名称" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><input type="date" id="reminderDate" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
-      <div><textarea id="reminderDesc" rows="2" placeholder="描述" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
-      <div class="flex space-x-3"><button id="addReminder" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">添加</button><button id="clearReminders" class="flex-1 btn-danger py-3 rounded-lg">清空</button></div>
-      <div><div id="remindersList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg"></div></div>
-    </div>
-  </div>
-
-  <!-- 顶部导航 -->
-  <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center gap-2"><i class="fa fa-clock-o text-2xl text-black dark:text-white"></i><h1 class="text-xl font-bold text-black dark:text-white">考试时钟</h1></div>
-      <div class="flex items-center gap-4">
-        <div id="countdownBadge" class="hidden bg-red-500 text-white px-4 py-3 rounded-full font-bold text-xl animate-pulse flex items-center justify-center gap-2 min-w-[200px]">
-          距期末考还剩 <span id="countdownDays" class="text-4xl font-extrabold text-yellow-300">0</span> 天
-        </div>
-        <nav><ul class="flex space-x-4"><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i></button></li></ul></nav>
-      </div>
-    </div>
-  </header>
-
-  <main class="flex-grow container mx-auto px-4 py-6 flex flex-col items-center justify-center">
-    <div id="clockCard" class="w-full max-w-8xl bg-white rounded-2xl clock-shadow p-8 md:p-10 card-hover dark:bg-neutral-800">
-      <div id="sloganContainer" class="text-center mb-5 font-bold"></div>
-      <div class="flex flex-col items-center"><p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p><div id="clockDisplay" class="text-[clamp(4rem,15vw,12rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div><br><button id="fullscreenBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-10 rounded-full mt-3 transition-all flex items-center shadow-md text-lg"><i class="fa fa-expand mr-2"></i><span>全屏</span></button></div>
-    </div>
-    <div class="calendar-card mt-5 card-hover"><div class="calendar-header"><button id="prevMonth" class="calendar-nav-btn"><i class="fa fa-chevron-left mr-1"></i> 上月</button><h2 id="calendarMonth" class="font-extrabold dark:text-white"></h2><button id="nextMonth" class="calendar-nav-btn">下月 <i class="fa fa-chevron-right ml-1"></i></button></div><div class="calendar-grid mt-2"><div class="calendar-day-header">日</div><div class="calendar-day-header">一</div><div class="calendar-day-header">二</div><div class="calendar-day-header">三</div><div class="calendar-day-header">四</div><div class="calendar-day-header">五</div><div class="calendar-day-header">六</div><div id="calendarDays" style="display: contents;"></div></div></div>
-  </main>
-
-  <script>
-    // ===== 核心逻辑 =====
-    const holidaysData = {"2025-01-01":{name:"元旦"},"2025-01-29":{name:"春节"},"2025-01-30":{name:"春节"},"2025-01-31":{name:"春节"},"2025-02-01":{name:"春节"},"2025-02-02":{name:"春节"},"2025-04-04":{name:"清明节"},"2025-05-01":{name:"劳动节"},"2025-05-02":{name:"劳动节"},"2025-05-03":{name:"劳动节"},"2025-05-31":{name:"端午节"},"2025-10-01":{name:"国庆节"},"2025-10-02":{name:"国庆节"},"2025-10-03":{name:"国庆节"},"2025-10-04":{name:"国庆节"},"2025-10-05":{name:"国庆节"},"2025-10-06":{name:"国庆节"},"2025-10-07":{name:"国庆节"},"2025-10-08":{name:"中秋节"},"2026-01-01":{name:"元旦"},"2026-02-17":{name:"春节"},"2026-02-18":{name:"春节"},"2026-02-19":{name:"春节"},"2026-02-20":{name:"春节"},"2026-02-21":{name:"春节"},"2026-02-22":{name:"春节"},"2026-04-05":{name:"清明节"},"2026-05-01":{name:"劳动节"},"2026-06-19":{name:"端午节"},"2026-10-01":{name:"国庆节"},"2026-10-02":{name:"国庆节"},"2026-10-03":{name:"国庆节"},"2026-10-04":{name:"国庆节"},"2026-10-05":{name:"国庆节"},"2026-10-06":{name:"国庆节"},"2026-10-07":{name:"国庆节"},"2026-10-08":{name:"中秋节"}};
-    const workdayData = {"2025-04-27":true,"2025-05-10":true,"2025-09-28":true,"2025-10-11":true,"2026-02-14":true,"2026-02-28":true,"2026-09-27":true,"2026-10-10":true};
-    function getHolidayInfo(dateStr){ if(holidaysData[dateStr]) return {name:holidaysData[dateStr].name, type:"holiday"}; if(workdayData[dateStr]) return {name:"调休工作日", type:"workday"}; return null; }
-    let reminderList = JSON.parse(localStorage.getItem('reminders') || '[{"id":1,"name":"期末考试","date":"2026-07-06","desc":"","shown":false}]');
-    let calendarCurrentDate = new Date();
-    let activePopup = null;
-    let activePopupTimeout = null;
-    let toastTimeout = null;
-    function cleanupPopup() {
-      if(activePopupTimeout) {
-        clearTimeout(activePopupTimeout);
-        activePopupTimeout = null;
-      }
-      if(activePopup && activePopup.parentNode) {
-        activePopup.remove();
-        activePopup = null;
-      }
-    }
-    function showToast(msg, duration=3000, isReminder=false) {
-      let t = document.getElementById('toast');
-      if(!t) return;
-      if(toastTimeout) {
-        clearTimeout(toastTimeout);
-      }
-      t.textContent = msg;
-      t.classList.add('show');
-      if(isReminder) {
-        t.classList.add('reminder');
-      } else {
-        t.classList.remove('reminder');
-      }
-      toastTimeout = setTimeout(() => {
-        t.classList.remove('show');
-        if(isReminder) t.classList.remove('reminder');
-        toastTimeout = null;
-      }, duration);
-    }
-    function updateClock() {
-      let n = new Date();
-      let clockDisplay = document.getElementById('clockDisplay');
-      let dateDisplay = document.getElementById('dateDisplay');
-      if(!clockDisplay || !dateDisplay) return;
-      
-      clockDisplay.innerText = 
-        `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`;
-      let week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-      dateDisplay.textContent = 
-        `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`;
-      checkReminders(n);
-      updateExamCountdown(n);
-    }
-    function updateExamCountdown(now) {
-      const examDate = new Date('2026-07-06');
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const diffTime = examDate - today;
-      const daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      const badge = document.getElementById('countdownBadge');
-      const daysSpan = document.getElementById('countdownDays');
-      
-      if (daysLeft > 0) {
-        if (badge) {
-          badge.classList.remove('hidden');
-        }
-        if (daysSpan) {
-          daysSpan.textContent = daysLeft;
-        }
-        showExamCountdownCard(daysLeft);
-      } else {
-        if (badge) {
-          badge.classList.add('hidden');
-        }
-      }
-    }
-    let countdownCardShown = false;
-    function showExamCountdownCard(daysLeft) {
-      const overlay = document.getElementById('examCountdownOverlay');
-      const card = document.getElementById('examCountdownCard');
-      const daysElement = document.getElementById('countdownCardDays');
-      const closeBtn = document.getElementById('closeExamCountdownBtn');
-      
-      if (!overlay || !card || !daysElement) return;
-      
-      if (countdownCardShown) return;
-      
-      daysElement.textContent = daysLeft;
-      overlay.classList.add('show');
-      card.classList.add('show');
-      countdownCardShown = true;
-      
-      if (closeBtn) {
-        closeBtn.onclick = () => {
-          overlay.classList.remove('show');
-          card.classList.remove('show');
-        };
-      }
-      
-      overlay.onclick = (e) => {
-        if (e.target === overlay) {
-          overlay.classList.remove('show');
-          card.classList.remove('show');
-        }
-      };
-    }
-    function checkReminders(now) {
-      let today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-      let update = false;
-      reminderList.forEach(r => {
-        if(r.date === today && !r.shown) {
-          showToast(` 今日提醒：${r.name} - ${r.desc||'无描述'}`, 5000, true);
-          r.shown = true;
-          update = true;
-        }
-      });
-      if(update) {
-        localStorage.setItem('reminders', JSON.stringify(reminderList));
-        renderRemindersList();
-        renderCalendar();
-      }
-    }
-    let fullscreenBtn = document.getElementById('fullscreenBtn');
-    function toggleFull() {
-      if(!fullscreenBtn) return;
-      if(!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.error('Fullscreen request failed:', err);
-        });
-        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
-      } else {
-        document.exitFullscreen().catch(err => {
-          console.error('Fullscreen exit failed:', err);
-        });
-        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏</span>';
-      }
-    }
-    function renderRemindersList() {
-      let c = document.getElementById('remindersList');
-      if(!c) return;
-      if(reminderList.length === 0) {
-        c.innerHTML = '<div class="text-center text-neutral-500">暂无提醒</div>';
-        return;
-      }
-      c.innerHTML = '';
-      reminderList.forEach(r => {
-        let div = document.createElement('div');
-        div.className = 'p-2 bg-neutral-100 dark:bg-neutral-600 rounded-lg flex justify-between items-center';
-        div.innerHTML = `<div><div class="font-bold">${escapeHtml(r.name)}</div>
-          <div class="text-sm">${r.date} - ${escapeHtml(r.desc||'无描述')}</div></div>
-          <button class="text-red-500 delete-reminder-btn" data-id="${r.id}"><i class="fa fa-times"></i></button>`;
-        c.appendChild(div);
-      });
-      document.querySelectorAll('.delete-reminder-btn').forEach(btn => btn.addEventListener('click', e => {
-        let id = parseInt(btn.dataset.id);
-        reminderList = reminderList.filter(i => i.id !== id);
-        localStorage.setItem('reminders', JSON.stringify(reminderList));
-        renderRemindersList();
-        renderCalendar();
-        showToast('提醒已删除');
-      }));
-    }
-    function renderCalendar() {
-      let y = calendarCurrentDate.getFullYear();
-      let m = calendarCurrentDate.getMonth();
-      document.getElementById('calendarMonth').innerHTML = `${y}年${m+1}月`;
-      
-      let firstDay = new Date(y, m, 1).getDay();
-      let daysInMonth = new Date(y, m+1, 0).getDate();
-      let prevLastDay = new Date(y, m, 0).getDate();
-      let container = document.getElementById('calendarDays');
-      container.innerHTML = '';
-      
-      for(let i = firstDay; i > 0; i--) {
-        let cell = document.createElement('div');
-        cell.className = 'calendar-day other-month';
-        cell.textContent = prevLastDay - i + 1;
-        container.appendChild(cell);
-      }
-      
-      let today = new Date();
-      for(let i = 1; i <= daysInMonth; i++) {
-        let cell = document.createElement('div');
-        let dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-        let isToday = (y === today.getFullYear() && m === today.getMonth() && i === today.getDate());
-        let weekDay = new Date(y, m, i).getDay();
-        let holiday = getHolidayInfo(dateStr);
-        
-        cell.className = 'calendar-day';
-        if(weekDay === 0 || weekDay === 6) cell.classList.add('restday');
-        if(holiday && holiday.type === 'holiday') cell.classList.add('holiday-badge');
-        if(holiday && holiday.type === 'workday') cell.classList.add('workday-badge');
-        if(isToday) cell.classList.add('today');
-        if(reminderList.some(r => r.date === dateStr)) cell.classList.add('reminder');
-        cell.textContent = i;
-        
-        cell.addEventListener('click', () => {
-          cleanupPopup();
-          let details = [];
-          if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`);
-          let dayReminders = reminderList.filter(r => r.date === dateStr);
-          dayReminders.forEach(rem => details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`));
-          if(details.length === 0) details.push('  暂无内容显示');
-          
-          let pop = document.createElement('div');
-          pop.className = 'detail-popup';
-          pop.innerHTML = `<strong> ${dateStr}</strong><hr>
-            <div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div>
-            <button>关闭</button>`;
-          document.body.appendChild(pop);
-          activePopup = pop;
-          
-          requestAnimationFrame(() => pop.classList.add('show'));
-          let closeHandler = () => {
-            pop.classList.remove('show');
-            setTimeout(() => pop.remove(), 300);
-            if(activePopup === pop) {
-              activePopup = null;
-              activePopupTimeout = null;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>HJ_ToolHub-合金实用工具集合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Tailwind 配置
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        noto: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                    },
+                }
             }
-          };
-          pop.querySelector('button').addEventListener('click', closeHandler);
-          activePopupTimeout = setTimeout(closeHandler, 6000);
-        });
-        
-        container.appendChild(cell);
-      }
-      
-      let total = firstDay + daysInMonth;
-      let next = 42 - total;
-      for(let i = 1; i <= next; i++) {
-        let cell = document.createElement('div');
-        cell.className = 'calendar-day other-month';
-        cell.textContent = i;
-        container.appendChild(cell);
-      }
-    }
-    function escapeHtml(str) {
-      if(!str) return '';
-      return str.replace(/[&<>]/g, m => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[m]));
-    }
-    function initSloganUI() {
-      let container = document.getElementById('sloganContainer');
-      let savedText = localStorage.getItem('sloganText');
-      let savedColor = localStorage.getItem('sloganColor');
-      let savedSize = localStorage.getItem('sloganFontSize');
-      let savedLineHeight = localStorage.getItem('sloganLineHeight');
-      
-      if(savedText) {
-        container.innerHTML = savedText.replace(/\n/g, '<br>');
-      } else {
-        container.innerHTML = "";
-      }
-      
-      if(savedColor) {
-        container.style.color = savedColor;
-      } else {
-        container.style.color = "#dc2626";
-      }
-      
-      if(savedSize) {
-        container.style.fontSize = savedSize + 'px';
-      } else {
-        container.style.fontSize = '48px';
-      }
-      
-      let lineH = savedLineHeight ? parseFloat(savedLineHeight) : 1.4;
-      container.style.lineHeight = lineH;
-      
-      document.getElementById('sloganText').value = localStorage.getItem('sloganText') || "";
-      document.getElementById('sloganColor').value = savedColor || "#dc2626";
-      document.getElementById('sloganFontSize').value = parseInt(savedSize || 48);
-      document.getElementById('sloganLineHeight').value = lineH;
-      
-      document.getElementById('applySloganBtn').onclick = () => {
-        let txt = document.getElementById('sloganText').value;
-        let col = document.getElementById('sloganColor').value;
-        let sz = document.getElementById('sloganFontSize').value;
-        let lh = document.getElementById('sloganLineHeight').value;
-        
-        container.innerHTML = txt.replace(/\n/g, '<br>');
-        container.style.color = col;
-        container.style.fontSize = sz + 'px';
-        container.style.lineHeight = lh;
-        
-        localStorage.setItem('sloganText', txt);
-        localStorage.setItem('sloganColor', col);
-        localStorage.setItem('sloganFontSize', sz);
-        localStorage.setItem('sloganLineHeight', lh);
-        
-        showToast('标语已更新');
-        document.getElementById('sloganOverlay').classList.remove('show');
-        document.getElementById('sloganSettingsCard').classList.remove('show');
-      };
-      
-      document.getElementById('resetSloganBtn').onclick = () => {
-        let def = "";
-        container.innerHTML = def.replace(/\n/g, '<br>');
-        container.style.color = "#dc2626";
-        container.style.fontSize = "48px";
-        container.style.lineHeight = "1.4";
-        
-        localStorage.setItem('sloganText', def);
-        localStorage.setItem('sloganColor', '#dc2626');
-        localStorage.setItem('sloganFontSize', '48');
-        localStorage.setItem('sloganLineHeight', '1.4');
-        
-        document.getElementById('sloganText').value = def;
-        document.getElementById('sloganColor').value = "#dc2626";
-        document.getElementById('sloganFontSize').value = 48;
-        document.getElementById('sloganLineHeight').value = 1.4;
-        
-        showToast('恢复默认');
-        document.getElementById('sloganOverlay').classList.remove('show');
-        document.getElementById('sloganSettingsCard').classList.remove('show');
-      };
-    }
-    function initDarkMode() {
-      let cb = document.getElementById('darkModeTogglePanel');
-      let isDark = localStorage.getItem('darkMode') === 'true';
-      if(isDark) {
-        document.documentElement.classList.add('dark');
-        cb.checked = true;
-      }
-      cb.addEventListener('change', () => {
-        if(cb.checked) {
-          document.documentElement.classList.add('dark');
-          localStorage.setItem('darkMode', 'true');
-          showToast('已开启黑夜模式');
-        } else {
-          document.documentElement.classList.remove('dark');
-          localStorage.setItem('darkMode', 'false');
-          showToast('已关闭黑夜模式');
         }
-        renderCalendar();
-      });
-    }
-    document.addEventListener('DOMContentLoaded', () => {
-      initSloganUI();
-      initDarkMode();
-      
-      fullscreenBtn.addEventListener('click', toggleFull);
-      
-      setInterval(updateClock, 1000);
-      updateClock();
-      
-      renderCalendar();
-      renderRemindersList();
-      
-      let openSet = document.getElementById('openSettingsBtn');
-      let panel = document.getElementById('settingsPanelCard');
-      let overlay = document.getElementById('settingsPanelOverlay');
-      let closePanel = document.getElementById('closeSettingsPanel');
-      
-      const closeSettingsPanel = () => {
-        if(overlay) overlay.classList.remove('show');
-        if(panel) panel.classList.remove('show');
-      };
-      
-      if(openSet && overlay && panel) {
-        openSet.onclick = () => {
-          overlay.classList.add('show');
-          panel.classList.add('show');
-        };
-      }
-      
-      if(closePanel) {
-        closePanel.onclick = closeSettingsPanel;
-      }
-      
-      if(overlay) {
-        overlay.onclick = closeSettingsPanel;
-      }
-      
-      const quickReminderBtn = document.getElementById('quickReminderSettingBtn');
-      if(quickReminderBtn) {
-        quickReminderBtn.onclick = () => {
-          closeSettingsPanel();
-          const reminderOverlay = document.getElementById('reminderOverlay');
-          const reminderCard = document.getElementById('reminderSettingsCard');
-          if(reminderOverlay) reminderOverlay.classList.add('show');
-          if(reminderCard) reminderCard.classList.add('show');
-        };
-      }
-      
-      const quickSloganBtn = document.getElementById('quickSloganSettingBtn');
-      if(quickSloganBtn) {
-        quickSloganBtn.onclick = () => {
-          closeSettingsPanel();
-          const sloganOverlay = document.getElementById('sloganOverlay');
-          const sloganCard = document.getElementById('sloganSettingsCard');
-          if(sloganOverlay) sloganOverlay.classList.add('show');
-          if(sloganCard) sloganCard.classList.add('show');
-        };
-      }
-      
-      const backFromReminderBtn = document.getElementById('backFromReminderSettings');
-      if(backFromReminderBtn) {
-        backFromReminderBtn.onclick = () => {
-          const reminderOverlay = document.getElementById('reminderOverlay');
-          const reminderCard = document.getElementById('reminderSettingsCard');
-          if(reminderOverlay) reminderOverlay.classList.remove('show');
-          if(reminderCard) reminderCard.classList.remove('show');
-          if(overlay) overlay.classList.add('show');
-          if(panel) panel.classList.add('show');
-        };
-      }
-      
-      const backFromSloganBtn = document.getElementById('backFromSlogan');
-      if(backFromSloganBtn) {
-        backFromSloganBtn.onclick = () => {
-          const sloganOverlay = document.getElementById('sloganOverlay');
-          const sloganCard = document.getElementById('sloganSettingsCard');
-          if(sloganOverlay) sloganOverlay.classList.remove('show');
-          if(sloganCard) sloganCard.classList.remove('show');
-          if(overlay) overlay.classList.add('show');
-          if(panel) panel.classList.add('show');
-        };
-      }
-      
-      const reminderOverlay = document.getElementById('reminderOverlay');
-      if(reminderOverlay) {
-        reminderOverlay.onclick = () => {
-          reminderOverlay.classList.remove('show');
-          const reminderCard = document.getElementById('reminderSettingsCard');
-          if(reminderCard) reminderCard.classList.remove('show');
-        };
-      }
-      
-      const sloganOverlay = document.getElementById('sloganOverlay');
-      if(sloganOverlay) {
-        sloganOverlay.onclick = () => {
-          sloganOverlay.classList.remove('show');
-          const sloganCard = document.getElementById('sloganSettingsCard');
-          if(sloganCard) sloganCard.classList.remove('show');
-        };
-      }
-      
-      const addReminderBtn = document.getElementById('addReminder');
-      if(addReminderBtn) {
-        addReminderBtn.onclick = () => {
-          const nameInput = document.getElementById('reminderName');
-          const dateInput = document.getElementById('reminderDate');
-          const descInput = document.getElementById('reminderDesc');
-          
-          if(!nameInput || !dateInput) return;
-          
-          let name = nameInput.value.trim();
-          let date = dateInput.value;
-          
-          if(!name || !date) {
-            showToast('请填写名称和日期', 2000, true);
-            return;
-          }
-          
-          reminderList.push({
-            id: Date.now(),
-            name: name,
-            date: date,
-            desc: descInput ? descInput.value : '',
-            shown: false
-          });
-          
-          localStorage.setItem('reminders', JSON.stringify(reminderList));
-          renderRemindersList();
-          renderCalendar();
-          showToast('提醒已添加');
-          
-          nameInput.value = '';
-          dateInput.value = '';
-          if(descInput) descInput.value = '';
-        };
-      }
-      
-      const clearRemindersBtn = document.getElementById('clearReminders');
-      if(clearRemindersBtn) {
-        clearRemindersBtn.onclick = () => {
-          if(confirm('清空所有提醒？')) {
-            reminderList = [];
-            localStorage.setItem('reminders', '[]');
-            renderRemindersList();
-            renderCalendar();
-            showToast('已清空');
-          }
-        };
-      }
-      
-      const prevMonthBtn = document.getElementById('prevMonth');
-      if(prevMonthBtn) {
-        prevMonthBtn.addEventListener('click', () => {
-          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
-          renderCalendar();
+    </script>
+    <style type="text/tailwindcss">
+        /* 禁用移动端缩放和拖动 */
+        html {
+            touch-action: pan-y;
+            overscroll-behavior: contain;
+        }
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+            }
+            .typing-cursor::after {
+                content: '|';
+                animation: blink 1s infinite;
+            }
+            img {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-user-drag: none;
+                user-drag: none;
+            }
+            .hide-content {
+                opacity: 0;
+                transform: translateY(30px);
+                pointer-events: none;
+            }
+            .show-content {
+                opacity: 1;
+                transform: translateY(0);
+                pointer-events: auto;
+                transition: opacity 0.6s ease, transform 0.6s ease;
+            }
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* 背景动画样式 */
+        #hero-animation {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        #hero-animation.hidden {
+            opacity: 0;
+            transform: scale(1.1);
+        }
+        
+        .grid-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+        
+        @keyframes grid-move {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0);
+            }
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(50px);
+            }
+        }
+        
+        /* 炫酷文字渐变效果 */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: gradient-shift 3s ease infinite;
+        }
+        
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        
+        /* 霓虹发光效果 */
+        .neon-glow {
+            text-shadow: 
+                0 0 5px rgba(102, 126, 234, 0.8),
+                0 0 10px rgba(102, 126, 234, 0.6),
+                0 0 15px rgba(102, 126, 234, 0.4),
+                0 0 20px rgba(102, 126, 234, 0.2);
+            animation: neon-pulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes neon-pulse {
+            from {
+                text-shadow: 
+                    0 0 5px rgba(102, 126, 234, 0.8),
+                    0 0 10px rgba(102, 126, 234, 0.6),
+                    0 0 15px rgba(102, 126, 234, 0.4),
+                    0 0 20px rgba(102, 126, 234, 0.2);
+            }
+            to {
+                text-shadow: 
+                    0 0 10px rgba(102, 126, 234, 1),
+                    0 0 20px rgba(102, 126, 234, 0.8),
+                    0 0 30px rgba(102, 126, 234, 0.6),
+                    0 0 40px rgba(102, 126, 234, 0.4);
+            }
+        }
+        
+        /* 按钮悬停效果 */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+        
+        .btn-glow:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-glow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* 装饰性几何图形 */
+        .floating-shape {
+            position: absolute;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            animation: float-shape 6s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 10%;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation-delay: 0s;
+        }
+        
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            right: 15%;
+            border-radius: 50%;
+            animation-delay: 2s;
+        }
+        
+        .shape-3 {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            transform: rotate(45deg);
+            animation-delay: 4s;
+        }
+        
+        @keyframes float-shape {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+        
+        /* 图片3D悬浮效果 */
+        .image-3d {
+            transition: all 0.5s ease;
+            transform-style: preserve-3d;
+        }
+        
+        .image-3d:hover {
+            transform: perspective(1000px) rotateY(5deg) rotateX(5deg) scale(1.05);
+            box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* 卡片翻转效果 */
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-flip-inner {
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flip:hover .card-flip-inner {
+            transform: rotateY(10deg);
+        }
+        
+        /* 闪烁星星效果 */
+        .star-twinkle {
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* 背景渐变动画 */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient-bg 15s ease infinite;
+        }
+        
+        @keyframes gradient-bg {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="font-noto bg-gray-50 text-gray-800">
+
+    <!-- 导航栏-->
+    <header id="navbar" class="fixed w-full bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="#home" class="flex items-center space-x-2">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </a>
+                </div>
+                
+                <!-- 右侧导航与用户操作 -->
+                <div class="flex items-center space-x-6 ml-auto">
+                    <!-- 桌面端导航-->
+                    <nav class="hidden md:flex space-x-8 items-center">
+                        <a href="#home" class="text-gray-700 hover:text-primary font-medium transition-colors">首页</a>
+                        <a href="#categories" class="text-gray-700 hover:text-primary font-medium transition-colors">工具分类</a>
+                        <a href="#popular" class="text-gray-700 hover:text-primary font-medium transition-colors">热门工具</a>
+                        <a href="#features" class="text-gray-700 hover:text-primary font-medium transition-colors">特色介绍</a>
+                        <a href="download-center.html" class="px-4 py-2 border border-green-500 text-green-600 rounded-lg font-medium hover:bg-green-500 hover:text-white transition-colors">
+                            <i class="fa-regular fa-circle-down mr-1"></i>下载桌面版
+                        </a>
+                    </nav>
+
+                    <!-- 用户操作区 -->
+                        <div class="hidden md:flex items-center space-x-4" id="auth-section">
+                            <!-- 已登录状态 -->
+                            <div id="logged-in-section" class="hidden items-center space-x-3">
+                                <a href="user-center.html" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                                    <img id="nav-user-avatar" src="" alt="头像" class="w-8 h-8 rounded-full border-2 border-primary">
+                                    <span id="nav-user-name" class="text-gray-700 font-medium"></span>
+                                </a>
+                                <a href="admin.html" id="admin-link" class="hidden px-3 py-1 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors">
+                                    管理后台
+                                </a>
+                                <button id="nav-logout-btn" class="px-3 py-1 text-gray-600 hover:text-red-500 transition-colors">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+    <main class="pb-16 md:pb-0">
+        <!-- 开头区域-->
+        <section id="home" class="pt-16 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-blue-50 to-white relative overflow-hidden">
+            <!-- 背景动画容器 -->
+            <div id="hero-animation" class="absolute inset-0 pointer-events-none">
+                <!-- 网格背景 -->
+                <div class="grid-background"></div>
+                <!-- 装饰性几何图形 -->
+                <div class="floating-shape shape-1"></div>
+                <div class="floating-shape shape-2"></div>
+                <div class="floating-shape shape-3"></div>
+            </div>
+            
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 md:pr-12 mb-10 md:mb-0">
+                        <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6 min-h-[clamp(4rem,10vw,7rem)] overflow-hidden">
+                            <span id="typing-effect" class="typing-cursor gradient-text"></span>
+                        </h1>
+                        <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                            精选优质高质量在线工具，无需安装，即开即用。从日常办公到专业设计，满足你的各种需求。
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="#categories" class="btn-glow bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-full shadow-lg shadow-primary/20 transition-all text-center relative z-10">
+                    浏览工具
+                </a>
+                            <a href="#popular" class="btn-glow bg-white hover:bg-gray-50 text-primary border border-primary font-medium py-3 px-8 rounded-full transition-all text-center relative z-10">
+                                热门推荐
+                            </a>
+                        </div>
+                        <div class="mt-10 flex items-center">
+                            <div class="flex -space-x-2">
+                                <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                                <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                                <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                                <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                                <div class="w-10 h-10 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-xs font-medium">
+                                    1k+
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="flex items-center">
+                                    <div class="flex text-yellow-400">
+                                        <i class="fa-solid fa-star star-twinkle"></i>
+                                    </div>
+                                    <span class="ml-2 text-gray-600 font-medium">1,0</span>
+                                </div>
+                                <p class="text-sm text-gray-500">来自0个用户的好评如潮（应该是0） </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 relative">
+                        <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl transform rotate-1 hover:rotate-0 transition-transform duration-500 image-3d">
+                            <img src="https://img.cdn1.vip/i/6a1162e24d15e_1779524322.webp" alt="展示" class="w-full h-auto">
+                        </div>
+                        <div class="absolute top-10 -right-5 w-32 h-32 bg-secondary/20 rounded-full blur-3xl -z-10"></div>
+                        <div class="absolute -bottom-5 -left-5 w-40 h-40 bg-primary/20 rounded-full blur-3xl -z-10"></div>
+                    </div>
+                </div>
+                
+                <!-- 信任徽章 -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-lock text-green-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">安全可靠</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-cloud text-blue-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">云端处理</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-clock text-purple-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">快速响应</p>
+                        </div>
+                    </div>
+                    <div class="card-flip">
+                        <div class="card-flip-inner bg-white/80 backdrop-blur-sm rounded-2xl p-6 text-center hover:shadow-lg transition-all cursor-pointer border border-gray-100">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-heart text-red-600 text-2xl"></i>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-700">永久免费</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 使用统计 -->
+                <div class="mt-8 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-8">
+                    <div class="text-center mb-8">
+                        <h3 class="text-xl font-bold text-dark mb-2">数据统计</h3>
+                    <p class="text-gray-600">我们持续为您提供高效、安全、便捷的使用体验</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">30+</div>
+                            <p class="text-gray-600">实用工具</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-secondary mb-2">1K+</div>
+                            <p class="text-gray-600">累计使用</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-accent mb-2">100%</div>
+                            <p class="text-gray-600">服务可用</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-amber-500 mb-2">0</div>
+                            <p class="text-gray-600">广告弹窗</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 向下滑动提示 -->
+                <div class="mt-12 text-center">
+                    <button id="scroll-hint" class="inline-flex flex-col items-center text-gray-400 hover:text-primary cursor-pointer transition-all duration-300">
+                        <span class="text-sm mb-2">向下滚动查看更多</span>
+                        <i class="fa-solid fa-chevron-down animate-bounce text-xl"></i>
+                    </button>
+                </div>
+                
+            </div>
+        </section>
+        <!-- 工具分类 -->
+        <section id="categories" class="py-16 bg-white hide-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">工具分类</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">按类别浏览我们的工具集合，快速找到你需要的那一款工具。</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <!-- 全部工具 -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
+                        <div class="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-th-large text-gray-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">全部工具</h3>
+                        <p class="text-gray-600 mb-4">整合所有分类的实用工具，一站式访问</p>
+                        <a href="all-tools.html" class="text-primary font-medium flex items-center hover:text-primary/80 transition-colors">
+                            查看全部 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded-full">30+ 款工具</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 办公工具 -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
+                        <div class="w-14 h-14 rounded-lg bg-blue-100 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-briefcase text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">办公效率</h3>
+                        <p class="text-gray-600 mb-4">文档转换、格式处理、数据计算等实用工具</p>
+                        <a href="index (2).html" class="text-primary font-medium flex items-center hover:text-primary/80 transition-colors">
+                            查看全部 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded-full">12 款工具</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 图片工具 -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
+                        <div class="w-14 h-14 rounded-lg bg-green-100 flex items-center justify-center mb-5">
+                            <i class="fa-regular fa-image text-secondary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">图片处理</h3>
+                        <p class="text-gray-600 mb-4">图片压缩、格式转换、裁剪编辑等图像处理工具</p>
+                        <a href="index (3).html" class="text-primary font-medium flex items-center hover:text-primary/80 transition-colors">
+                            查看全部 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded-full">6 款工具</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 开发工具-->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
+                        <div class="w-14 h-14 rounded-lg bg-purple-100 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-code text-accent text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">开发辅助</h3>
+                        <p class="text-gray-600 mb-4">代码格式化、JSON处理、API测试等开发工具</p>
+                        <a href="index (4).html" class="text-primary font-medium flex items-center hover:text-primary/80 transition-colors">
+                            查看全部 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded-full">6 款工具</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 生活工具 -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover border border-gray-100">
+                        <div class="w-14 h-14 rounded-lg bg-amber-100 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-life-ring text-amber-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">生活服务</h3>
+                        <p class="text-gray-600 mb-4">单位转换、日期计算、健康计算等生活工具</p>
+                        <a href="index (5).html" class="text-primary font-medium flex items-center hover:text-primary/80 transition-colors">
+                            查看全部 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </a>
+                        <div class="mt-4 text-sm text-gray-500">
+                            <span class="bg-gray-100 px-2 py-1 rounded-full">6 款工具</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 热门工具 -->
+        <section id="popular" class="py-16 bg-gray-50 hide-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+                    <div>
+                        <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">热门工具</h2>
+                        <p class="text-gray-600 max-w-2xl">用户最常使用的实用工具</p>
+                    </div>
+                    <a href="#" class="mt-4 md:mt-0 text-primary font-medium hover:text-primary/80 transition-colors">
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 工具卡片 1 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                        <div class="h-40 bg-blue-50 flex items-center justify-center">
+                            <i class="fa-solid fa-file-pdf text-primary text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-semibold">PDF 转换工具</h3>
+                                <span class="bg-green-100 text-green-700 text-xs font-medium px-2.5 py-0.5 rounded">热门</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">将PDF文件转换为Word、Excel、图片等多种格式，保留原始排版</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <i class="fa-solid fa-download mr-1"></i>
+                                    <span>0 次下载</span>
+                                </div>
+                                <a href="office-pdf-converter.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                    立即使用
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 工具卡片 2 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                        <div class="h-40 bg-green-50 flex items-center justify-center">
+                            <i class="fa-solid fa-compress text-secondary text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-semibold">图片压缩工具</h3>
+                                <span class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded">高效</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">智能压缩图片体积，保持清晰度，支持批量处理和多种格式</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <i class="fa-solid fa-download mr-1"></i>
+                                    <span>0 次下载</span>
+                                </div>
+                                <a href="image-compressor.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                    立即使用
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 工具卡片 3 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                        <div class="h-40 bg-purple-50 flex items-center justify-center">
+                            <i class="fa-solid fa-exchange-alt text-accent text-6xl"></i>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <h3 class="text-xl font-semibold">单位转换</h3>
+                                <span class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded">实用</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">支持长度、重量、面积、体积等多种单位转换，精确便捷</p>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <i class="fa-solid fa-download mr-1"></i>
+                                    <span>0 次下载</span>
+                                </div>
+                                <a href="danweizhuanhuan.html" class="bg-primary/10 hover:bg-primary/20 text-primary font-medium py-2 px-4 rounded-lg transition-colors">
+                                    立即使用
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特色介绍 -->
+        <section id="features" class="py-16 bg-white hide-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">为什么选择我们</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">我们的工具集合为您提供高效、安全、便捷的使用体验</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-bolt text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">无需安装</h3>
+                        <p class="text-gray-600">所有工具均为在线使用，打开浏览器即可操作，不占用设备空间</p>
+                    </div>
+                    
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-shield-alt text-secondary text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">隐私保护</h3>
+                        <p class="text-gray-600">本地处理数据，无需上传至服务器，保障您的文件和信息安全</p>
+                    </div>
+                    
+                    <div class="text-center p-6">
+                        <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-gift text-accent text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">完全免费</h3>
+                        <p class="text-gray-600">所有基础功能完全免费，满足日常需求，无隐藏收费和广告干扰</p>
+                    </div>
+                </div>
+                
+                <!-- 数据统计 -->
+                <div class="mt-20 bg-gradient-to-r from-primary to-accent rounded-2xl p-8 md:p-12 text-white">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div>
+                            <div class="text-4xl md:text-5xl font-bold mb-2 counter" data-target="1">1</div>
+                            <p class="text-white/80">款实用工具</p>
+                        </div>
+                        <div>
+                            <div class="text-4xl md:text-5xl font-bold mb-2 counter" data-target="1">1</div>
+                            <p class="text-white/80">用户使用</p>
+                        </div>
+                        <div>
+                            <div class="text-4xl md:text-5xl font-bold mb-2 counter" data-target="4">4</div>
+                            <p class="text-white/80">工具调用</p>
+                        </div>
+                        <div>
+                            <div class="text-4xl md:text-5xl font-bold mb-2 counter" data-target="5">5</div>
+                            <p class="text-white/80">用户满意</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 用户评价 -->
+        <section class="py-16 bg-gray-50 hide-content">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark mb-4">用户评价</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">来自真实用户的使用体验和评价</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 评价 1 -->
+                    <div class="bg-white p-6 rounded-xl shadow-md card-hover border border-gray-100">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 mb-6">"PDF转换工具简直是我的救星，工作中经常需要处理PDF文件，这个工具转换速度快，格式保留完整，完全免费使用！"</p>
+                        <div class="flex items-center">
+                            <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">牛马</h4>
+                                <p class="text-sm text-gray-500">职场黑奴</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 评价 2 -->
+                    <div class="bg-white p-6 rounded-xl shadow-md card-hover border border-gray-100">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="text-gray-600 mb-6">"作为一名设计师，图片压缩工具帮我省了很多事，压缩后的图片质量几乎没有损失，但体积大大减小，方便分享和上传</p>
+                        <div class="flex items-center">
+                            <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">隔壁老王</h4>
+                                <p class="text-sm text-gray-500">UI设计</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 评价 3 -->
+                    <div class="bg-white p-6 rounded-xl shadow-md card-hover border border-gray-100">
+                        <div class="flex text-yellow-400 mb-4">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-regular fa-star-half"></i>
+                        </div>
+                        <p class="text-gray-600 mb-6">"开发辅助工具集合非常全面，特别是JSON格式化和代码转换工具，让我的开发效率提高了不少，强烈推荐给程序员同行！"</p>
+                        <div class="flex items-center">
+                            <img src="https://img.cdn1.vip/i/693cf357104dd_1765602135.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-semibold">翻斗花园强哥</h4>
+                                <p class="text-sm text-gray-500">软件开发工程师</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 移动端底部导航栏 -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-b from-gray-100 to-white border-t border-gray-200 z-50">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-around items-center h-16">
+                    <a href="#home" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-home text-lg"></i>
+                        <span class="text-xs mt-1">首页</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#categories" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-th-large text-lg"></i>
+                        <span class="text-xs mt-1">工具分类</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#popular" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-star text-lg"></i>
+                        <span class="text-xs mt-1">热门工具</span>
+                    </a>
+                    <div class="w-px h-full bg-gray-200"></div>
+                    <a href="#features" class="flex flex-col items-center text-gray-600 hover:text-primary transition-colors flex-1">
+                        <i class="fa-solid fa-feather text-lg"></i>
+                        <span class="text-xs mt-1">特色介绍</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+<!-- 页脚 -->
+    <footer class="bg-gray-100 pt-16 pb-8 md:pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <img src="https://img.cdn1.vip/i/69e48398936a9_1776583576.png" alt="HJ_ToolHub Logo" class="w-7 h-7 rounded-lg object-cover">
+                        <span class="text-xl font-bold text-gray-900">HJ_ToolHub</span>
+                    </div>
+                    <p class="text-gray-600 mb-6">合金实用工具集合，让您的工作和生活更高效便捷</p>
+                    <div class="flex space-x-4">
+                        <a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-qq text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-green-500 transition-colors">
+                            <i class="fab fa-weixin text-2xl text-gray-700"></i>
+                        </a>
+                        <a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-500 transition-colors">
+                            <svg class="w-5 h-5 text-gray-700" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                        </a>
+                        <a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-600 transition-colors">
+                            <i class="fab fa-github text-2xl text-gray-700"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">快速链接</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-700 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="#categories" class="text-gray-700 hover:text-primary transition-colors">工具分类</a></li>
+                        <li><a href="#popular" class="text-gray-700 hover:text-primary transition-colors">热门工具</a></li>
+                        <li><a href="#features" class="text-gray-700 hover:text-primary transition-colors">特色介绍</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">工具分类</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index (2).html" class="text-gray-700 hover:text-primary transition-colors">办公效率</a></li>
+                        <li><a href="index (3).html" class="text-gray-700 hover:text-primary transition-colors">图片处理</a></li>
+                        <li><a href="index (4).html" class="text-gray-700 hover:text-primary transition-colors">开发辅助</a></li>
+                        <li><a href="index (5).html" class="text-gray-700 hover:text-primary transition-colors">生活服务</a></li>
+                        <li><a href="#" class="text-gray-700 hover:text-primary transition-colors"> </a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-6 text-gray-900">联系我们</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-envelope mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">3301976275@qq.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-map-marker-alt mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">广州市番禺区</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-phone mt-1 mr-3 text-gray-500"></i>
+                            <span class="text-gray-700">联系电话：137 1019 0930</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 HJ'_DEV(合金). 保留所有权利。Power by HEJIN'_DEV</p>
+                    <img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300">
+                    <div class="flex space-x-6">
+                        <a href="yszc.html" class="text-gray-500 hover:text-gray-700 text-sm">隐私政策</a>
+                        <a href="sytk.html" class="text-gray-500 hover:text-gray-700 text-sm">使用条款</a>
+                        <a href="hjseach.html" class="text-gray-500 hover:text-gray-700 text-sm">合金搜索</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- 更新公告弹窗 -->
+    <div id="update-modal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 hidden">
+        <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full mx-4 overflow-hidden border-4 border-white">
+            <img src="https://img.cdn1.vip/i/6a1162e24d15e_1779524322.webp" alt="更新公告" class="w-full h-auto">
+            <div class="p-4 bg-white">
+                <button id="confirm-btn" class="w-full bg-black text-white font-medium py-3 rounded-lg hover:bg-gray-800 transition-colors">
+                    确认
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 登录状态检查
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            const loggedInSection = document.getElementById('logged-in-section');
+            const loggedOutSection = document.getElementById('logged-out-section');
+            const adminLink = document.getElementById('admin-link');
+            const userAvatar = document.getElementById('nav-user-avatar');
+            const userName = document.getElementById('nav-user-name');
+            
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                loggedInSection.classList.remove('hidden');
+                loggedInSection.classList.add('flex');
+                loggedOutSection.classList.add('hidden');
+                
+                userAvatar.src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`;
+                userName.textContent = user.username;
+                
+                if (user.role === 'admin' || user.role === 'superadmin') {
+                    adminLink.classList.remove('hidden');
+                }
+                
+                // 退出登录
+                document.getElementById('nav-logout-btn').addEventListener('click', async () => {
+                    try {
+                        await fetch('/api/auth/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+                    } catch (error) {
+                        console.error('退出登录失败:', error);
+                    }
+                    
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                });
+            } else {
+                loggedInSection.classList.add('hidden');
+                loggedInSection.classList.remove('flex');
+                loggedOutSection.classList.remove('hidden');
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+        
+        // 页面刷新后保持滚动位置
+        const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+        if (savedScrollPosition !== null) {
+            window.scrollTo(0, parseInt(savedScrollPosition));
+        }
+        
+        // 页面卸载前保存滚动位置
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
         });
-      }
-      
-      const nextMonthBtn = document.getElementById('nextMonth');
-      if(nextMonthBtn) {
-        nextMonthBtn.addEventListener('click', () => {
-          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
-          renderCalendar();
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.remove('shadow-sm');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.add('shadow-sm');
+            }
         });
-      }
-    });
-  </script>
+        
+        // 返回顶部按钮
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    // 滚动到目标位置
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // 数字计数动画
+        const counters = document.querySelectorAll('.counter');
+        const speed = 200;
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = +counter.getAttribute('data-target');
+                    const count = +counter.innerText;
+                    const increment = target / speed;
+                    
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + increment);
+                        setTimeout(() => {
+                            counter.innerText = Math.ceil(count + increment);
+                        }, 1);
+                    } else {
+                        counter.innerText = target;
+                        observer.unobserve(counter);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        counters.forEach(counter => {
+            observer.observe(counter);
+        });
+        
+        // 打字机效果
+        const fullText = '让工作更高效<br><span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">实用工具集合</span>';
+        const typingElement = document.getElementById('typing-effect');
+        const typingSpeed = 60;
+        const deletingSpeed = 30;
+        const pauseAfterTyping = 1500;
+        const pauseAfterDeleting = 1000;
+        let isTyping = true;
+        let displayText = '';
+        let animationId = null;
+        
+        function animate() {
+            if (isTyping) {
+                if (displayText.length < fullText.length) {
+                    const nextChar = fullText[displayText.length];
+                    if (nextChar === '<') {
+                        const endTagIndex = fullText.indexOf('>', displayText.length) + 1;
+                        displayText += fullText.substring(displayText.length, endTagIndex);
+                    } else {
+                        displayText += nextChar;
+                    }
+                    typingElement.innerHTML = displayText;
+                    animationId = setTimeout(animate, typingSpeed);
+                } else {
+                    isTyping = false;
+                    animationId = setTimeout(animate, pauseAfterTyping);
+                }
+            } else {
+                if (displayText.length > 0) {
+                    const lastChar = displayText[displayText.length - 1];
+                    
+                    if (lastChar === '>') {
+                        const startTagIndex = displayText.lastIndexOf('<');
+                        displayText = displayText.substring(0, startTagIndex);
+                    } else {
+                        displayText = displayText.substring(0, displayText.length - 1);
+                    }
+                    typingElement.innerHTML = displayText;
+                    animationId = setTimeout(animate, deletingSpeed);
+                } else {
+                    isTyping = true;
+                    animationId = setTimeout(animate, pauseAfterDeleting);
+                }
+            }
+        }
+        
+        const typingObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && displayText === '') {
+                    animate();
+                    typingObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        typingObserver.observe(typingElement);
+
+        // 背景动画显示控制
+        const heroAnimation = document.getElementById('hero-animation');
+        let animationHidden = false;
+        
+        function hideAnimation() {
+            if (heroAnimation && !animationHidden) {
+                animationHidden = true;
+                heroAnimation.classList.add('hidden');
+            }
+        }
+        
+        function showAnimation() {
+            if (heroAnimation && animationHidden) {
+                animationHidden = false;
+                heroAnimation.classList.remove('hidden');
+            }
+        }
+
+        // 内容显示控制
+        let contentShown = false;
+        const scrollHintBtn = document.getElementById('scroll-hint');
+        
+        function showContent() {
+            if (!contentShown) {
+                contentShown = true;
+                const hiddenSections = document.querySelectorAll('.hide-content');
+                hiddenSections.forEach((section, index) => {
+                    setTimeout(() => {
+                        section.classList.remove('hide-content');
+                        section.classList.add('show-content');
+                    }, index * 100);
+                });
+            }
+            // 隐藏向下滚动提示
+            if (scrollHintBtn) {
+                scrollHintBtn.style.opacity = '0';
+                scrollHintBtn.style.transform = 'translateY(20px)';
+                scrollHintBtn.style.pointerEvents = 'none';
+            }
+        }
+
+        const browseToolsBtn = document.querySelector('a[href="#categories"]');
+        const popularBtn = document.querySelector('a[href="#popular"]');
+
+        if (browseToolsBtn) {
+            browseToolsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    const categoriesSection = document.getElementById('categories');
+                    if (categoriesSection) {
+                        categoriesSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            });
+        }
+
+        if (popularBtn) {
+            popularBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    const popularSection = document.getElementById('popular');
+                    if (popularSection) {
+                        popularSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            });
+        }
+
+        // 滚动检测
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 200) {
+                showContent();
+                hideAnimation();
+            } else {
+                showAnimation();
+            }
+        });
+
+        // 向下滑动提示按钮点击事件
+        if (scrollHintBtn) {
+            scrollHintBtn.addEventListener('click', function() {
+                showContent();
+                hideAnimation();
+                setTimeout(() => {
+                    window.scrollBy({
+                        top: 500,
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            });
+        }
+
+        // 更新公告弹窗
+        const updateModal = document.getElementById('update-modal');
+        const confirmBtn = document.getElementById('confirm-btn');
+
+        if (!localStorage.getItem('updateAnnouncementShown')) {
+            updateModal.classList.remove('hidden');
+        }
+
+        confirmBtn.addEventListener('click', function() {
+            updateModal.classList.add('hidden');
+            localStorage.setItem('updateAnnouncementShown', 'true');
+        });
+
+        // 图片保护 - 阻止拖动和右键复制
+        document.addEventListener('dragstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // 禁用双指缩放
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function(e) {
+            e.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function(e) {
+            e.preventDefault();
+        });
+        
+        // 禁用触摸缩放
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        // 禁用双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // 禁用鼠标滚轮缩放
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
 </body>
 </html>
