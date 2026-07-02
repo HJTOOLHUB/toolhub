@@ -54,6 +54,43 @@
       .card-hover { transition: all 0.3s ease; }
       .card-hover:hover { transform: translateY(-5px); }
 
+      #clockDisplay {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-weight: 900;
+        color: #000000;
+        line-height: 330px;
+        @apply dark:text-white;
+      }
+      #dateDisplay {
+        font-weight: 900;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 40px;
+        @apply dark:text-white;
+      }
+      footer.text-center > strong {
+        font-weight: 900;
+      }
+      footer.text-center {
+        backdrop-filter: blur(8px);
+      }
+      #countdownBadge {
+        border-radius: 9999px;
+        background-color: #ff0000;
+        border-width: 2px;
+        border-style: solid;
+        border-color: #bdbdbd;
+        box-shadow: inset 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
+      }
+      #openSettingsBtn > i.fa {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 18px;
+      }
+      header.sticky > div.container > div.flex:first-child > i.fa {
+        color: #000000;
+        @apply dark:text-white;
+      }
+
       /* 提示框 - 设置更高的z-index确保在遮罩层之上 */
       .toast {
         position: fixed;
@@ -215,6 +252,7 @@
         padding: 0.75rem 0.75rem 1rem 0.75rem;
         margin: 2.5rem auto 1.2rem auto;
         background-color: transparent;
+        backdrop-filter: blur(15px);
         @apply bg-white;
         @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
         transition: all 0.2s;
@@ -569,6 +607,36 @@
     <button id="closeExamCountdownBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我知道了</button>
   </div>
 
+  <!-- 精确倒计时弹窗 -->
+  <div id="preciseCountdownOverlay" class="important-overlay"></div>
+  <div id="preciseCountdownCard" class="important-card">
+    <div class="important-icon"><i class="fa fa-clock"></i></div>
+    <div class="important-title">期末考试倒计时</div>
+    <div class="important-content" style="text-align: center;">
+      <div style="font-size: clamp(0.8rem, 3vw, 1rem); margin-bottom: 1rem;">距离期末考试还有</div>
+      <div class="grid grid-cols-4 gap-2" style="width: 100%;">
+        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 0.5rem 0; border: 1px solid rgba(255,215,0,0.3);">
+          <div id="preciseDays" style="font-size: clamp(2rem, 10vw, 4rem); font-weight: 900; color: #FFD700; line-height: 1;">0</div>
+          <div style="font-size: clamp(0.6rem, 2vw, 0.8rem); color: rgba(255,255,255,0.8);">天</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 0.5rem 0; border: 1px solid rgba(255,215,0,0.3);">
+          <div id="preciseHours" style="font-size: clamp(2rem, 10vw, 4rem); font-weight: 900; color: #FFD700; line-height: 1;">0</div>
+          <div style="font-size: clamp(0.6rem, 2vw, 0.8rem); color: rgba(255,255,255,0.8);">时</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 0.5rem 0; border: 1px solid rgba(255,215,0,0.3);">
+          <div id="preciseMinutes" style="font-size: clamp(2rem, 10vw, 4rem); font-weight: 900; color: #FFD700; line-height: 1;">0</div>
+          <div style="font-size: clamp(0.6rem, 2vw, 0.8rem); color: rgba(255,255,255,0.8);">分</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 0.5rem 0; border: 1px solid rgba(255,215,0,0.3);">
+          <div id="preciseSeconds" style="font-size: clamp(2rem, 10vw, 4rem); font-weight: 900; color: #FFD700; line-height: 1;">0</div>
+          <div style="font-size: clamp(0.6rem, 2vw, 0.8rem); color: rgba(255,255,255,0.8);">秒</div>
+        </div>
+      </div>
+      <div style="font-size: clamp(0.7rem, 2.5vw, 0.9rem); color: rgba(255,255,255,0.8); margin-top: 1rem;">考试日期：2026年7月6日</div>
+    </div>
+    <button id="closePreciseCountdownBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我知道了</button>
+  </div>
+
   <!-- 标语自定义卡片 -->
   <div id="sloganSettingsCard" class="slogan-settings-card">
     <div class="card-header-flex"><h2 class="text-2xl font-bold">自定义标语区域</h2><button id="backFromSlogan" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
@@ -598,22 +666,24 @@
   <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center gap-2"><i class="fa fa-clock-o text-2xl text-black dark:text-white"></i><h1 class="text-xl font-bold text-black dark:text-white">考试时钟</h1></div>
-      <div class="flex items-center gap-4">
-        <div id="countdownBadge" class="hidden bg-red-500 text-white px-4 py-3 rounded-full font-bold text-xl animate-pulse flex items-center justify-center gap-2 min-w-[200px]">
-          距期末考还剩 <span id="countdownDays" class="text-4xl font-extrabold text-yellow-300">0</span> 天
-        </div>
-        <nav><ul class="flex space-x-4"><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i></button></li></ul></nav>
+      <div id="countdownBadge" class="hidden bg-red-500 text-white px-4 py-3 rounded-full font-bold text-xl animate-pulse flex items-center justify-center gap-2 min-w-[200px]">
+        距期末考还剩 <span id="countdownDays" class="text-4xl font-extrabold text-yellow-300">0</span> 天
       </div>
+      <nav><ul class="flex space-x-4"><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i></button></li></ul></nav>
     </div>
   </header>
 
   <main class="flex-grow container mx-auto px-4 py-6 flex flex-col items-center justify-center">
     <div id="clockCard" class="w-full max-w-8xl bg-white rounded-2xl clock-shadow p-8 md:p-10 card-hover dark:bg-neutral-800">
       <div id="sloganContainer" class="text-center mb-5 font-bold"></div>
-      <div class="flex flex-col items-center"><p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p><div id="clockDisplay" class="text-[clamp(4rem,15vw,12rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div><br><button id="fullscreenBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-10 rounded-full mt-3 transition-all flex items-center shadow-md text-lg"><i class="fa fa-expand mr-2"></i><span>全屏</span></button></div>
+      <div class="flex flex-col items-center"><p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p><div id="clockDisplay" class="text-[clamp(4rem,15vw,12rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div><div class="mt-20"></div></div>
     </div>
     <div class="calendar-card mt-5 card-hover"><div class="calendar-header"><button id="prevMonth" class="calendar-nav-btn"><i class="fa fa-chevron-left mr-1"></i> 上月</button><h2 id="calendarMonth" class="font-extrabold dark:text-white"></h2><button id="nextMonth" class="calendar-nav-btn">下月 <i class="fa fa-chevron-right ml-1"></i></button></div><div class="calendar-grid mt-2"><div class="calendar-day-header">日</div><div class="calendar-day-header">一</div><div class="calendar-day-header">二</div><div class="calendar-day-header">三</div><div class="calendar-day-header">四</div><div class="calendar-day-header">五</div><div class="calendar-day-header">六</div><div id="calendarDays" style="display: contents;"></div></div></div>
   </main>
+
+  <footer class="text-center py-4 text-sm text-neutral-500 dark:text-neutral-400 bg-neutral-200 dark:bg-neutral-800/50">
+    ©2026 Copyright San Long Studio    Power by <strong>侯文杰</strong> Dev
+  </footer>
 
   <script>
     // ===== 核心逻辑 =====
@@ -721,6 +791,65 @@
         }
       };
     }
+    let preciseCountdownInterval = null;
+    function showPreciseCountdown() {
+      const overlay = document.getElementById('preciseCountdownOverlay');
+      const card = document.getElementById('preciseCountdownCard');
+      const closeBtn = document.getElementById('closePreciseCountdownBtn');
+      
+      if (!overlay || !card) return;
+      
+      overlay.classList.add('show');
+      card.classList.add('show');
+      
+      updatePreciseCountdown();
+      if (preciseCountdownInterval) {
+        clearInterval(preciseCountdownInterval);
+      }
+      preciseCountdownInterval = setInterval(updatePreciseCountdown, 1000);
+      
+      const closeHandler = () => {
+        overlay.classList.remove('show');
+        card.classList.remove('show');
+        if (preciseCountdownInterval) {
+          clearInterval(preciseCountdownInterval);
+          preciseCountdownInterval = null;
+        }
+      };
+      
+      if (closeBtn) {
+        closeBtn.onclick = closeHandler;
+      }
+      
+      overlay.onclick = (e) => {
+        if (e.target === overlay) {
+          closeHandler();
+        }
+      };
+    }
+    function updatePreciseCountdown() {
+      const examDate = new Date('2026-07-06');
+      const now = new Date();
+      const diffTime = examDate - now;
+      
+      if (diffTime <= 0) {
+        document.getElementById('preciseDays').textContent = '0';
+        document.getElementById('preciseHours').textContent = '0';
+        document.getElementById('preciseMinutes').textContent = '0';
+        document.getElementById('preciseSeconds').textContent = '0';
+        return;
+      }
+      
+      const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+      
+      document.getElementById('preciseDays').textContent = days;
+      document.getElementById('preciseHours').textContent = hours.toString().padStart(2, '0');
+      document.getElementById('preciseMinutes').textContent = minutes.toString().padStart(2, '0');
+      document.getElementById('preciseSeconds').textContent = seconds.toString().padStart(2, '0');
+    }
     function checkReminders(now) {
       let today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       let update = false;
@@ -735,21 +864,6 @@
         localStorage.setItem('reminders', JSON.stringify(reminderList));
         renderRemindersList();
         renderCalendar();
-      }
-    }
-    let fullscreenBtn = document.getElementById('fullscreenBtn');
-    function toggleFull() {
-      if(!fullscreenBtn) return;
-      if(!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.error('Fullscreen request failed:', err);
-        });
-        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>退出全屏</span>';
-      } else {
-        document.exitFullscreen().catch(err => {
-          console.error('Fullscreen exit failed:', err);
-        });
-        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>全屏</span>';
       }
     }
     function renderRemindersList() {
@@ -956,7 +1070,11 @@
       initSloganUI();
       initDarkMode();
       
-      fullscreenBtn.addEventListener('click', toggleFull);
+      const countdownBadge = document.getElementById('countdownBadge');
+      if (countdownBadge) {
+        countdownBadge.style.cursor = 'pointer';
+        countdownBadge.addEventListener('click', showPreciseCountdown);
+      }
       
       setInterval(updateClock, 1000);
       updateClock();
