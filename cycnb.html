@@ -951,9 +951,421 @@
     div#clockDisplay {
       font-family: "Lucida Console", Monaco, monospace;
     }
+    /* 引导动画样式 */
+    #welcomeScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2F4052 0%, #8A939B 50%, #B2B9BE 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      overflow: hidden;
+    }
+    #welcomeScreen::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0,212,255,0.15) 0%, transparent 50%);
+      transform: translate(-50%, -50%);
+      animation: ripple 8s ease-in-out infinite;
+    }
+    #welcomeScreen::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: sweep 4s ease-in-out infinite;
+    }
+    @keyframes ripple {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
+    }
+    @keyframes sweep {
+      0% { left: -100%; }
+      100% { left: 150%; }
+    }
+    .handwriting {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 5rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(255,255,255,0.4), 0 0 90px rgba(255,255,255,0.2);
+      white-space: nowrap;
+      position: relative;
+      z-index: 2;
+      letter-spacing: 0.1em;
+    }
+    #startBtn {
+      margin-top: 3rem;
+      padding: 14px 40px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0284C7, #0369A1);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 20px rgba(2,132,199,0.5), 0 4px 15px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+    }
+    #startBtn.show {
+      animation: btnFadeIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes btnFadeIn {
+      0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+      50% { opacity: 0.8; transform: translateY(-5px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #startBtn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 30px rgba(0, 103, 247, 0.741), 0 8px 25px rgba(0,0,0,0.3);
+    }
+    #startBtn:active {
+      transform: translateY(0) scale(0.98);
+    }
+    #tutorialOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(47,64,82,0.8);
+      z-index: 9998;
+      display: none;
+      pointer-events: none;
+    }
+    .tutorial-highlight {
+      position: absolute;
+      border-radius: 12px;
+      box-shadow: 0 0 0 9999px rgba(47,64,82,0.8);
+      pointer-events: auto;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 9999px rgba(47,64,82,0.8), 0 0 0 0 rgba(178,185,190,0.4); }
+      50% { box-shadow: 0 0 0 9999px rgba(47,64,82,0.8), 0 0 20px 10px rgba(178,185,190,0.2); }
+    }
+    .tutorial-tooltip {
+      position: absolute;
+      background: white;
+      color: #333;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 1rem;
+      max-width: 300px;
+      pointer-events: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      pointer-events: auto;
+      animation: fadeInUp 0.3s ease;
+    }
+    .tutorial-tooltip::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      transform: rotate(45deg);
+    }
+    .tutorial-next-btn {
+      margin-top: 12px;
+      padding: 8px 24px;
+      background: #2F4052;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .tutorial-next-btn:hover {
+      background: #1A2735;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #configOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #2F4052 0%, #8A939B 50%, #B2B9BE 100%);
+      z-index: 9997;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    .config-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      max-width: 1700px;
+      width: 96%;
+      height: 65vh;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+      border: 1px solid rgba(0,0,0,0.1);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    .config-step-header {
+      font-size: 2rem;
+      color: black;
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+    }
+    .config-card-body {
+      display: flex;
+      gap: 2.5rem;
+      align-items: flex-start;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .config-icon {
+      width: 42%;
+      height: 280px;
+      background: #E5E7EB;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4.5rem;
+      flex-shrink: 0;
+      flex-grow: 0;
+      color: #0EA5E9;
+    }
+    .config-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .config-content p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #4B5563;
+      margin-bottom: 1.2rem;
+    }
+    .bg-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 0.8rem;
+    }
+    .bg-preview-item {
+      width: 100%;
+      height: 65px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+      object-fit: cover;
+    }
+    .bg-preview-item:hover {
+      transform: scale(1.05);
+      border-color: #0EA5E9;
+    }
+    .bg-preview-item.selected {
+      border-color: #0EA5E9;
+      box-shadow: 0 0 15px rgba(14,165,233,0.5);
+    }
+    .upload-btn {
+      width: 100%;
+      height: 60px;
+      border-radius: 6px;
+      border: 2px dashed #0EA5E9;
+      background: rgba(14,165,233,0.08);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #0EA5E9;
+      transition: all 0.3s;
+    }
+    .upload-btn:hover {
+      background: rgba(14,165,233,0.2);
+    }
+    .slogan-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .slogan-input-group input,
+    .slogan-input-group select,
+    .slogan-input-group input[type="range"] {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #D1D5DB;
+      background: white;
+      color: #1F2937;
+      font-size: 1rem;
+    }
+    .slogan-input-group input::placeholder {
+      color: #9CA3AF;
+    }
+    .slogan-input-group select option {
+      background: white;
+      color: #1F2937;
+    }
+    .slogan-preview {
+      padding: 1rem;
+      background: #F9FAFB;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 1rem;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1F2937;
+    }
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #F9FAFB;
+      border-radius: 10px;
+    }
+    .toggle-item span {
+      font-size: 1rem;
+      color: #374151;
+    }
+
+    .config-btn-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.8rem;
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+    }
+    .config-btn {
+      padding: 10px 28px;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    .config-btn.cancel {
+      background: white;
+      border: 1px solid #D1D5DB;
+      color: #6B7280;
+    }
+    .config-btn.cancel:hover {
+      background: #F9FAFB;
+      color: #374151;
+    }
+    .config-btn.prev {
+      background: white;
+      border: 1px solid #D1D5DB;
+      color: #6B7280;
+    }
+    .config-btn.prev:hover {
+      background: #F9FAFB;
+      color: #374151;
+    }
+    .config-btn.next,
+    .config-btn.finish {
+      background: #0EA5E9;
+      border: none;
+      color: white;
+      box-shadow: 0 2px 8px rgba(14,165,233,0.3);
+    }
+    .config-btn.next:hover,
+    .config-btn.finish:hover {
+      transform: scale(1.02);
+      background: #0284C7;
+      box-shadow: 0 4px 12px rgba(2,132,199,0.4);
+    }
+    #finalScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 9996;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    #finalScreen h1 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #5EC5F7;
+      text-shadow: 0 0 20px rgba(94,197,247,0.5);
+    }
+    #finalScreen p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
   </style>
 </head>
 <body class="bg-neutral-100 font-noto text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300" style="background-size: cover; background-position: center; background-attachment: fixed; will-change: auto;">
+
+  <!-- 欢迎页面 -->
+  <div id="welcomeScreen">
+    <h1 id="welcomeText" class="handwriting"></h1>
+    <button id="startBtn">开始使用</button>
+  </div>
+
+  <!-- 引导遮罩 -->
+  <div id="tutorialOverlay">
+    <div id="tutorialHighlight" class="tutorial-highlight"></div>
+    <div id="tutorialTooltip" class="tutorial-tooltip"></div>
+  </div>
+
+  <!-- 配置引导遮罩 -->
+  <div id="configOverlay">
+    <div id="configContent" class="config-step"></div>
+  </div>
+
+  <!-- 最终页面 -->
+  <div id="finalScreen">
+    <h1>开始您的探索吧</h1>
+    <p>点击任意区域进入</p>
+  </div>
 
   <div id="toast" class="toast"></div>
   <div id="bgOverlay" class="bg-overlay"></div>
@@ -1317,6 +1729,18 @@
 
   <script>
     // ===== 核心逻辑 (完全保留原有功能，仅增强动画效果) =====
+    const OFFICIAL_BG = [
+      { url: "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp", type: "image" },
+      { url: "https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp", type: "image" },
+      { url: "https://img.tofaka.com/autoupload/f/LwnK8UqNTSuHQs33fWKsW9iO_OyvX7mIgxFBfDMDErs/20260707/qSye/1.mp4", type: "video" },
+    ];
     const holidaysData = {
       "2025-01-01": {name: "元旦"},
       "2025-01-29": {name: "春节"},
@@ -2504,20 +2928,6 @@
         };
       }
       
-      // 官方背景图片和视频
-      const OFFICIAL_BG = [
-        { url: "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp", type: "image" },
-        { url: "https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp", type: "image" },
-        { url: "https://img.tofaka.com/autoupload/f/LwnK8UqNTSuHQs33fWKsW9iO_OyvX7mIgxFBfDMDErs/20260707/qSye/1.mp4", type: "video" },
-      ];
-      
       let thumbContainer = document.getElementById('officialBgThumbs');
       OFFICIAL_BG.forEach(item => {
         let div = document.createElement('div');
@@ -2759,6 +3169,405 @@
           if (e.ctrlKey) { e.preventDefault(); }
       }, { passive: false });
     });
+
+    // 引导动画逻辑
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查是否已经完成过引导
+      if (localStorage.getItem('tutorialCompleted') === 'true') {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        return;
+      }
+
+      // 手写动画
+      const welcomeText = document.getElementById('welcomeText');
+      const text = '欢迎';
+      let index = 0;
+      
+      const typeWriter = () => {
+        if (index < text.length) {
+          welcomeText.textContent += text.charAt(index);
+          index++;
+          setTimeout(typeWriter, 800);
+        } else {
+          // 动画完成后添加淡入动画类
+          const startBtn = document.getElementById('startBtn');
+          startBtn.classList.add('show');
+        }
+      };
+      
+      setTimeout(typeWriter, 800);
+
+      // 开始使用按钮点击
+      document.getElementById('startBtn').addEventListener('click', function() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        startConfigGuide();
+      });
+    });
+
+    let tutorialStep = 0;
+    const tutorialSteps = [
+      { element: '#fullscreenBtn', message: '点击这里可以进入全屏模式，享受沉浸式体验！', position: 'bottom' },
+      { element: '#clockCard', message: '这是时钟区域，显示当前时间和日期', position: 'top' },
+      { element: '.calendar-card', message: '这是日历卡片，可以查看日期和设置提醒', position: 'top' }
+    ];
+
+    function startTutorial() {
+      tutorialStep = 0;
+      showTutorialStep();
+    }
+
+    function showTutorialStep() {
+      if (tutorialStep >= tutorialSteps.length) {
+        endTutorial();
+        return;
+      }
+
+      const step = tutorialSteps[tutorialStep];
+      const element = document.querySelector(step.element);
+      
+      if (!element) {
+        tutorialStep++;
+        showTutorialStep();
+        return;
+      }
+
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      setTimeout(() => {
+        const overlay = document.getElementById('tutorialOverlay');
+        const highlight = document.getElementById('tutorialHighlight');
+        const tooltip = document.getElementById('tutorialTooltip');
+
+        overlay.style.display = 'block';
+        highlight.style.display = 'block';
+        tooltip.style.display = 'block';
+        
+        const rect = element.getBoundingClientRect();
+        highlight.style.left = rect.left + 'px';
+        highlight.style.top = rect.top + 'px';
+        highlight.style.width = rect.width + 'px';
+        highlight.style.height = rect.height + 'px';
+
+        tooltip.innerHTML = `${step.message}<br><button class="tutorial-next-btn" onclick="nextTutorialStep()">下一步</button>`;
+        
+        if (step.position === 'bottom') {
+          tooltip.style.top = rect.bottom + 15 + 'px';
+          tooltip.style.left = rect.left + 'px';
+          tooltip.style.right = 'auto';
+          tooltip.style.bottom = 'auto';
+          tooltip.style.marginLeft = '0';
+        } else {
+          tooltip.style.top = rect.top - tooltip.offsetHeight - 15 + 'px';
+          tooltip.style.left = rect.left + 'px';
+          tooltip.style.right = 'auto';
+          tooltip.style.bottom = 'auto';
+          tooltip.style.marginLeft = '0';
+        }
+      }, 500);
+    }
+
+    function nextTutorialStep() {
+      const highlight = document.getElementById('tutorialHighlight');
+      const tooltip = document.getElementById('tutorialTooltip');
+      
+      tutorialStep++;
+      showTutorialStep();
+    }
+
+    function endTutorial() {
+      const overlay = document.getElementById('tutorialOverlay');
+      const highlight = document.getElementById('tutorialHighlight');
+      const tooltip = document.getElementById('tutorialTooltip');
+      
+      overlay.style.display = 'none';
+      highlight.style.display = 'none';
+      tooltip.style.display = 'none';
+      
+      localStorage.setItem('tutorialCompleted', 'true');
+      showFinalScreen();
+    }
+
+    function showFinalScreen() {
+      const finalScreen = document.getElementById('finalScreen');
+      finalScreen.style.display = 'flex';
+
+      finalScreen.addEventListener('click', function() {
+        finalScreen.style.display = 'none';
+      });
+    }
+
+    let configStep = 0;
+
+    const configSteps = [
+      {
+        step: 1,
+        title: '配置您的背景',
+        icon: 'fa-image',
+        description: '选择一个您喜欢的背景图片，或者上传自己的图片',
+        type: 'bg'
+      },
+      {
+        step: 2,
+        title: '配置您的标语',
+        icon: 'fa-font',
+        description: '设置个性化的标语，调整字体大小和样式',
+        type: 'slogan'
+      },
+      {
+        step: 3,
+        title: '配置您的视觉效果',
+        icon: 'fa-eye',
+        description: '开启液体玻璃效果和黑夜模式',
+        type: 'visual'
+      }
+    ];
+
+    function startConfigGuide() {
+      configStep = 0;
+      document.getElementById('configOverlay').style.display = 'flex';
+      showConfigStep();
+    }
+
+    function showConfigStep() {
+      const step = configSteps[configStep];
+      const content = document.getElementById('configContent');
+
+      let bodyContent = '';
+      if (step.type === 'bg') {
+        const bgGrid = OFFICIAL_BG.map((item, i) => {
+          if (item.type === 'video') {
+            return `<video class="bg-preview-item" autoplay loop muted playsinline onclick="selectBg(this, '${item.url}', true)">
+              <source src="${item.url}" type="video/mp4">
+            </video>`;
+          } else {
+            return `<img src="${item.url}" class="bg-preview-item" onclick="selectBg(this, '${item.url}', false)">`;
+          }
+        }).join('');
+
+        bodyContent = `
+          <div class="bg-preview-grid">${bgGrid}</div>
+          <button class="upload-btn" onclick="triggerBgUpload()">
+            <i class="fa fa-upload" style="font-size:16px;"></i>
+            <span style="font-size:11px;">上传图片</span>
+          </button>
+          <input type="file" id="bgUpload" accept="image/*" style="display:none;" onchange="handleBgUpload(this)">
+        `;
+      } else if (step.type === 'slogan') {
+        const savedText = localStorage.getItem('sloganText') || '温迪牛逼';
+        const savedSize = localStorage.getItem('sloganFontSize') || 48;
+        const savedFont = localStorage.getItem('sloganFontFamily') || 'ZCOOL QingKe HuangYou';
+        
+        bodyContent = `
+          <div class="slogan-preview" id="configSloganPreview">${savedText}</div>
+          <div class="slogan-input-group">
+            <input type="text" id="configSloganText" placeholder="输入标语内容" value="${savedText}" oninput="updateConfigSlogan()">
+            <div>
+              <label style="color:#6B7280; margin-bottom:5px; display:block;">字体大小: ${savedSize}px</label>
+              <input type="range" id="configSloganSize" min="14" max="96" value="${savedSize}" oninput="updateConfigSlogan()">
+            </div>
+            <select id="configSloganFont" onchange="updateConfigSlogan()">
+              <option value="Noto Sans SC" ${savedFont === 'Noto Sans SC' ? 'selected' : ''}>微软雅黑</option>
+              <option value="ZCOOL QingKe HuangYou" ${savedFont === 'ZCOOL QingKe HuangYou' ? 'selected' : ''}>科技风</option>
+              <option value="Ma Shan Zheng" ${savedFont === 'Ma Shan Zheng' ? 'selected' : ''}>机械书法风</option>
+              <option value="ZCOOL KuaiLe" ${savedFont === 'ZCOOL KuaiLe' ? 'selected' : ''}>卡通童趣风</option>
+              <option value="Rajdhani" ${savedFont === 'Rajdhani' ? 'selected' : ''}>ROG电竞风</option>
+            </select>
+          </div>
+        `;
+      } else if (step.type === 'visual') {
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        const isGlass = localStorage.getItem('glassMode') === 'true';
+        
+        bodyContent = `
+          <div class="toggle-group">
+            <div class="toggle-item">
+              <span>液体玻璃</span>
+              <label class="toggle-switch"><input type="checkbox" id="configGlassToggle" ${isGlass ? 'checked' : ''}><span class="toggle-slider"></span></label>
+            </div>
+            <div class="toggle-item">
+              <span>黑夜模式</span>
+              <label class="toggle-switch"><input type="checkbox" id="configDarkToggle" ${isDark ? 'checked' : ''}><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+        `;
+      }
+
+      let prevBtn = '';
+      let nextBtn = '';
+      if (configStep > 0) {
+        prevBtn = '<button class="config-btn prev" onclick="prevConfigStep()">上一步</button>';
+      } else {
+        prevBtn = '<button class="config-btn cancel" onclick="cancelConfigGuide()">取消</button>';
+      }
+
+      if (configStep < configSteps.length - 1) {
+        nextBtn = '<button class="config-btn next" onclick="nextConfigStep()">下一步</button>';
+      } else {
+        nextBtn = '<button class="config-btn finish" onclick="finishConfigGuide()">完成设置</button>';
+      }
+
+      content.innerHTML = `
+        <div class="config-card">
+          <div class="config-step-header">第 ${step.step} 步：${step.title}</div>
+          <div class="config-card-body">
+            <div class="config-icon"><i class="fa ${step.icon}"></i></div>
+            <div class="config-content">
+              <p>${step.description}</p>
+              ${bodyContent}
+            </div>
+          </div>
+          <div class="config-btn-group">
+            ${prevBtn}
+            ${nextBtn}
+          </div>
+        </div>
+      `;
+
+      if (step.type === 'visual') {
+        setupVisualToggles();
+      }
+    }
+
+    function selectBg(el, url, isVideo) {
+      document.querySelectorAll('.bg-preview-item').forEach(item => item.classList.remove('selected'));
+      el.classList.add('selected');
+      if (isVideo) {
+        setBackgroundImage(url, true);
+      } else {
+        setBackgroundImage(url);
+      }
+    }
+
+    function triggerBgUpload() {
+      document.getElementById('bgUpload').click();
+    }
+
+    function handleBgUpload(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          setBackgroundImage(e.target.result);
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function updateConfigSlogan() {
+      const text = document.getElementById('configSloganText').value || '温迪牛逼';
+      const size = document.getElementById('configSloganSize').value;
+      const font = document.getElementById('configSloganFont').value;
+
+      const preview = document.getElementById('configSloganPreview');
+      if (preview) {
+        preview.textContent = text;
+        preview.style.fontSize = size + 'px';
+        preview.style.fontFamily = font;
+      }
+
+      applySloganConfig(text, size, font);
+    }
+
+    function applySloganConfig(txt, sz, ff) {
+      let container = document.getElementById('sloganContainer');
+      let col = localStorage.getItem('sloganColor') || '#5EC5F7';
+      let lh = localStorage.getItem('sloganLineHeight') || '1.4';
+      let sw = localStorage.getItem('sloganStrokeWidth') || '2';
+      let sc = localStorage.getItem('sloganStrokeColor') || '#000000';
+      
+      let fontFamily = ff;
+      if(ff.includes(' ')) {
+        fontFamily = `"${ff}"`;
+      }
+      if(ff === 'Orbitron' || ff === 'Press Start 2P') {
+        fontFamily = `${fontFamily}, "Noto Sans SC", sans-serif`;
+      } else {
+        fontFamily = `${fontFamily}, sans-serif`;
+      }
+      
+      container.innerHTML = txt.replace(/\n/g, '<br>');
+      container.style.color = col;
+      container.style.fontSize = sz + 'px';
+      container.style.lineHeight = lh;
+      container.style.fontFamily = fontFamily;
+      
+      let strokeWidth = parseInt(sw);
+      if(strokeWidth > 0) {
+        container.style.textShadow = `
+          -${strokeWidth}px -${strokeWidth}px 0 ${sc},
+          ${strokeWidth}px -${strokeWidth}px 0 ${sc},
+          -${strokeWidth}px ${strokeWidth}px 0 ${sc},
+          ${strokeWidth}px ${strokeWidth}px 0 ${sc}
+        `;
+      } else {
+        container.style.textShadow = 'none';
+      }
+      
+      localStorage.setItem('sloganText', txt);
+      localStorage.setItem('sloganFontSize', sz);
+      localStorage.setItem('sloganFontFamily', ff);
+    }
+
+    function setupVisualToggles() {
+      const darkToggle = document.getElementById('configDarkToggle');
+      const glassToggle = document.getElementById('configGlassToggle');
+
+      if (darkToggle) {
+        darkToggle.addEventListener('change', () => {
+          if (darkToggle.checked) {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('darkMode', 'true');
+          } else {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('darkMode', 'false');
+          }
+          renderCalendar();
+        });
+      }
+
+      if (glassToggle) {
+        glassToggle.addEventListener('change', () => {
+          if (glassToggle.checked) {
+            document.body.classList.add('glass-mode');
+            localStorage.setItem('glassMode', 'true');
+          } else {
+            document.body.classList.remove('glass-mode');
+            localStorage.setItem('glassMode', 'false');
+          }
+        });
+      }
+    }
+
+    function prevConfigStep() {
+      configStep--;
+      showConfigStep();
+    }
+
+    function nextConfigStep() {
+      configStep++;
+      showConfigStep();
+    }
+
+    function cancelConfigGuide() {
+      document.getElementById('configOverlay').style.display = 'none';
+      document.getElementById('welcomeScreen').style.display = 'flex';
+    }
+
+    function finishConfigGuide() {
+      document.getElementById('configOverlay').style.display = 'none';
+      startFooterTutorial();
+    }
+
+    function startFooterTutorial() {
+      tutorialStep = 0;
+      tutorialSteps.length = 0;
+      tutorialSteps.push(
+        { element: '#fullscreenBtn', message: '点击这里可以进入全屏模式，享受沉浸式体验！', position: 'bottom' },
+        { element: '#clockCard', message: '这是时钟区域，显示当前时间和日期', position: 'top' },
+        { element: '.calendar-card', message: '这是日历卡片，可以查看日期和设置提醒', position: 'top' },
+        { element: 'footer', message: '这是页脚区域，包含关于工具集合的详细介绍', position: 'top' }
+      );
+      showTutorialStep();
+    }
   </script>
 </body>
 </html>
