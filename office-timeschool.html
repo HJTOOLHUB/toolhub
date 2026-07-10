@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-  <title>考试时钟</title>
+  <title>在线时钟校园版 | 杂杂时钟</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -53,51 +53,59 @@
       .text-shadow { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
       .card-hover { transition: all 0.3s ease; }
       .card-hover:hover { transform: translateY(-5px); }
+      .glass-effect {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      }
+      .glass-light { background-color: rgba(255, 255, 255, 0.8); }
+      .glass-dark { background-color: rgba(31, 41, 55, 0.8); }
 
-      footer.text-center > strong {
-        font-weight: 900;
+      /* 公告栏样式 */
+      .announcement-board {
+        width: 100%;
+        max-width: 7xl;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        position: relative;
+        background-color: transparent;
+        @apply bg-white;
+        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
       }
-      footer.text-center {
-        backdrop-filter: blur(8px);
+      .announcement { display: none; }
+      .announcement.active { display: block; }
+      .announcement img { max-width: 100%; height: auto; margin-bottom: 0.5rem; border-radius: 4px; }
+      
+      /* 方形翻页按钮 */
+      .announcement-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.55);
+        color: white;
+        border: none;
+        padding: 0.5rem 0.9rem;
+        cursor: pointer;
+        border-radius: 8px;
+        z-index: 10;
+        transition: all 0.2s ease;
+        font-size: 1.2rem;
+        backdrop-filter: blur(4px);
+        @apply dark:bg-neutral-700/80 dark:hover:bg-neutral-600;
       }
-      #countdownBadge {
-        border-radius: 9999px;
-        background-color: #ff0000;
-        border-width: 2px;
-        border-style: solid;
-        border-color: #bdbdbd;
-        box-shadow: inset 0px 4px 8px 0px rgba(0, 0, 0, 0.25);
-      }
-      @keyframes float-up {
-        0% { transform: translateY(0); opacity: 1; }
-        100% { transform: translateY(-100px); opacity: 0; }
-      }
-      @keyframes blink {
-        0%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
-      }
-      .animate-float-up {
-        animation: float-up 1s ease-out forwards;
-      }
-      .animate-blink {
-        animation: blink 0.6s ease-in-out infinite;
-      }
-      #openSettingsBtn > i.fa {
-        font-size: 20px;
-        font-weight: 600;
-        line-height: 18px;
-      }
-      header.sticky > div.container > div.flex:first-child > i.fa {
-        color: #000000;
-        @apply dark:text-white;
-      }
+      .announcement-btn.prev { left: 1rem; }
+      .announcement-btn.next { right: 1rem; }
+      .announcement-btn:hover { background-color: rgba(0,0,0,0.8); transform: translateY(-50%) scale(1.02); }
 
       /* 提示框 - 设置更高的z-index确保在遮罩层之上 */
       .toast {
         position: fixed;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%) translateY(-100%);
+        top: 20px;
+        right: 20px;
         background-color: #FFFFFF;
         color: #1F2937;
         padding: 16px 24px;
@@ -105,6 +113,7 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
         z-index: 10000;
         opacity: 0;
+        transform: translateX(100%);
         transition: all 0.3s ease;
         font-size: 18px;
         font-weight: 500;
@@ -113,17 +122,17 @@
         @apply dark:bg-neutral-800 dark:text-white dark:border-neutral-600 dark:shadow-lg dark:shadow-black/20;
       }
       .toast.reminder { border-left: 4px solid #EF4444; background-color: #FEF2F2; @apply dark:bg-red-900/30 dark:text-red-300; }
-      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .toast.show { opacity: 1; transform: translateX(0); }
 
-      /* 黑夜开关优化 */
-      .toggle-switch {
+      /* 黑夜开关优化 + 液态玻璃开关优化 */
+      .toggle-switch, .glass-toggle-switch {
         position: relative;
         display: inline-block;
         width: 52px;
         height: 28px;
       }
-      .toggle-switch input { opacity: 0; width: 0; height: 0; }
-      .toggle-slider {
+      .toggle-switch input, .glass-toggle-switch input { opacity: 0; width: 0; height: 0; }
+      .toggle-slider, .glass-toggle-slider {
         position: absolute;
         cursor: pointer;
         top: 0;
@@ -135,7 +144,7 @@
         border-radius: 34px;
         @apply dark:bg-neutral-600;
       }
-      .toggle-slider:before {
+      .toggle-slider:before, .glass-toggle-slider:before {
         position: absolute;
         content: "";
         height: 22px;
@@ -147,10 +156,12 @@
         border-radius: 50%;
         box-shadow: 0 1px 3px rgba(0,0,0,0.2);
       }
-      .toggle-switch input:checked + .toggle-slider {
+      .toggle-switch input:checked + .toggle-slider,
+      .glass-toggle-switch input:checked + .glass-toggle-slider {
         background-color: #30b551 !important;
       }
-      .toggle-switch input:checked + .toggle-slider:before {
+      .toggle-switch input:checked + .toggle-slider:before,
+      .glass-toggle-switch input:checked + .glass-toggle-slider:before {
         transform: translateX(24px) !important;
         left: unset !important;
       }
@@ -244,7 +255,160 @@
         to { opacity: 1; }
       }
 
+      /* 官方背景预览区域 */
+      .official-bg-section {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb8f;
+        padding-top: 1rem;
+      }
+      .official-bg-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        @apply text-neutral-700 dark:text-neutral-200;
+      }
+      .bg-thumbnails {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .bg-thumb-item {
+        width: 80px;
+        height: 60px;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .bg-thumb-item:hover {
+        transform: scale(1.02);
+        border-color: #83f512;
+        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
+      }
+      .bg-thumb-item.active-bg {
+        border-color: #34C759;
+        box-shadow: 0 0 0 2px rgba(52,199,89,0.5);
+      }
+      .bg-thumb-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      /* 日历卡片 */
+      .calendar-card {
+        width: 80%;
+        max-width: 28rem;
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        padding: 0.75rem 0.75rem 1rem 0.75rem;
+        margin: 2.5rem auto 1.2rem auto;
+        background-color: transparent;
+        @apply bg-white;
+        @apply dark:bg-neutral-800 dark:shadow-none dark:border dark:border-neutral-700;
+        transition: all 0.2s;
+      }
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .calendar-nav-btn {
+        background-color: #f3f4f6;
+        border: none;
+        border-radius: 8px;
+        padding: 0.35rem 0.9rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        @apply dark:bg-neutral-700 dark:text-white hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors;
+      }
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.3rem;
+      }
+      .calendar-day-header {
+        text-align: center;
+        font-weight: 800;
+        padding: 0.3rem 0;
+        color: #191919;
+        font-size: 0.75rem;
+        @apply dark:text-neutral-300;
+      }
+      .calendar-day {
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 1000;
+        font-size: 1rem;
+        transition: all 0.15s;
+        position: relative;
+        background-color: transparent;
+        @apply hover:bg-neutral-100 dark:hover:bg-neutral-700/70;
+      }
+      .calendar-day.restday {
+        background-color: #EFF6FF;
+        color: #3B82F6;
+        @apply dark:bg-blue-900/20 dark:text-blue-300 font-extrabold;
+      }
+      .calendar-day.today {
+        border: 2px solid #12f54b;
+        font-weight: 900;
+        background-color: rgba(17, 55, 69, 0.08);
+      }
+      .calendar-day.reminder::after {
+        content: '●';
+        position: absolute;
+        bottom: 5px;
+        font-size: 12px;
+        color: #F59E0B;
+      }
+      .calendar-day.holiday-badge::before {
+        content: '休';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 9px;
+        background: #EF4444;
+        color: white;
+        border-radius: 10px;
+        padding: 0px 4px;
+        font-weight: bold;
+      }
+      .calendar-day.workday-badge::before {
+        content: '班';
+        position: absolute;
+        top: 2px;
+        right: 4px;
+        font-size: 9px;
+        background: #F97316;
+        color: white;
+        border-radius: 10px;
+        padding: 0px 4px;
+        font-weight: bold;
+      }
+      .calendar-day.other-month {
+        color: #5e5e5e;
+        font-weight: 470;
+        @apply dark:text-neutral-500;
+      }
       
+      /* 日历详细信息卡片 - 增大尺寸 + 划入动画 */
       .detail-popup {
         position: fixed;
         bottom: 40px;
@@ -296,19 +460,54 @@
         border-color: rgba(0,0,0,0.1);
       }
 
+      /* 玻璃模式全局样式 (保持原样) */
+      .glass-mode .announcement-board,
+      .glass-mode .calendar-card,
+      .glass-mode #clockCard {
+        @apply bg-transparent glass-effect;
+        @apply glass-light dark:glass-dark;
+      }
+      .local-upload-area {
+        margin: 1rem 0;
+        border-top: 1px solid #e5e7eb;
+        padding-top: 1rem;  
+      }
+      .local-upload-label {
+        background-color: #f3f4f6;
+        padding: 8px 12px;
+        border-radius: 9999px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        @apply dark:bg-neutral-700 dark:text-white;
+      }
+      .local-upload-label:hover {
+        background-color: #e5e7eb8a;
+        @apply dark:bg-neutral-600;
+      }
+      .bg-preview-img {
+        max-width: 100%;
+        max-height: 100px;
+        border-radius: 8px;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        display: none;
+      }
+
       /* 重要提示卡片  */
       .important-card {
         position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 95%;
-        max-width: 900px;
-        max-height: 70vh;
-        overflow-y: auto;
+        width: 90%;
+        max-width: 520px;
         background-color: #ff000054;
         border-radius: 20px;
-        padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+        padding: 1.8rem 2rem 2rem 2rem;
         box-shadow: 0 25px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255,255,255,0.2);
         z-index: 10002;
         display: none;
@@ -324,13 +523,13 @@
         animation: fadeInUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       }
       .important-card .important-icon {
-        font-size: clamp(2rem, 8vw, 3.5rem);
+        font-size: 3.5rem;
         color: #FFE484;
         margin-bottom: 0.5rem;
         text-shadow: 0 2px 5px rgba(0,0,0,0.2);
       }
       .important-card .important-title {
-        font-size: clamp(1.2rem, 5vw, 2rem);
+        font-size: 2rem;
         font-weight: 900;
         letter-spacing: -0.5px;
         color: white;
@@ -345,17 +544,13 @@
         width: 100%;
         margin: 0.8rem 0 1.2rem;
         color: #fff8e7;
-        font-size: clamp(0.9rem, 3vw, 1.1rem);
+        font-size: 1.1rem;
         line-height: 1.5;
         font-weight: 500;
         border: 1px solid rgba(255,245,180,0.4);
-        text-align: center;
+        text-align: left;
         word-break: break-word;
         white-space: pre-wrap;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
       }
       .important-close-btn {
         background-color: white;
@@ -364,7 +559,7 @@
         border-radius: 60px;
         padding: 0.7rem 1.6rem;
         font-weight: 800;
-        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        font-size: 1.1rem;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
@@ -405,6 +600,128 @@
           opacity: 1;
           transform: translate(-50%, -50%);
         }
+      }
+
+      .apology-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 520px;
+        background: linear-gradient(145deg, rgba(60, 60, 60, 0.95), rgba(40, 40, 40, 0.98));
+        border-radius: 20px;
+        padding: 1.8rem 2rem 2rem 2rem;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.15);
+        z-index: 10004;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 215, 0, 0.4);
+      }
+      .apology-card.show {
+        display: flex;
+        animation: fadeInUp 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      }
+      .apology-card .apology-icon {
+        font-size: 3.5rem;
+        color: #FFD700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      }
+      .apology-card .apology-title {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        color: #fff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        margin-bottom: 0.75rem;
+      }
+      .apology-card .apology-content {
+        background-color: rgba(255,255,255,0.1);
+        backdrop-filter: blur(4px);
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        width: 100%;
+        margin: 0.8rem 0 1.2rem;
+        color: #f0f0f0;
+        font-size: 1rem;
+        line-height: 1.6;
+        font-weight: 500;
+        border: 1px solid rgba(255,255,255,0.2);
+        text-align: left;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      .apology-card .apology-content-placeholder {
+        color: rgba(255,255,255,0.5);
+        font-style: italic;
+      }
+      .apology-close-btn {
+        background-color: #FFD700;
+        color: #1a1a1a;
+        border: none;
+        border-radius: 60px;
+        padding: 0.7rem 1.6rem;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        margin-top: 0.2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .apology-close-btn:hover {
+        background-color: #FFC000;
+        transform: scale(1.02);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+      }
+      .apology-close-btn:active {
+        transform: scale(0.98);
+      }
+      .apology-fix-btn {
+        background-color: #12B7F5;
+        color: white;
+        border: none;
+        border-radius: 60px;
+        padding: 0.7rem 1.6rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(18,183,245,0.3);
+        margin-top: 0.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .apology-fix-btn:hover {
+        background-color: #0ea5e9;
+        transform: scale(1.02);
+        box-shadow: 0 6px 16px rgba(18,183,245,0.4);
+      }
+      .apology-fix-btn:active {
+        transform: scale(0.98);
+      }
+      .apology-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 10003;
+        display: none;
+        backdrop-filter: blur(5px);
+      }
+      .apology-overlay.show {
+        display: block;
+        animation: fadeBg 0.3s ease;
       }
 
       /* 设置卡片内小组件 */
@@ -455,40 +772,13 @@
       .btn-danger:hover {
         background-color: #DC2626 !important;
       }
-      
-      .custom-titlebar {
-        -webkit-app-region: drag;
-        user-select: none;
-      }
-      .custom-titlebar-button {
-        -webkit-app-region: no-drag;
-      }
-      
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: #d1d5db;
-        border-radius: 4px;
-        @apply dark:bg-neutral-600;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: #9ca3af;
-        @apply dark:bg-neutral-500;
-      }
-      
-      body {
-        overflow: hidden;
-      }
     }
   </style>
 </head>
 <body class="bg-neutral-100 font-noto text-neutral-800 min-h-screen flex flex-col dark:bg-neutral-900 dark:text-neutral-100 transition-colors duration-300" style="background-size: cover; background-position: center; background-attachment: fixed; will-change: auto;">
 
   <div id="toast" class="toast"></div>
+  <div id="bgOverlay" class="bg-overlay"></div>
   <div id="reminderOverlay" class="reminder-overlay"></div>
   <div id="sloganOverlay" class="slogan-overlay"></div>
 
@@ -500,8 +790,12 @@
       <button id="closeSettingsPanel" class="text-black dark:text-white text-3xl leading-5">&times;</button>
     </div>
     <div class="space-y-1">
+      <div class="settings-group-item cursor-pointer" id="quickBgSettingBtn">
+        <div class="settings-label-icon"><i class="fa fa-picture-o text-black dark:text-white w-6"></i><span>背景图片设置</span></div>
+        <i class="fa fa-chevron-right text-black dark:text-white"></i>
+      </div>
       <div class="settings-group-item cursor-pointer" id="quickReminderSettingBtn">
-        <div class="settings-label-icon"><i class="fa fa-bell text-black dark:text-white"></i><span>考试时间设置</span></div>
+        <div class="settings-label-icon"><i class="fa fa-bell text-black dark:text-white"></i><span>事件提醒设置</span></div>
         <i class="fa fa-chevron-right text-black dark:text-white"></i>
       </div>
       <div class="settings-group-item cursor-pointer" id="quickSloganSettingBtn">
@@ -513,48 +807,41 @@
         <label class="toggle-switch"><input type="checkbox" id="darkModeTogglePanel"><span class="toggle-slider"></span></label>
       </div>
       <div class="settings-group-item">
-        <div class="settings-label-icon"><i class="fa fa-search-plus text-black dark:text-white"></i><span>页面缩放</span></div>
-        <div class="flex items-center gap-2">
-          <button id="zoomMinus" class="w-8 h-8 flex items-center justify-center bg-neutral-200 hover:bg-neutral-300 rounded dark:bg-neutral-700 dark:hover:bg-neutral-600 text-lg font-bold transition-colors">-</button>
-          <input type="number" id="zoomInput" min="50" max="150" value="100" class="w-16 text-center border border-neutral-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-600">
-          <button id="zoomPlus" class="w-8 h-8 flex items-center justify-center bg-neutral-200 hover:bg-neutral-300 rounded dark:bg-neutral-700 dark:hover:bg-neutral-600 text-lg font-bold transition-colors">+</button>
-          <span class="text-sm font-medium">%</span>
-        </div>
+        <div class="settings-label-icon"><i class="fa fa-eyedropper text-black dark:text-white"></i><span>液态玻璃</span></div>
+        <label class="glass-toggle-switch"><input type="checkbox" id="glassModeTogglePanel"><span class="glass-toggle-slider"></span></label>
       </div>
-      <div class="settings-group-item">
-        <div class="settings-label-icon"><i class="fa fa-window-maximize text-black dark:text-white"></i><span>灵动岛</span></div>
-        <label class="toggle-switch"><input type="checkbox" id="islandToggle" checked><span class="toggle-slider"></span></label>
-      </div>
-      <div class="settings-group-item">
-        <div class="settings-label-icon"><i class="fa fa-expand text-black dark:text-white"></i><span>灵动岛大小</span></div>
-        <div class="flex items-center gap-2">
-          <button id="islandScaleMinus" class="w-8 h-8 flex items-center justify-center bg-neutral-200 hover:bg-neutral-300 rounded dark:bg-neutral-700 dark:hover:bg-neutral-600 text-lg font-bold transition-colors">-</button>
-          <input type="number" id="islandScaleInput" min="50" max="200" value="100" class="w-16 text-center border border-neutral-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-600">
-          <button id="islandScalePlus" class="w-8 h-8 flex items-center justify-center bg-neutral-200 hover:bg-neutral-300 rounded dark:bg-neutral-700 dark:hover:bg-neutral-600 text-lg font-bold transition-colors">+</button>
-          <span class="text-sm font-medium">%</span>
-        </div>
+      <div class="settings-group-item cursor-pointer" id="settingsOpenFixToolBtn">
+        <div class="settings-label-icon"><i class="fa fa-wrench text-black dark:text-white"></i><span>修复工具</span></div>
+        <i class="fa fa-external-link text-black dark:text-white"></i>
       </div>
     </div>
   </div>
 
-  <!-- 考试倒计时紧急提醒卡片 -->
-
-  <!-- 考试场次安排弹窗 -->
-  <div id="examSessionsOverlay" class="important-overlay"></div>
-  <div id="examSessionsCard" class="important-card" style="max-width: 1000px;">
-    <div class="important-icon"><i class="fa fa-clock"></i></div>
-    <div class="important-title">考试场次安排</div>
-    <div class="important-content" style="width: 100%;">
-      <div id="todaySessions" class="mb-4">
-        <div style="font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: #FFD700;">今日场次</div>
-        <div id="todaySessionsList" class="flex flex-wrap gap-2"></div>
-      </div>
-      <div id="tomorrowSessions">
-        <div style="font-size: 1rem; font-weight: bold; margin-bottom: 0.5rem; color: #FFD700;">明日场次</div>
-        <div id="tomorrowSessionsList" class="flex flex-wrap gap-2"></div>
-      </div>
+  <!-- 更新公告 -->
+  <div id="importantOverlay" class="important-overlay"></div>
+  <div id="importantCard" class="important-card">
+    <div class="important-icon"><i class="fa fa-refresh"></i></div>
+    <div class="important-title">杂杂时钟3.1更新公告</div>
+    <div class="important-content" id="importantMessageContent">
+      1. 新增设置中心，将之前的相关设置集中在内<br>
+      2. 优化用户界面，提升用户体验<br>
+      3. 与主页面同步页脚<br>
+      4. 修复了一些已知的BUG<br>
+      5. 新增自定义标语设置<br>
     </div>
-    <button id="closeExamSessionsBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 我知道了</button>
+    <button id="closeImportantBtn" class="important-close-btn"><i class="fa fa-check-circle"></i> 确认并使用</button>
+  </div>
+
+  <!-- 致歉通知 -->
+  <div id="apologyOverlay" class="apology-overlay"></div>
+  <div id="apologyCard" class="apology-card">
+    <div class="apology-icon"><i class="fa fa-exclamation-triangle"></i></div>
+    <div class="apology-title">致歉通知</div>
+    <div class="apology-content" id="apologyContent">
+      <span class="apology-content-placeholder">亲爱的用户，由于<合金搜索><杂杂时钟|风华无界><杂杂时钟|校园版>存在严重后台代码漏洞，致使Edge浏览器用户产生严重内存泄漏、GPU显卡超载渲染页面等影响浏览体验的BUG，导致浏览器严重卡顿等问题。对于给您带来的不便我们深表歉意———S.L STIDIO</span>
+    </div>
+    <button id="closeApologyBtn" class="apology-close-btn"><i class="fa fa-check-circle"></i> 确认并继续</button>
+    <button id="openFixToolBtn" class="apology-fix-btn"><i class="fa fa-wrench"></i> 打开修复工具</button>
   </div>
 
   <!-- 标语自定义卡片 -->
@@ -570,75 +857,59 @@
     </div>
   </div>
 
-  <!-- 考试时间设置卡片 -->
-  <div id="reminderSettingsCard" class="reminder-settings-card">
-    <div class="card-header-flex"><h2 class="text-2xl font-bold">考试时间设置</h2><button id="backFromReminderSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
+  <!-- 背景设置卡片 -->
+  <div id="bgSettingsCard" class="bg-settings-card">
+    <div class="card-header-flex"><h2 class="text-2xl font-bold">背景图片设置</h2><button id="backFromBgSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
     <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">科目名称</label>
-        <input type="text" id="examSubjectName" placeholder="如：数学、语文" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">考试开始时间</label>
-        <input type="datetime-local" id="examStartTime" step="1" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">考试结束时间</label>
-        <input type="datetime-local" id="examEndTime" step="1" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900">
-      </div>
-      <div class="flex space-x-3">
-        <button id="saveExamTime" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">保存场次</button>
-        <button id="clearExamTime" class="flex-1 btn-danger py-3 rounded-lg">清除设置</button>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">考试场次列表</label>
-        <div id="examSessionsList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg bg-white dark:bg-gray-700"></div>
-      </div>
-      <div class="text-sm text-neutral-500 dark:text-neutral-400">
-        <p id="currentExamTimeDisplay"></p>
-      </div>
+      <div class="official-bg-section"><div class="official-bg-title"><i class="fa fa-image text-black dark:text-white"></i> 官方精选背景</div><div class="bg-thumbnails" id="officialBgThumbs"></div></div>
+      <div><i class="fa fa-image text-black dark:text-white"></i> 网络图片上传<input type="text" id="bgImageUrl" placeholder="图片URL" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div class="local-upload-area"><label class="local-upload-label"><i class="fa fa-upload"></i> 本地上传</label><input type="file" id="localBgUpload" accept="image/*" style="display:none"><div id="localBgPreview" class="bg-preview-img"></div></div>
+      <div class="flex space-x-3"><button id="applyBgImage" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">应用</button><button id="resetBgImage" class="flex-1 btn-danger py-3 rounded-lg">重置</button></div>
+    </div>
+  </div>
+
+  <!-- 提醒设置卡片 -->
+  <div id="reminderSettingsCard" class="reminder-settings-card">
+    <div class="card-header-flex"><h2 class="text-2xl font-bold">事件提醒设置</h2><button id="backFromReminderSettings" class="back-to-settings-btn"><i class="fa fa-arrow-left"></i> 返回</button></div>
+    <div class="space-y-4">
+      <div><input type="text" id="reminderName" placeholder="提醒名称" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><input type="date" id="reminderDate" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></div>
+      <div><textarea id="reminderDesc" rows="2" placeholder="描述" class="w-full px-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-900"></textarea></div>
+      <div class="flex space-x-3"><button id="addReminder" class="flex-1 bg-black text-white py-3 rounded-lg dark:bg-white dark:text-black">添加</button><button id="clearReminders" class="flex-1 btn-danger py-3 rounded-lg">清空</button></div>
+      <div><div id="remindersList" class="max-h-40 overflow-y-auto space-y-2 p-2 border rounded-lg"></div></div>
     </div>
   </div>
 
   <!-- 顶部导航 -->
-  <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-gray-500 dark:border-gray-700 custom-titlebar h-10">
-    <div class="absolute right-0 top-0 h-full flex gap-1">
-      <button id="openSettingsBtn" class="h-full w-10 flex items-center justify-center text-black dark:text-white custom-titlebar-button bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors rounded-l-lg"><i class="fa fa-cog"></i></button>
-      <button id="minimizeBtn" class="h-full w-10 flex items-center justify-center text-black dark:text-white custom-titlebar-button bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors"><i class="fa fa-minus"></i></button>
-    </div>
-    <div class="h-full flex items-center pl-4">
-      <div class="flex items-center gap-2"><img src="icon.ico" alt="Icon" class="w-5 h-5"><h1 class="text-lg text-black dark:text-white font-[system-ui]">考试时钟</h1></div>
+  <header class="sticky top-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center gap-2"><i class="fa fa-clock-o text-2xl text-black dark:text-white"></i><h1 class="text-xl font-bold text-black dark:text-white">杂杂时钟 | 校园版</h1></div>
+      <nav><ul class="flex space-x-4"><li><a href="index.html" id="homeLink" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white inline-flex items-center gap-1"><i class="fa fa-home mr-1"></i>返回首页</a></li><li><button id="openSettingsBtn" class="bg-neutral-200 dark:bg-neutral-700 px-3 py-2 rounded-full text-black dark:text-white"><i class="fa fa-cog mr-1"></i>设置</button></li></ul></nav>
     </div>
   </header>
 
-  <main class="flex-grow w-full overflow-y-auto" style="height: 0;">
-    <div id="zoomContainer" class="container mx-auto px-4 py-6 flex flex-col items-center justify-center w-full">
+  <main class="flex-grow container mx-auto px-4 py-6 flex flex-col items-center justify-center">
     <div id="clockCard" class="w-full max-w-8xl bg-white rounded-2xl clock-shadow p-8 md:p-10 card-hover dark:bg-neutral-800">
       <div id="sloganContainer" class="text-center mb-5 font-bold"></div>
-      <div id="countdownBadge" class="hidden bg-black text-white px-4 py-2 rounded-full font-bold text-lg flex items-center justify-center min-w-[180px] mx-auto mb-4 gap-2">
-        <img id="examLogo" src="hj.ico" alt="Logo" class="w-6 h-6 flex-shrink-0">
-        <div id="examContent" class="flex items-center gap-2 flex-wrap justify-center">
-          <span id="examSubjectText" class="opacity-0 whitespace-nowrap"></span>
-          <span id="examStatusText" class="opacity-0 whitespace-nowrap"></span>
-          <span id="examCountdownDisplay" class="text-2xl font-extrabold text-yellow-300 opacity-0 whitespace-nowrap">--:--:--</span>
-        </div>
-      </div>
-      <div class="flex flex-col items-center"><p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p><div id="clockDisplay" class="text-[clamp(4rem,15vw,12rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div><div class="mt-20"></div></div>
+      <div class="flex flex-col items-center"><div id="clockDisplay" class="text-[clamp(2.5rem,10vw,7rem)] font-bold text-neutral-900 dark:text-white">--:--:--</div><p id="dateDisplay" class="text-2xl md:text-3xl font-semibold mt-2 dark:text-white"></p><br><button id="fullscreenBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-3 px-10 rounded-full mt-3 transition-all flex items-center shadow-md text-lg"><i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span></button></div>
     </div>
-    </div>
+    <div class="calendar-card mt-5 card-hover"><div class="calendar-header"><button id="prevMonth" class="calendar-nav-btn"><i class="fa fa-chevron-left mr-1"></i> 上月</button><h2 id="calendarMonth" class="font-extrabold dark:text-white"></h2><button id="nextMonth" class="calendar-nav-btn">下月 <i class="fa fa-chevron-right ml-1"></i></button></div><div class="calendar-grid mt-2"><div class="calendar-day-header">日</div><div class="calendar-day-header">一</div><div class="calendar-day-header">二</div><div class="calendar-day-header">三</div><div class="calendar-day-header">四</div><div class="calendar-day-header">五</div><div class="calendar-day-header">六</div><div id="calendarDays" style="display: contents;"></div></div></div>
+    <div id="announcementBoard" class="announcement-board mt-6"><div class="announcement active"><p class="text-center font-bold text-2xl md:text-4xl text-red-600 dark:text-red-400">8B8晚自习三不准：</p><p class="text-center text-xl md:text-2xl">不准转头</p><p class="text-center text-xl md:text-2xl">不准讲话</p><p class="text-center text-xl md:text-2xl">不准下位</p></div><div class="announcement"><p class="text-center font-bold text-2xl md:text-3xl">2026/04/18更新日志</p><p class="text-center text-base md:text-lg">1. 时钟卡片增大，日历大幅缩小</p><p class="text-center text-base md:text-lg">2. 卡片间距显著增加</p><p class="text-center text-base md:text-lg">3. 日历文字加粗，液态玻璃优化</p><p class="text-center text-base md:text-lg">4. 方形按钮 + 开关视觉增强</p><p class="text-center text-base md:text-lg">5. 支持本地上传背景并永久保存</p><p class="text-center text-base md:text-lg">6. 官方背景三张高清壁纸预览</p></div><button class="announcement-btn prev" id="prevAnnounceBtn"><i class="fa fa-chevron-left"></i></button><button class="announcement-btn next" id="nextAnnounceBtn"><i class="fa fa-chevron-right"></i></button></div>
   </main>
 
-  <footer class="text-center py-0.5 text-[10px] text-neutral-500 dark:text-neutral-400 bg-neutral-200 dark:bg-neutral-800/50">
-    ©2026 Copyright SanLong Studio By <strong>侯文杰</strong> Dev
-  </footer>
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white pt-16 pb-8" style="background-color: #22262f;"><div class="container mx-auto px-4 sm:px-6 lg:px-8"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"><div><div class="flex items-center space-x-2 mb-6"><div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center" style="background: linear-gradient(135deg, #2e54ffe4, #9e44dfe9);"><i class="fa fa-wrench text-white text-xl"></i></div><span class="text-xl font-bold">HJ_ToolHub</span></div><p class="text-gray-400 mb-6">合金实用工具集合，让您的工作和生活更高效便捷。</p><div class="flex space-x-4"><a href="https://qm.qq.com/q/mVoOvLQ95S" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition-colors"><i class="fab fa-qq text-2xl text-white"></i></a><a href="weixin.html" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 transition-colors"><i class="fab fa-weixin text-2xl text-white"></i></a><a href="https://kook.vip/O6tC2z" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-purple-500 transition-colors"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></a><a href="https://github.com/HJTOOLHUB/toolhub" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-600 transition-colors"><i class="fab fa-github text-2xl"></i></a></div></div><div><h3 class="text-lg font-semibold mb-6">快速链接</h3><ul class="space-y-3"><li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li><li><a href="#categories" class="text-gray-400 hover:text-white transition-colors">工具分类</a></li><li><a href="#popular" class="text-gray-400 hover:text-white transition-colors">热门工具</a></li><li><a href="#features" class="text-gray-400 hover:text-white transition-colors">特色介绍</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">工具分类</h3><ul class="space-y-3"><li><a href="index (2).html" class="text-gray-400 hover:text-white transition-colors">办公效率</a></li><li><a href="index (3).html" class="text-gray-400 hover:text-white transition-colors">图片处理</a></li><li><a href="index (4).html" class="text-gray-400 hover:text-white transition-colors">开发辅助</a></li><li><a href="index (5).html" class="text-gray-400 hover:text-white transition-colors">生活服务</a></li><li><a href="#" class="text-gray-400 hover:text-white transition-colors"> </a></li></ul></div><div><h3 class="text-lg font-semibold mb-6">联系我们</h3><ul class="space-y-3"><li class="flex items-start"><i class="fa fa-envelope mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">3301976275@qq.com</span></li><li class="flex items-start"><i class="fa fa-map-marker mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">广州市番禺区</span></li><li class="flex items-start"><i class="fa fa-phone mt-1 mr-3 text-gray-400"></i><span class="text-gray-400">联系电话：137 1019 0930</span></li></ul></div></div><div class="border-t border-gray-800 pt-8"><div class="flex flex-col md:flex-row justify-between items-center"><p class="text-gray-500 text-sm mb-4 md:mb-0">© 2026 copyright HJ'_DEV(合金). 杂杂时钟 v3.1 Beta</p><img src="https://img.cdn1.vip/i/6946bfa7534c3_1766244263.webp" alt="HJ'_DEV" width="300" height="300" class="mb-4 md:mb-0"><div class="flex space-x-6"><a href="yszc.html" class="text-gray-500 hover:text-gray-300 text-sm">隐私政策</a><a href="sytk.html" class="text-gray-500 hover:text-gray-300 text-sm">使用条款</a><a href="date.html" class="text-gray-500 hover:text-gray-300 text-sm">更新日志</a></div></div></div></div></footer>
 
   <script>
-    // ===== 核心逻辑 =====
-    let reminderList = JSON.parse(localStorage.getItem('reminders') || '[{"id":1,"name":"期末考试","date":"2026-07-06","desc":"","shown":false}]');
+    // ===== 核心逻辑 (完全保留原有功能，仅增强动画效果) =====
+    const holidaysData = {"2025-01-01":{name:"元旦"},"2025-01-29":{name:"春节"},"2025-01-30":{name:"春节"},"2025-01-31":{name:"春节"},"2025-02-01":{name:"春节"},"2025-02-02":{name:"春节"},"2025-04-04":{name:"清明节"},"2025-05-01":{name:"劳动节"},"2025-05-02":{name:"劳动节"},"2025-05-03":{name:"劳动节"},"2025-05-31":{name:"端午节"},"2025-10-01":{name:"国庆节"},"2025-10-02":{name:"国庆节"},"2025-10-03":{name:"国庆节"},"2025-10-04":{name:"国庆节"},"2025-10-05":{name:"国庆节"},"2025-10-06":{name:"国庆节"},"2025-10-07":{name:"国庆节"},"2025-10-08":{name:"中秋节"},"2026-01-01":{name:"元旦"},"2026-02-17":{name:"春节"},"2026-02-18":{name:"春节"},"2026-02-19":{name:"春节"},"2026-02-20":{name:"春节"},"2026-02-21":{name:"春节"},"2026-02-22":{name:"春节"},"2026-04-05":{name:"清明节"},"2026-05-01":{name:"劳动节"},"2026-06-19":{name:"端午节"},"2026-10-01":{name:"国庆节"},"2026-10-02":{name:"国庆节"},"2026-10-03":{name:"国庆节"},"2026-10-04":{name:"国庆节"},"2026-10-05":{name:"国庆节"},"2026-10-06":{name:"国庆节"},"2026-10-07":{name:"国庆节"},"2026-10-08":{name:"中秋节"}};
+    const workdayData = {"2025-04-27":true,"2025-05-10":true,"2025-09-28":true,"2025-10-11":true,"2026-02-14":true,"2026-02-28":true,"2026-09-27":true,"2026-10-10":true};
+    function getHolidayInfo(dateStr){ if(holidaysData[dateStr]) return {name:holidaysData[dateStr].name, type:"holiday"}; if(workdayData[dateStr]) return {name:"调休工作日", type:"workday"}; return null; }
+    let reminderList = JSON.parse(localStorage.getItem('reminders') || '[]');
+    let calendarCurrentDate = new Date();
     let activePopup = null;
     let activePopupTimeout = null;
     let toastTimeout = null;
-    let examSessions = [];
     function cleanupPopup() {
       if(activePopupTimeout) {
         clearTimeout(activePopupTimeout);
@@ -680,133 +951,7 @@
       dateDisplay.textContent = 
         `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`;
       checkReminders(n);
-      updateExamCountdown(n);
     }
-    function updateExamCountdown(now) {
-      const examDate = new Date('2026-07-06');
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const diffTime = examDate - today;
-      const daysLeft = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      const badge = document.getElementById('countdownBadge');
-      const daysSpan = document.getElementById('countdownDays');
-      
-      if (daysLeft > 0) {
-        if (badge) {
-          badge.classList.remove('hidden');
-        }
-        if (daysSpan) {
-          daysSpan.textContent = daysLeft;
-        }
-      } else {
-        if (badge) {
-          badge.classList.add('hidden');
-        }
-      }
-    }
-
-    let examSessionsInterval = null;
-    function showExamSessions() {
-      const overlay = document.getElementById('examSessionsOverlay');
-      const card = document.getElementById('examSessionsCard');
-      const closeBtn = document.getElementById('closeExamSessionsBtn');
-      
-      if (!overlay || !card) return;
-      
-      overlay.classList.add('show');
-      card.classList.add('show');
-      
-      updateExamSessionsDisplay();
-      if (examSessionsInterval) {
-        clearInterval(examSessionsInterval);
-      }
-      examSessionsInterval = setInterval(updateExamSessionsDisplay, 1000);
-      
-      const closeHandler = () => {
-        overlay.classList.remove('show');
-        card.classList.remove('show');
-        if (examSessionsInterval) {
-          clearInterval(examSessionsInterval);
-          examSessionsInterval = null;
-        }
-      };
-      
-      if (closeBtn) {
-        closeBtn.onclick = closeHandler;
-      }
-      
-      overlay.onclick = (e) => {
-        if (e.target === overlay) {
-          closeHandler();
-        }
-      };
-    }
-    function getSessionStatus(session) {
-      const now = new Date();
-      const start = new Date(session.start);
-      const end = new Date(session.end);
-      
-      if (now >= end) return { text: '已结束', color: '#9CA3AF' };
-      if (now >= start) return { text: '进行中', color: '#10B981' };
-      return { text: '未开始', color: '#3B82F6' };
-    }
-    function formatTime(date) {
-      return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
-    }
-    function updateExamSessionsDisplay() {
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      
-      const todaySessions = examSessions.filter(session => {
-        const start = new Date(session.start);
-        return start >= today && start < tomorrow;
-      }).sort((a, b) => new Date(a.start) - new Date(b.start));
-      
-      const tomorrowSessions = examSessions.filter(session => {
-        const start = new Date(session.start);
-        return start >= tomorrow && start < new Date(tomorrow.getTime() + 24 * 60 * 60 * 1000);
-      }).sort((a, b) => new Date(a.start) - new Date(b.start));
-      
-      const todayList = document.getElementById('todaySessionsList');
-      const tomorrowList = document.getElementById('tomorrowSessionsList');
-      
-      if (todaySessions.length === 0) {
-        todayList.innerHTML = '<div style="color: rgba(255,255,255,0.5); text-align: center; padding: 0.5rem;">今日无考试</div>';
-      } else {
-        todayList.innerHTML = todaySessions.map(session => {
-          const status = getSessionStatus(session);
-          const start = new Date(session.start);
-          const end = new Date(session.end);
-          return `
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; min-width: 200px;">
-              <span style="font-weight: bold; font-size: 1rem;">${session.subject || '未命名科目'}</span>
-              <span style="color: ${status.color}; font-size: 0.85rem; font-weight: 500; margin: 0 1rem;">${status.text}</span>
-              <span style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">${formatTime(start)} - ${formatTime(end)}</span>
-            </div>
-          `;
-        }).join('');
-      }
-      
-      if (tomorrowSessions.length === 0) {
-        tomorrowList.innerHTML = '<div style="color: rgba(255,255,255,0.5); text-align: center; padding: 0.5rem;">明日无考试</div>';
-      } else {
-        tomorrowList.innerHTML = tomorrowSessions.map(session => {
-          const status = getSessionStatus(session);
-          const start = new Date(session.start);
-          const end = new Date(session.end);
-          return `
-            <div style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; min-width: 200px;">
-              <span style="font-weight: bold; font-size: 1rem;">${session.subject || '未命名科目'}</span>
-              <span style="color: ${status.color}; font-size: 0.85rem; font-weight: 500; margin: 0 1rem;">${status.text}</span>
-              <span style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">${formatTime(start)} - ${formatTime(end)}</span>
-            </div>
-          `;
-        }).join('');
-      }
-    }
-
     function checkReminders(now) {
       let today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
       let update = false;
@@ -820,7 +965,36 @@
       if(update) {
         localStorage.setItem('reminders', JSON.stringify(reminderList));
         renderRemindersList();
+        renderCalendar();
       }
+    }
+    let fullscreenBtn = document.getElementById('fullscreenBtn');
+    function toggleFull() {
+      if(!fullscreenBtn) return;
+      if(!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error('Fullscreen request failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-compress mr-2"></i><span>点击我退出全屏</span>';
+      } else {
+        document.exitFullscreen().catch(err => {
+          console.error('Fullscreen exit failed:', err);
+        });
+        fullscreenBtn.innerHTML = '<i class="fa fa-expand mr-2"></i><span>点击我进入全屏模式</span>';
+      }
+    }
+    function setBackgroundImage(src) {
+      document.body.style.backgroundImage = `url(${src})`;
+      localStorage.setItem('backgroundImage', src);
+      localStorage.setItem('backgroundIsLocal', src.startsWith('data:') ? 'true' : 'false');
+    }
+    function resetBackground() {
+      document.body.style.backgroundImage = '';
+      localStorage.removeItem('backgroundImage');
+      localStorage.removeItem('backgroundIsLocal');
+      document.getElementById('bgImageUrl').value = '';
+      document.getElementById('localBgPreview').style.display = 'none';
+      showToast('背景已重置');
     }
     function renderRemindersList() {
       let c = document.getElementById('remindersList');
@@ -843,8 +1017,84 @@
         reminderList = reminderList.filter(i => i.id !== id);
         localStorage.setItem('reminders', JSON.stringify(reminderList));
         renderRemindersList();
+        renderCalendar();
         showToast('提醒已删除');
       }));
+    }
+    function renderCalendar() {
+      let y = calendarCurrentDate.getFullYear();
+      let m = calendarCurrentDate.getMonth();
+      document.getElementById('calendarMonth').innerHTML = `${y}年${m+1}月`;
+      
+      let firstDay = new Date(y, m, 1).getDay();
+      let daysInMonth = new Date(y, m+1, 0).getDate();
+      let prevLastDay = new Date(y, m, 0).getDate();
+      let container = document.getElementById('calendarDays');
+      container.innerHTML = '';
+      
+      for(let i = firstDay; i > 0; i--) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = prevLastDay - i + 1;
+        container.appendChild(cell);
+      }
+      
+      let today = new Date();
+      for(let i = 1; i <= daysInMonth; i++) {
+        let cell = document.createElement('div');
+        let dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        let isToday = (y === today.getFullYear() && m === today.getMonth() && i === today.getDate());
+        let weekDay = new Date(y, m, i).getDay();
+        let holiday = getHolidayInfo(dateStr);
+        
+        cell.className = 'calendar-day';
+        if(weekDay === 0 || weekDay === 6) cell.classList.add('restday');
+        if(holiday && holiday.type === 'holiday') cell.classList.add('holiday-badge');
+        if(holiday && holiday.type === 'workday') cell.classList.add('workday-badge');
+        if(isToday) cell.classList.add('today');
+        if(reminderList.some(r => r.date === dateStr)) cell.classList.add('reminder');
+        cell.textContent = i;
+        
+        cell.addEventListener('click', () => {
+          cleanupPopup();
+          let details = [];
+          if(holiday) details.push(` 节假日: ${holiday.name} (${holiday.type==='holiday'?'法定假日':'调休上班'})`);
+          let dayReminders = reminderList.filter(r => r.date === dateStr);
+          dayReminders.forEach(rem => details.push(`  提醒: ${rem.name} - ${rem.desc||'无描述'}`));
+          if(details.length === 0) details.push('  暂无内容显示');
+          
+          let pop = document.createElement('div');
+          pop.className = 'detail-popup';
+          pop.innerHTML = `<strong> ${dateStr}</strong><hr>
+            <div style="margin:12px 0;white-space:pre-line;font-size:1rem;">${details.join('\n')}</div>
+            <button>关闭</button>`;
+          document.body.appendChild(pop);
+          activePopup = pop;
+          
+          requestAnimationFrame(() => pop.classList.add('show'));
+          let closeHandler = () => {
+            pop.classList.remove('show');
+            setTimeout(() => pop.remove(), 300);
+            if(activePopup === pop) {
+              activePopup = null;
+              activePopupTimeout = null;
+            }
+          };
+          pop.querySelector('button').addEventListener('click', closeHandler);
+          activePopupTimeout = setTimeout(closeHandler, 6000);
+        });
+        
+        container.appendChild(cell);
+      }
+      
+      let total = firstDay + daysInMonth;
+      let next = 42 - total;
+      for(let i = 1; i <= next; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'calendar-day other-month';
+        cell.textContent = i;
+        container.appendChild(cell);
+      }
     }
     function escapeHtml(str) {
       if(!str) return '';
@@ -860,7 +1110,7 @@
       if(savedText) {
         container.innerHTML = savedText.replace(/\n/g, '<br>');
       } else {
-        container.innerHTML = "";
+        container.innerHTML = "8B8晚自习三不准：<br>不准转头<br>不准讲话<br>不准下位";
       }
       
       if(savedColor) {
@@ -878,7 +1128,8 @@
       let lineH = savedLineHeight ? parseFloat(savedLineHeight) : 1.4;
       container.style.lineHeight = lineH;
       
-      document.getElementById('sloganText').value = localStorage.getItem('sloganText') || "";
+      document.getElementById('sloganText').value = localStorage.getItem('sloganText') || 
+        "8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位";
       document.getElementById('sloganColor').value = savedColor || "#dc2626";
       document.getElementById('sloganFontSize').value = parseInt(savedSize || 48);
       document.getElementById('sloganLineHeight').value = lineH;
@@ -905,7 +1156,7 @@
       };
       
       document.getElementById('resetSloganBtn').onclick = () => {
-        let def = "";
+        let def = "8B8晚自习三不准：\n不准转头\n不准讲话\n不准下位";
         container.innerHTML = def.replace(/\n/g, '<br>');
         container.style.color = "#dc2626";
         container.style.fontSize = "48px";
@@ -943,23 +1194,85 @@
           localStorage.setItem('darkMode', 'false');
           showToast('已关闭黑夜模式');
         }
+        renderCalendar();
+      });
+    }
+    function initGlassMode() {
+      let cb = document.getElementById('glassModeTogglePanel');
+      let isGlass = localStorage.getItem('glassMode') === 'true';
+      if(isGlass) {
+        document.body.classList.add('glass-mode');
+        cb.checked = true;
+      }
+      cb.addEventListener('change', () => {
+        if(cb.checked) {
+          document.body.classList.add('glass-mode');
+          localStorage.setItem('glassMode', 'true');
+          showToast('液态玻璃已开启');
+        } else {
+          document.body.classList.remove('glass-mode');
+          localStorage.setItem('glassMode', 'false');
+          showToast('液态玻璃已关闭');
+        }
       });
     }
     document.addEventListener('DOMContentLoaded', () => {
+      // 初始化UI组件
       initSloganUI();
       initDarkMode();
+      initGlassMode();
       
-      const countdownBadge = document.getElementById('countdownBadge');
-      if (countdownBadge) {
-        countdownBadge.style.cursor = 'pointer';
-        countdownBadge.addEventListener('click', showExamSessions);
-      }
+      // 全屏按钮事件
+      fullscreenBtn.addEventListener('click', toggleFull);
       
+      // 时钟更新
       setInterval(updateClock, 1000);
       updateClock();
       
+      // 渲染日历和提醒列表
+      renderCalendar();
       renderRemindersList();
       
+      // 公告轮播
+      let ann = Array.from(document.querySelectorAll('.announcement'));
+      let idx = 0;
+      let announcementInterval = null;
+      
+      const updateAnnouncement = () => {
+        ann.forEach((a, i) => {
+          if(i === idx) {
+            a.classList.add('active');
+          } else {
+            a.classList.remove('active');
+          }
+        });
+      };
+      
+      const prevBtn = document.getElementById('prevAnnounceBtn');
+      const nextBtn = document.getElementById('nextAnnounceBtn');
+      
+      if(prevBtn) {
+        prevBtn.onclick = () => {
+          idx = (idx - 1 + ann.length) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      if(nextBtn) {
+        nextBtn.onclick = () => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        };
+      }
+      
+      // 设置定时器
+      if(ann.length > 1) {
+        announcementInterval = setInterval(() => {
+          idx = (idx + 1) % ann.length;
+          updateAnnouncement();
+        }, 5000);
+      } 
+      // 设置面板控制
       let openSet = document.getElementById('openSettingsBtn');
       let panel = document.getElementById('settingsPanelCard');
       let overlay = document.getElementById('settingsPanelOverlay');
@@ -985,6 +1298,18 @@
         overlay.onclick = closeSettingsPanel;
       }
       
+      // 快速设置按钮
+      const quickBgBtn = document.getElementById('quickBgSettingBtn');
+      if(quickBgBtn) {
+        quickBgBtn.onclick = () => {
+          closeSettingsPanel();
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.add('show');
+          if(bgCard) bgCard.classList.add('show');
+        };
+      }
+      
       const quickReminderBtn = document.getElementById('quickReminderSettingBtn');
       if(quickReminderBtn) {
         quickReminderBtn.onclick = () => {
@@ -1004,6 +1329,19 @@
           const sloganCard = document.getElementById('sloganSettingsCard');
           if(sloganOverlay) sloganOverlay.classList.add('show');
           if(sloganCard) sloganCard.classList.add('show');
+        };
+      }
+      
+      // 返回按钮
+      const backFromBgBtn = document.getElementById('backFromBgSettings');
+      if(backFromBgBtn) {
+        backFromBgBtn.onclick = () => {
+          const bgOverlay = document.getElementById('bgOverlay');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgOverlay) bgOverlay.classList.remove('show');
+          if(bgCard) bgCard.classList.remove('show');
+          if(overlay) overlay.classList.add('show');
+          if(panel) panel.classList.add('show');
         };
       }
       
@@ -1030,6 +1368,23 @@
           if(panel) panel.classList.add('show');
         };
       }
+
+      const settingsOpenFixToolBtn = document.getElementById('settingsOpenFixToolBtn');
+      if(settingsOpenFixToolBtn) {
+        settingsOpenFixToolBtn.onclick = () => {
+          window.open("edge-fix.html", "_blank");
+        };
+      }
+      
+      // 遮罩层点击关闭
+      const bgOverlay = document.getElementById('bgOverlay');
+      if(bgOverlay) {
+        bgOverlay.onclick = () => {
+          bgOverlay.classList.remove('show');
+          const bgCard = document.getElementById('bgSettingsCard');
+          if(bgCard) bgCard.classList.remove('show');
+        };
+      }
       
       const reminderOverlay = document.getElementById('reminderOverlay');
       if(reminderOverlay) {
@@ -1049,6 +1404,71 @@
         };
       }
       
+      // 官方背景图片
+      const OFFICIAL_BG = [
+        "https://img.cdn1.vip/i/69e38cf0b3ada_1776520432.webp",
+        "https://img.cdn1.vip/i/69e38cd7b40cf_1776520407.webp",
+        "https://img.cdn1.vip/i/69e38cd297ddb_1776520402.webp",
+        "https://img.cdn1.vip/i/69ff15019d34c_1778324737.webp",
+        "https://img.cdn1.vip/i/69ff150096cc1_1778324736.webp",
+        "https://img.cdn1.vip/i/69ff15026c0df_1778324738.webp",
+        "https://img.cdn1.vip/i/69ff1503b4977_1778324739.webp",
+        "https://img.cdn1.vip/i/69ff1504ca58d_1778324740.webp",
+        "https://img.cdn1.vip/i/69ff1505326ec_1778324741.webp"
+      ];
+      
+      let thumbContainer = document.getElementById('officialBgThumbs');
+      OFFICIAL_BG.forEach(url => {
+        let div = document.createElement('div');
+        div.className = 'bg-thumb-item';
+        let img = document.createElement('img');
+        img.src = url;
+        div.appendChild(img);
+        div.addEventListener('click', () => {
+          setBackgroundImage(url);
+          showToast('已应用官方背景');
+          document.getElementById('bgOverlay').classList.remove('show');
+          document.getElementById('bgSettingsCard').classList.remove('show');
+        });
+        thumbContainer.appendChild(div);
+      });
+      
+      // 背景设置按钮
+      document.getElementById('applyBgImage').onclick = () => {
+        let url = document.getElementById('bgImageUrl').value.trim();
+        if(url) {
+          setBackgroundImage(url);
+        } else {
+          showToast('请输入URL', 2000, true);
+        }
+      };
+      
+      document.getElementById('resetBgImage').onclick = () => {
+        resetBackground();
+      };
+      
+      // 本地上传背景
+      document.getElementById('localBgUpload').addEventListener('change', e => {
+        let f = e.target.files[0];
+        if(f) {
+          let reader = new FileReader();
+          reader.onload = ev => {
+            setBackgroundImage(ev.target.result);
+            document.getElementById('localBgPreview').src = ev.target.result;
+            document.getElementById('localBgPreview').style.display = 'block';
+            showToast('本地背景已应用');
+            document.getElementById('bgOverlay').classList.remove('show');
+            document.getElementById('bgSettingsCard').classList.remove('show');
+          };
+          reader.readAsDataURL(f);
+        }
+      });
+      
+      document.querySelector('.local-upload-label').addEventListener('click', () => {
+        document.getElementById('localBgUpload').click();
+      });
+      
+      // 添加提醒
       const addReminderBtn = document.getElementById('addReminder');
       if(addReminderBtn) {
         addReminderBtn.onclick = () => {
@@ -1076,6 +1496,7 @@
           
           localStorage.setItem('reminders', JSON.stringify(reminderList));
           renderRemindersList();
+          renderCalendar();
           showToast('提醒已添加');
           
           nameInput.value = '';
@@ -1084,6 +1505,7 @@
         };
       }
       
+      // 清空提醒
       const clearRemindersBtn = document.getElementById('clearReminders');
       if(clearRemindersBtn) {
         clearRemindersBtn.onclick = () => {
@@ -1091,446 +1513,107 @@
             reminderList = [];
             localStorage.setItem('reminders', '[]');
             renderRemindersList();
+            renderCalendar();
             showToast('已清空');
           }
         };
       }
       
-      const minimizeBtn = document.getElementById('minimizeBtn');
-      if(minimizeBtn) {
-        minimizeBtn.addEventListener('click', () => {
-          window.electronAPI?.minimizeWindow();
+      // 加载保存的背景
+      let savedBg = localStorage.getItem('backgroundImage');
+      if(savedBg) {
+        document.body.style.backgroundImage = `url(${savedBg})`;
+      }
+      
+      // 日历导航
+      const prevMonthBtn = document.getElementById('prevMonth');
+      if(prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() - 1);
+          renderCalendar();
         });
       }
       
-      const zoomMinus = document.getElementById('zoomMinus');
-      const zoomPlus = document.getElementById('zoomPlus');
-      const zoomInput = document.getElementById('zoomInput');
-      const zoomContainer = document.getElementById('zoomContainer');
-      
-      const savedZoom = localStorage.getItem('examClockZoom');
-      if (savedZoom) {
-        const zoom = parseInt(savedZoom);
-        zoomInput.value = zoom;
-        zoomContainer.style.transform = `scale(${zoom / 100})`;
-        zoomContainer.style.transformOrigin = 'top center';
-      }
-      
-      function setZoom(zoom) {
-        zoom = Math.max(50, Math.min(150, zoom));
-        zoomInput.value = zoom;
-        zoomContainer.style.transform = `scale(${zoom / 100})`;
-        zoomContainer.style.transformOrigin = 'top center';
-        localStorage.setItem('examClockZoom', zoom.toString());
-      }
-      
-      zoomMinus.addEventListener('click', () => {
-        setZoom(parseInt(zoomInput.value) - 10);
-      });
-      
-      zoomPlus.addEventListener('click', () => {
-        setZoom(parseInt(zoomInput.value) + 10);
-      });
-      
-      zoomInput.addEventListener('change', () => {
-        setZoom(parseInt(zoomInput.value) || 100);
-      });
-      
-      const islandToggle = document.getElementById('islandToggle');
-      const islandScaleMinus = document.getElementById('islandScaleMinus');
-      const islandScalePlus = document.getElementById('islandScalePlus');
-      const islandScaleInput = document.getElementById('islandScaleInput');
-      
-      const savedIslandEnabled = localStorage.getItem('islandEnabled');
-      const savedIslandScale = localStorage.getItem('islandScale');
-      
-      if (savedIslandEnabled !== null) {
-        islandToggle.checked = savedIslandEnabled === 'true';
-      }
-      if (savedIslandScale) {
-        islandScaleInput.value = parseInt(savedIslandScale);
-      }
-      
-      islandToggle.addEventListener('change', (e) => {
-        const enabled = e.target.checked;
-        localStorage.setItem('islandEnabled', enabled.toString());
-        if (window.electronAPI) {
-          window.electronAPI.toggleIsland(enabled);
-        }
-      });
-      
-      function setIslandScale(scale) {
-        scale = Math.max(50, Math.min(200, scale));
-        islandScaleInput.value = scale;
-        localStorage.setItem('islandScale', scale.toString());
-        if (window.electronAPI) {
-          window.electronAPI.setIslandScale(scale / 100);
-        }
-      }
-      
-      islandScaleMinus.addEventListener('click', () => {
-        setIslandScale(parseInt(islandScaleInput.value) - 10);
-      });
-      
-      islandScalePlus.addEventListener('click', () => {
-        setIslandScale(parseInt(islandScaleInput.value) + 10);
-      });
-      
-      islandScaleInput.addEventListener('change', () => {
-        setIslandScale(parseInt(islandScaleInput.value) || 100);
-      });
-      
-      if (window.electronAPI) {
-        window.electronAPI.getIslandSettings().then(settings => {
-          islandToggle.checked = settings.enabled;
-          islandScaleInput.value = Math.round(settings.scale * 100);
+      const nextMonthBtn = document.getElementById('nextMonth');
+      if(nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+          calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + 1);
+          renderCalendar();
         });
       }
       
-      const examSubjectNameInput = document.getElementById('examSubjectName');
-      const examStartTimeInput = document.getElementById('examStartTime');
-      const examEndTimeInput = document.getElementById('examEndTime');
-      const saveExamTimeBtn = document.getElementById('saveExamTime');
-      const clearExamTimeBtn = document.getElementById('clearExamTime');
-      const currentExamTimeDisplay = document.getElementById('currentExamTimeDisplay');
-      const examSessionsList = document.getElementById('examSessionsList');
+      // 更新公告弹窗
+      const UPDATE_KEY_31 = 'hasViewedUpdate31';
+      const FORCE_SHOW_UPDATE_31 = 'forceShowUpdate31';
+      const importantCardDom = document.getElementById('importantCard');
+      const importantOverlayDom = document.getElementById('importantOverlay');
+      const closeImportantBtnDom = document.getElementById('closeImportantBtn');
       
-      const examLogo = document.getElementById('examLogo');
-      const examSubjectText = document.getElementById('examSubjectText');
-      const examStatusText = document.getElementById('examStatusText');
-      const examCountdownDisplay = document.getElementById('examCountdownDisplay');
-      
-      let currentSession = null;
-      let examTimerInterval = null;
-      let examEndTimer = null;
-      let logoAnimationTriggered = false;
-      
-      function loadExamSettings() {
-        const savedSessions = localStorage.getItem('examSessions');
-        if (savedSessions) {
-          examSessions = JSON.parse(savedSessions);
-          renderSessionsList();
+      if(!importantCardDom || !importantOverlayDom || !closeImportantBtnDom) {
+        console.warn('Update announcement elements not found');
+      } else {
+        if(!localStorage.getItem(UPDATE_KEY_31)) {
+          importantCardDom.classList.add('show');
+          importantOverlayDom.classList.add('show');
+          localStorage.setItem(FORCE_SHOW_UPDATE_31, 'true');
         }
-        findCurrentSession();
-      }
-      
-      function renderSessionsList() {
-        examSessionsList.innerHTML = '';
-        examSessions.forEach((session, index) => {
-          const item = document.createElement('div');
-          item.className = 'flex justify-between items-center p-2 bg-neutral-100 dark:bg-neutral-600 rounded';
-          item.innerHTML = `
-            <div>
-              <span class="font-bold">${session.subject || '未命名科目'}</span>
-              <span class="text-sm ml-2">${formatDateTime(new Date(session.start))} - ${formatDateTime(new Date(session.end))}</span>
-            </div>
-            <button class="delete-session-btn text-red-500 hover:text-red-700" data-index="${index}">
-              <i class="fa fa-trash"></i>
-            </button>
-          `;
-          examSessionsList.appendChild(item);
-        });
-        
-        document.querySelectorAll('.delete-session-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const index = parseInt(e.currentTarget.dataset.index);
-            examSessions.splice(index, 1);
-            localStorage.setItem('examSessions', JSON.stringify(examSessions));
-            renderSessionsList();
-            findCurrentSession();
-            startExamTimer();
-          });
+        closeImportantBtnDom.addEventListener('click', function() {
+          importantCardDom.classList.remove('show');
+          importantOverlayDom.classList.remove('show');
+          localStorage.setItem(UPDATE_KEY_31, 'true');
         });
       }
-      
-      function findCurrentSession() {
-        const now = new Date();
-        currentSession = examSessions.find(session => {
-          const start = new Date(session.start);
-          const end = new Date(session.end);
-          return now >= start && now < end;
-        });
-        
-        if (!currentSession) {
-          const upcomingSession = examSessions.filter(session => {
-            const start = new Date(session.start);
-            return now < start;
-          }).sort((a, b) => new Date(a.start) - new Date(b.start))[0];
-          currentSession = upcomingSession || null;
-        }
-        
-        updateExamTimeDisplay();
+
+      let apologyCard = document.getElementById("apologyCard");
+      let apologyOverlay = document.getElementById("apologyOverlay");
+      let closeApologyBtn = document.getElementById("closeApologyBtn");
+      let openFixToolBtn = document.getElementById("openFixToolBtn");
+      const APOLOGY_CONFIRMED_KEY = "apologyCardConfirmed_school_v1";
+      if (apologyCard && apologyOverlay && localStorage.getItem(APOLOGY_CONFIRMED_KEY) !== "true") {
+        apologyOverlay.classList.add("show");
+        apologyCard.classList.add("show");
+      }
+      if (closeApologyBtn) {
+        closeApologyBtn.onclick = () => {
+          if (apologyCard) {
+            apologyCard.classList.remove("show");
+            apologyOverlay.classList.remove("show");
+            localStorage.setItem(APOLOGY_CONFIRMED_KEY, "true");
+            location.reload();
+          }
+        };
+      }
+      if (apologyOverlay) {
+        apologyOverlay.onclick = () => {
+          if (apologyCard && apologyCard.classList.contains("show")) {
+            apologyCard.classList.remove("show");
+            apologyOverlay.classList.remove("show");
+            localStorage.setItem(APOLOGY_CONFIRMED_KEY, "true");
+          }
+        };
+      }
+      if (openFixToolBtn) {
+        openFixToolBtn.onclick = () => {
+          window.open("edge-fix.html", "_blank");
+        };
       }
       
-      function updateExamTimeDisplay() {
-        if (currentSession) {
-          currentExamTimeDisplay.textContent = `${currentSession.subject || '未命名科目'}：${formatDateTime(new Date(currentSession.start))} - ${formatDateTime(new Date(currentSession.end))}`;
-        } else {
-          currentExamTimeDisplay.textContent = '未设置考试时间';
-        }
-      }
-      
-      function formatDateTime(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        const h = String(date.getHours()).padStart(2, '0');
-        const min = String(date.getMinutes()).padStart(2, '0');
-        const s = String(date.getSeconds()).padStart(2, '0');
-        return `${y}-${m}-${d} ${h}:${min}:${s}`;
-      }
-      
-      saveExamTimeBtn.addEventListener('click', () => {
-        const subject = examSubjectNameInput.value.trim();
-        const startVal = examStartTimeInput.value;
-        const endVal = examEndTimeInput.value;
-        if (startVal && endVal) {
-          const newSession = {
-            subject: subject || '未命名科目',
-            start: startVal,
-            end: endVal
-          };
-          examSessions.push(newSession);
-          examSessions.sort((a, b) => new Date(a.start) - new Date(b.start));
-          localStorage.setItem('examSessions', JSON.stringify(examSessions));
-          examSubjectNameInput.value = '';
-          examStartTimeInput.value = '';
-          examEndTimeInput.value = '';
-          renderSessionsList();
-          findCurrentSession();
-          startExamTimer();
-        }
-      });
-      
-      clearExamTimeBtn.addEventListener('click', () => {
-        examSessions = [];
-        currentSession = null;
-        examSubjectNameInput.value = '';
-        examStartTimeInput.value = '';
-        examEndTimeInput.value = '';
-        localStorage.removeItem('examSessions');
-        renderSessionsList();
-        updateExamTimeDisplay();
-        stopExamTimer();
-        resetExamTimerUI();
-      });
-      
-      function resetExamTimerUI() {
-        const badge = document.getElementById('countdownBadge');
-        if (badge) badge.classList.add('hidden');
-        examLogo.style.opacity = '0';
-        examLogo.classList.remove('animate-float-up');
-        examStatusText.style.opacity = '0';
-        examStatusText.classList.remove('animate-blink');
-        examStatusText.textContent = '';
-        examCountdownDisplay.style.opacity = '0';
-        examCountdownDisplay.textContent = '--:--:--';
-      }
-      
-      function startExamTimer() {
-        stopExamTimer();
-        updateExamState();
-        examTimerInterval = setInterval(updateExamState, 1000);
-      }
-      
-      function stopExamTimer() {
-        if (examTimerInterval) {
-          clearInterval(examTimerInterval);
-          examTimerInterval = null;
-        }
-        if (examEndTimer) {
-          clearTimeout(examEndTimer);
-          examEndTimer = null;
-        }
-      }
-      
-      function updateExamState() {
-        if (window.electronAPI) {
-          window.electronAPI.setExamSession(currentSession || null);
-        }
-        
-        if (!currentSession) {
-          showExamNotStarted();
-          return;
-        }
-        
-        const now = new Date();
-        const examStartTime = new Date(currentSession.start);
-        const examEndTime = new Date(currentSession.end);
-        
-        if (now >= examEndTime) {
-          showExamEnd();
-          return;
-        }
-        
-        if (now >= examStartTime) {
-          showExamInProgress(now, examStartTime, examEndTime);
-          return;
-        }
-        
-        const timeToStart = examStartTime - now;
-        if (timeToStart <= 10000 && timeToStart > 0) {
-          showExamReady();
-          return;
-        }
-        
-        if (timeToStart <= 15 * 60 * 1000 && timeToStart > 10000) {
-          showExamUpcoming();
-          return;
-        }
-        
-        showExamNotStarted();
-      }
-      
-      function showExamNotStarted() {
-        const badge = document.getElementById('countdownBadge');
-        const examContent = document.getElementById('examContent');
-        if (badge) badge.classList.remove('hidden');
-        badge.style.backgroundColor = '#000000';
-        badge.classList.remove('animate-blink');
-        examLogo.style.opacity = '1';
-        examLogo.classList.remove('animate-float-up');
-        examContent.style.display = 'none';
-        logoAnimationTriggered = false;
-        
-        examSubjectText.textContent = '';
-        examSubjectText.style.opacity = '0';
-        examStatusText.style.opacity = '0';
-        examStatusText.classList.remove('animate-blink');
-        examStatusText.textContent = '';
-        examCountdownDisplay.style.opacity = '0';
-      }
-      
-      function showExamUpcoming() {
-        const badge = document.getElementById('countdownBadge');
-        const examContent = document.getElementById('examContent');
-        if (badge) badge.classList.remove('hidden');
-        badge.style.backgroundColor = '#000000';
-        badge.classList.remove('animate-blink');
-        examLogo.style.opacity = '1';
-        examLogo.classList.remove('animate-float-up');
-        examContent.style.display = 'flex';
-        
-        if (currentSession && currentSession.subject) {
-          examSubjectText.textContent = currentSession.subject;
-          examSubjectText.style.opacity = '1';
-        } else {
-          examSubjectText.textContent = '';
-          examSubjectText.style.opacity = '0';
-        }
-        
-        examStatusText.textContent = '准备考试';
-        examStatusText.style.opacity = '1';
-        examStatusText.classList.remove('animate-blink');
-        examCountdownDisplay.style.opacity = '0';
-      }
-      
-      function showExamReady() {
-        const badge = document.getElementById('countdownBadge');
-        const examContent = document.getElementById('examContent');
-        if (badge) badge.classList.remove('hidden');
-        badge.style.backgroundColor = '#000000';
-        badge.classList.remove('animate-blink');
-        examLogo.style.opacity = '1';
-        examContent.style.display = 'flex';
-        
-        if (!logoAnimationTriggered) {
-          logoAnimationTriggered = true;
-          examLogo.classList.remove('animate-float-up');
-          void examLogo.offsetWidth;
-          examLogo.classList.add('animate-float-up');
-        }
-        
-        if (currentSession && currentSession.subject) {
-          examSubjectText.textContent = currentSession.subject;
-          examSubjectText.style.opacity = '1';
-        } else {
-          examSubjectText.textContent = '';
-          examSubjectText.style.opacity = '0';
-        }
-        
-        examStatusText.textContent = '即将开考';
-        examStatusText.style.opacity = '1';
-        examStatusText.classList.remove('animate-blink');
-        examCountdownDisplay.style.opacity = '0';
-      }
-      
-      function showExamInProgress(now, examStartTime, examEndTime) {
-        const badge = document.getElementById('countdownBadge');
-        const examContent = document.getElementById('examContent');
-        if (badge) badge.classList.remove('hidden');
-        
-        const totalDuration = examEndTime - examStartTime;
-        const remainingTime = examEndTime - now;
-        const percentageRemaining = (remainingTime / totalDuration) * 100;
-        
-        const bgColor = percentageRemaining <= 10 ? '#ff0000' : '#000000';
-        badge.style.backgroundColor = bgColor;
-        badge.classList.remove('animate-blink');
-        
-        if (!logoAnimationTriggered) {
-          logoAnimationTriggered = true;
-          examLogo.style.opacity = '1';
-          examLogo.classList.add('animate-float-up');
-          setTimeout(() => {
-            examLogo.style.opacity = '0';
-            examLogo.classList.remove('animate-float-up');
-          }, 1000);
-        }
-        
-        examContent.style.display = 'flex';
-        
-        const subjectText = (currentSession && currentSession.subject) || '';
-        if (subjectText) {
-          examSubjectText.textContent = subjectText;
-          examSubjectText.style.opacity = '1';
-        } else {
-          examSubjectText.textContent = '';
-          examSubjectText.style.opacity = '0';
-        }
-        
-        examStatusText.style.opacity = '0';
-        
-        const hours = Math.floor(remainingTime / 3600000);
-        const minutes = Math.floor((remainingTime % 3600000) / 60000);
-        const seconds = Math.floor((remainingTime % 60000) / 1000);
-        
-        const countdownText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        examCountdownDisplay.textContent = countdownText;
-        examCountdownDisplay.style.opacity = '1';
-      }
-      
-      function showExamEnd() {
-        const badge = document.getElementById('countdownBadge');
-        if (badge) badge.classList.remove('hidden');
-        badge.style.backgroundColor = '#ff0000';
-        badge.classList.add('animate-blink');
-        
-        examLogo.style.opacity = '0';
-        
-        const subjectText = (currentSession && currentSession.subject) || '';
-        if (subjectText) {
-          examSubjectText.textContent = subjectText;
-          examSubjectText.style.opacity = '1';
-        } else {
-          examSubjectText.textContent = '';
-          examSubjectText.style.opacity = '0';
-        }
-        
-        examStatusText.textContent = '考试结束';
-        examStatusText.style.opacity = '1';
-        examStatusText.classList.remove('animate-blink');
-        examCountdownDisplay.style.opacity = '0';
-        
-        stopExamTimer();
-        examEndTimer = setTimeout(() => {
-          findCurrentSession();
-          startExamTimer();
-        }, 60000);
-      }
-      
-      loadExamSettings();
-      startExamTimer();
+      // 禁用双指缩放
+      document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+      document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+      document.addEventListener('gestureend', function(e) { e.preventDefault(); });
+      document.addEventListener('touchmove', function(e) {
+          if (e.touches.length > 1) { e.preventDefault(); }
+      }, { passive: false });
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(e) {
+          const now = Date.now();
+          if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+          lastTouchEnd = now;
+      }, false);
+      document.addEventListener('wheel', function(e) {
+          if (e.ctrlKey) { e.preventDefault(); }
+      }, { passive: false });
     });
   </script>
 </body>
